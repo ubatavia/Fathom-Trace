@@ -1,0 +1,174 @@
+{
+  "name": "Fathom Trace — Workflow 2: Signal Monitor",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "minutes", "minutesInterval": 2 }]
+        }
+      },
+      "id": "c1000001-0000-0000-0000-000000000001",
+      "name": "Schedule — Every 2 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "assign-1",
+              "name": "deployment_id",
+              "value": "deploy-v24.4-20260224",
+              "type": "string"
+            },
+            {
+              "id": "assign-2",
+              "name": "airtable_base_id",
+              "value": "={{ $vars.AIRTABLE_BASE_ID }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-3",
+              "name": "airtable_api_key",
+              "value": "={{ $vars.AIRTABLE_API_KEY }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-4",
+              "name": "support_contacts_threshold",
+              "value": 50,
+              "type": "number"
+            },
+            {
+              "id": "assign-5",
+              "name": "error_rate_threshold",
+              "value": 30,
+              "type": "number"
+            },
+            {
+              "id": "assign-6",
+              "name": "completion_rate_threshold",
+              "value": -15,
+              "type": "number"
+            },
+            {
+              "id": "assign-7",
+              "name": "app_review_threshold",
+              "value": 2,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c1000002-0000-0000-0000-000000000002",
+      "name": "Set Thresholds",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.airtable.com/v0/{{ $json.airtable_base_id }}/signal_feeds?filterByFormula=AND(%7Bdeployment_id%7D%3D%27{{ $json.deployment_id }}%27)",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.airtable_api_key }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c1000003-0000-0000-0000-000000000003",
+      "name": "Read Signal Feeds",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Evaluate signals against thresholds\nconst thresholds = $('Set Thresholds').item.json;\nconst response = $input.item.json;\nconst records = response.records || [];\n\nconst signals = records.map(r => r.fields);\n\nlet shouldTriggerAnalysis = false;\nconst breaches = [];\n\nfor (const signal of signals) {\n  const { signal_type, delta_pct } = signal;\n\n  if (signal_type === 'support_contacts' && delta_pct > thresholds.support_contacts_threshold) {\n    shouldTriggerAnalysis = true;\n    breaches.push(`support_contacts: +${delta_pct}% (threshold: +${thresholds.support_contacts_threshold}%)`);\n  }\n  if (signal_type === 'error_rate' && delta_pct > thresholds.error_rate_threshold) {\n    shouldTriggerAnalysis = true;\n    breaches.push(`error_rate: +${delta_pct}% (threshold: +${thresholds.error_rate_threshold}%)`);\n  }\n  if (signal_type === 'completion_rate' && delta_pct < thresholds.completion_rate_threshold) {\n    shouldTriggerAnalysis = true;\n    breaches.push(`completion_rate: ${delta_pct}% (threshold: ${thresholds.completion_rate_threshold}%)`);\n  }\n  if (signal_type === 'app_review' && signal.value > thresholds.app_review_threshold) {\n    shouldTriggerAnalysis = true;\n    breaches.push(`app_review: ${signal.value} mentions (threshold: ${thresholds.app_review_threshold})`);\n  }\n}\n\nconsole.log(`Signal check for ${thresholds.deployment_id}: shouldTrigger=${shouldTriggerAnalysis}`);\nif (breaches.length > 0) console.log('Breaches:', breaches.join(', '));\n\nreturn [{\n  json: {\n    shouldTriggerAnalysis,\n    breaches,\n    deployment_id: thresholds.deployment_id,\n    signal_count: signals.length\n  }\n}];"
+      },
+      "id": "c1000004-0000-0000-0000-000000000004",
+      "name": "Evaluate Thresholds",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "condition-1",
+              "leftValue": "={{ $json.shouldTriggerAnalysis }}",
+              "rightValue": true,
+              "operator": { "type": "boolean", "operation": "equal" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c1000005-0000-0000-0000-000000000005",
+      "name": "Threshold Breached?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "content": "TRUE path: threshold breached → trigger Workflow 3\n\nIn production: use an HTTP Request node here to call\nWorkflow 3's webhook URL.\n\nFor the demo: run Workflow 3 manually from n8n UI instead.\nThis avoids needing to set up webhook-to-webhook calls.",
+        "height": 160,
+        "width": 300
+      },
+      "id": "c1000006-0000-0000-0000-000000000006",
+      "name": "Note — Trigger W3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1340, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log that no threshold was breached this cycle\nconsole.log('Signal check complete — no threshold breached. Monitoring continues.');\nreturn [{ json: { status: 'monitoring', message: 'No threshold breached this cycle' } }];"
+      },
+      "id": "c1000007-0000-0000-0000-000000000007",
+      "name": "Log — No Breach",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 420]
+    }
+  ],
+  "connections": {
+    "Schedule — Every 2 Minutes": {
+      "main": [[{ "node": "Set Thresholds", "type": "main", "index": 0 }]]
+    },
+    "Set Thresholds": {
+      "main": [[{ "node": "Read Signal Feeds", "type": "main", "index": 0 }]]
+    },
+    "Read Signal Feeds": {
+      "main": [[{ "node": "Evaluate Thresholds", "type": "main", "index": 0 }]]
+    },
+    "Evaluate Thresholds": {
+      "main": [[{ "node": "Threshold Breached?", "type": "main", "index": 0 }]]
+    },
+    "Threshold Breached?": {
+      "main": [
+        [],
+        [{ "node": "Log — No Breach", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "versionId": "c1000000-0000-0000-0000-000000000000",
+  "meta": { "instanceId": "fathom-trace" },
+  "id": "workflow-2-signal-monitor",
+  "tags": [{ "name": "fathom-trace" }]
+}

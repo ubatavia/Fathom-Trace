@@ -1,0 +1,128 @@
+{
+  "name": "Fathom Trace — Workflow 4: Decision Logger",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [{ "mode": "everyMinute" }]
+        },
+        "application": "={{ $vars.AIRTABLE_BASE_ID }}",
+        "table": "decisions",
+        "additionalFields": {}
+      },
+      "id": "d1000001-0000-0000-0000-000000000001",
+      "name": "Airtable Trigger — New Decision",
+      "type": "n8n-nodes-base.airtableTrigger",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "REPLACE_WITH_YOUR_AIRTABLE_CREDENTIAL_ID",
+          "name": "Airtable Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract decision data\nconst record = $input.item.json;\nconst fields = record.fields || record;\n\nconsole.log(`Decision received: ${fields.decision} for deployment ${fields.deployment_id}`);\n\nreturn [{\n  json: {\n    decision_id: fields.decision_id,\n    brief_id: fields.brief_id,\n    deployment_id: fields.deployment_id,\n    decision: fields.decision,\n    decided_by: fields.decided_by,\n    decided_at: fields.decided_at,\n    notes: fields.notes || '',\n    airtable_base_id: $vars.AIRTABLE_BASE_ID,\n    airtable_api_key: $vars.AIRTABLE_API_KEY\n  }\n}];"
+      },
+      "id": "d1000002-0000-0000-0000-000000000002",
+      "name": "Extract Decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.airtable.com/v0/{{ $json.airtable_base_id }}/deployments?filterByFormula=AND(%7Bdeployment_id%7D%3D%27{{ $json.deployment_id }}%27)",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.airtable_api_key }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d1000003-0000-0000-0000-000000000003",
+      "name": "Find Deployment Record",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Map decision to deployment status and find record ID\nconst decisionData = $('Extract Decision').item.json;\nconst lookupResult = $input.item.json;\n\nif (!lookupResult.records || lookupResult.records.length === 0) {\n  throw new Error('Deployment record not found: ' + decisionData.deployment_id);\n}\n\nconst recordId = lookupResult.records[0].id;\n\n// Map decision to status\nconst statusMap = {\n  'acknowledge': 'resolved',\n  'escalate': 'anomaly_detected',\n  'rollback': 'resolved'\n};\n\nconst newStatus = statusMap[decisionData.decision] || 'resolved';\n\nconsole.log(`Updating deployment ${decisionData.deployment_id} to status: ${newStatus}`);\n\nreturn [{\n  json: {\n    record_id: recordId,\n    new_status: newStatus,\n    decision: decisionData.decision,\n    airtable_base_id: decisionData.airtable_base_id,\n    airtable_api_key: decisionData.airtable_api_key\n  }\n}];"
+      },
+      "id": "d1000004-0000-0000-0000-000000000004",
+      "name": "Map Decision to Status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://api.airtable.com/v0/{{ $json.airtable_base_id }}/deployments/{{ $json.record_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.airtable_api_key }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"fields\": { \"status\": \"{{ $json.new_status }}\" } }",
+        "options": {}
+      },
+      "id": "d1000005-0000-0000-0000-000000000005",
+      "name": "Update Deployment Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const decision = $('Map Decision to Status').item.json.decision;\nconsole.log(`Decision logged. Deployment updated. Decision: ${decision}`);\nreturn [{ json: { status: 'logged', decision } }];"
+      },
+      "id": "d1000006-0000-0000-0000-000000000006",
+      "name": "Log Complete",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 300]
+    }
+  ],
+  "connections": {
+    "Airtable Trigger — New Decision": {
+      "main": [[{ "node": "Extract Decision", "type": "main", "index": 0 }]]
+    },
+    "Extract Decision": {
+      "main": [[{ "node": "Find Deployment Record", "type": "main", "index": 0 }]]
+    },
+    "Find Deployment Record": {
+      "main": [[{ "node": "Map Decision to Status", "type": "main", "index": 0 }]]
+    },
+    "Map Decision to Status": {
+      "main": [[{ "node": "Update Deployment Status", "type": "main", "index": 0 }]]
+    },
+    "Update Deployment Status": {
+      "main": [[{ "node": "Log Complete", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "versionId": "d1000000-0000-0000-0000-000000000000",
+  "meta": { "instanceId": "fathom-trace" },
+  "id": "workflow-4-decision-logger",
+  "tags": [{ "name": "fathom-trace" }]
+}

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fathom Trace</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #07100D;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+    }
+
+    .title-wrap {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 700;
+      font-size: clamp(3rem, 9vw, 8rem);
+      letter-spacing: 0.06em;
+      color: #E8F5EE;
+      text-shadow: 0 0 60px rgba(72, 199, 142, 0.25);
+      line-height: 1;
+    }
+
+    .rule {
+      width: 48px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #48C78E, transparent);
+      margin: 1.2em auto 1em;
+      opacity: 0.7;
+    }
+
+    .sub {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      font-size: clamp(0.6rem, 1.1vw, 0.78rem);
+      letter-spacing: 0.35em;
+      color: #48C78E;
+      text-transform: uppercase;
+      opacity: 0.65;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bg"></canvas>
+
+  <div class="title-wrap">
+    <h1>Fathom Trace</h1>
+    <div class="rule"></div>
+    <div class="sub">Surfacing the signals that matter</div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('bg');
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // --- Soft ambient orbs ---
+    const orbs = [
+      { x: 0.2, y: 0.3, r: 0.28, color: '72,199,142' },
+      { x: 0.8, y: 0.65, r: 0.22, color: '72,199,142' },
+      { x: 0.5, y: 0.85, r: 0.18, color: '100,220,160' },
+    ];
+
+    function drawOrbs() {
+      orbs.forEach(o => {
+        const x = o.x * canvas.width;
+        const y = o.y * canvas.height;
+        const r = o.r * Math.min(canvas.width, canvas.height);
+        const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+        grad.addColorStop(0, `rgba(${o.color}, 0.07)`);
+        grad.addColorStop(1, `rgba(${o.color}, 0)`);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+    // --- Fine data lines (chart-like) ---
+    const lines = Array.from({ length: 6 }, (_, i) => {
+      const pts = [];
+      const segments = 60;
+      for (let s = 0; s <= segments; s++) {
+        pts.push({
+          x: (s / segments) * canvas.width,
+          y: canvas.height * (0.3 + i * 0.12) + (Math.random() - 0.5) * 40,
+        });
+      }
+      return { pts, opacity: 0.03 + i * 0.008 };
+    });
+
+    function smoothLine(pts) {
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length - 1; i++) {
+        const mx = (pts[i].x + pts[i + 1].x) / 2;
+        const my = (pts[i].y + pts[i + 1].y) / 2;
+        ctx.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
+      }
+      ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
+    }
+
+    function drawLines() {
+      lines.forEach(l => {
+        ctx.strokeStyle = `rgba(72, 199, 142, ${l.opacity})`;
+        ctx.lineWidth = 1;
+        smoothLine(l.pts);
+        ctx.stroke();
+      });
+    }
+
+    // --- Minimal dot grid ---
+    function drawDots() {
+      const step = 56;
+      ctx.fillStyle = 'rgba(72,199,142,0.07)';
+      for (let x = step; x < canvas.width; x += step) {
+        for (let y = step; y < canvas.height; y += step) {
+          ctx.beginPath();
+          ctx.arc(x, y, 0.8, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    }
+
+    // --- Floating particles ---
+    const particles = Array.from({ length: 35 }, () => ({
+      x: Math.random() * (typeof canvas !== 'undefined' ? canvas.width : 1200),
+      y: Math.random() * (typeof canvas !== 'undefined' ? canvas.height : 800),
+      r: 0.8 + Math.random() * 1.2,
+      vx: (Math.random() - 0.5) * 0.15,
+      vy: -0.08 - Math.random() * 0.12,
+      opacity: 0.08 + Math.random() * 0.18,
+    }));
+
+    function drawParticles() {
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(72,199,142,${p.opacity})`;
+        ctx.fill();
+      });
+    }
+
+    // --- Main loop ---
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawOrbs();
+      drawDots();
+      drawLines();
+      drawParticles();
+      requestAnimationFrame(draw);
+    }
+
+    requestAnimationFrame(draw);
+  </script>
+</body>
+</html>

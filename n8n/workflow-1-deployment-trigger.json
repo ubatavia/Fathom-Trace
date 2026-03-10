@@ -1,0 +1,62 @@
+{
+  "name": "Fathom Trace — Workflow 1: Deployment Trigger",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [{ "mode": "everyMinute" }]
+        },
+        "application": "={{ $vars.AIRTABLE_BASE_ID }}",
+        "table": "deployments",
+        "triggerField": "status",
+        "additionalFields": {}
+      },
+      "id": "b1000001-0000-0000-0000-000000000001",
+      "name": "Airtable Trigger — New Deployment",
+      "type": "n8n-nodes-base.airtableTrigger",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "REPLACE_WITH_YOUR_AIRTABLE_CREDENTIAL_ID",
+          "name": "Airtable Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Filter: only process records where status === 'monitoring'\n// (new deployments land with status='monitoring')\nconst record = $input.item.json;\nconst fields = record.fields || record;\n\nif (fields.status !== 'monitoring') {\n  return []; // stop execution — not a new deployment\n}\n\nconsole.log('New deployment detected:', fields.deployment_id);\n\nreturn [{\n  json: {\n    deployment_id: fields.deployment_id,\n    release_version: fields.release_version,\n    deploying_team: fields.deploying_team,\n    release_datetime: fields.release_datetime,\n    triggered_at: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "b1000002-0000-0000-0000-000000000002",
+      "name": "Filter New Deployments",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "content": "Workflow 1 detects new deployments.\n\nFor the demo, you don't need to run this workflow — the deployment record is already seeded.\n\nThis workflow is for the full production scenario: when a new deployment_id appears in Airtable with status='monitoring', Workflow 2 starts watching for signal deviations.\n\nIn n8n Cloud, activate this workflow so it runs automatically.",
+        "height": 200,
+        "width": 400
+      },
+      "id": "b1000003-0000-0000-0000-000000000003",
+      "name": "Note — Demo Usage",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [240, 500]
+    }
+  ],
+  "connections": {
+    "Airtable Trigger — New Deployment": {
+      "main": [[{ "node": "Filter New Deployments", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b1000000-0000-0000-0000-000000000000",
+  "meta": { "instanceId": "fathom-trace" },
+  "id": "workflow-1-deployment-trigger",
+  "tags": [{ "name": "fathom-trace" }]
+}

@@ -1,0 +1,423 @@
+{
+  "name": "Fathom Trace — Workflow 3: AI Analysis Chain",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "a1000001-0000-0000-0000-000000000001",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "assign-1",
+              "name": "deployment_id",
+              "value": "deploy-v24.4-20260224",
+              "type": "string"
+            },
+            {
+              "id": "assign-2",
+              "name": "airtable_base_id",
+              "value": "app5MsHEVyYJdJD09",
+              "type": "string"
+            },
+            {
+              "id": "assign-3",
+              "name": "airtable_api_key",
+              "value": "YOUR_AIRTABLE_API_KEY",
+              "type": "string"
+            },
+            {
+              "id": "assign-4",
+              "name": "anthropic_api_key",
+              "value": "={{ $vars.ANTHROPIC_API_KEY }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1000002-0000-0000-0000-000000000002",
+      "name": "Set Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.airtable.com/v0/{{ $json.airtable_base_id }}/deployments?filterByFormula=AND(%7Bdeployment_id%7D%3D%27{{ $json.deployment_id }}%27)",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.airtable_api_key }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1000003-0000-0000-0000-000000000003",
+      "name": "Read Deployment Record",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.airtable.com/v0/{{ $('Set Config').item.json.airtable_base_id }}/signal_feeds?filterByFormula=AND(%7Bdeployment_id%7D%3D%27{{ $('Set Config').item.json.deployment_id }}%27)",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Set Config').item.json.airtable_api_key }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1000004-0000-0000-0000-000000000004",
+      "name": "Read Signal Feeds",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare input for Claude Call 1 — Anomaly Classification\nconst config = $('Set Config').item.json;\nconst deploymentRecords = $('Read Deployment Record').item.json.records;\nconst signalRecords = $('Read Signal Feeds').item.json.records;\n\nif (!deploymentRecords || deploymentRecords.length === 0) {\n  throw new Error('No deployment record found for: ' + config.deployment_id);\n}\n\nconst deployment = deploymentRecords[0].fields;\nconst signals = signalRecords.map(r => r.fields);\n\nconst userMessage = `Deployment Record:\\n${JSON.stringify(deployment, null, 2)}\\n\\nSignal Deviations (measured 4 hours post-release):\\n${JSON.stringify(signals, null, 2)}\\n\\nClassify the anomaly. Return JSON only.`;\n\nconst systemPrompt = \"You are a client impact analyst at a fintech company. You receive post-deployment signal data showing deviations from baseline across multiple signal types.\\n\\nClassify the anomaly across four dimensions:\\n\\n1. affected_flow — the specific product flow or feature where the failure is occurring\\n2. affected_segment — the specific client segment impacted\\n3. signal_severity — one of: low, medium, high, critical\\n4. anomaly_type — one of: Bug, Degradation, Intentional Restriction, New Baseline, Unknown\\n\\nAnomaly type guidance:\\n- Use Bug when signals suggest an unintended system failure with historical precedent likely\\n- Use Degradation when signals suggest gradual performance decline rather than a sudden break\\n- Use Intentional Restriction when signals suggest access limitations that may be by design — phased rollouts, invite-only launches, eligibility gates. Key indicator: support contacts spike but error_rate is low or absent; affected segment is narrow and new\\n- Use New Baseline when the product area has no historical precedent and you cannot classify confidently\\n- Use Unknown when classification is not possible from available signals\\n\\nAlso return: warrants_pattern_matching (boolean) — true if anomaly_type is Bug or Degradation and signal_severity is medium or above.\\n\\nReturn valid JSON only. No explanation text outside the JSON.\\n\\nOutput fields: affected_flow (string), affected_segment (string), signal_severity (low/medium/high/critical), anomaly_type (Bug/Degradation/Intentional Restriction/New Baseline/Unknown), warrants_pattern_matching (boolean), classification_notes (one sentence on the primary classification signal).\";\n\nreturn [{\n  json: {\n    deployment,\n    signals,\n    call1_user_message: userMessage,\n    call1_system_prompt: systemPrompt,\n    airtable_base_id: config.airtable_base_id,\n    airtable_api_key: config.airtable_api_key,\n    anthropic_api_key: config.anthropic_api_key,\n    deployment_id: config.deployment_id\n  }\n}];"
+      },
+      "id": "a1000005-0000-0000-0000-000000000005",
+      "name": "Prepare Call 1 Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $json.anthropic_api_key }}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"claude-sonnet-4-6\",\n  \"max_tokens\": 2048,\n  \"system\": {{ JSON.stringify($json.call1_system_prompt) }},\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($json.call1_user_message) }}\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "a1000006-0000-0000-0000-000000000006",
+      "name": "Claude Call 1 — Anomaly Classification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Claude Call 1 response and prepare Call 2 input\nconst prev = $('Prepare Call 1 Input').item.json;\nconst response = $input.item.json;\n\nconst content = response.content[0].text;\nlet anomalyClassification;\n\ntry {\n  const cleaned = content.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  anomalyClassification = JSON.parse(cleaned);\n} catch (e) {\n  throw new Error('Failed to parse Call 1 response: ' + content);\n}\n\nconsole.log('Call 1 result — severity:', anomalyClassification.signal_severity);\nconsole.log('Anomaly type:', anomalyClassification.anomaly_type);\nconsole.log('Warrants pattern matching:', anomalyClassification.warrants_pattern_matching);\n\nreturn [{\n  json: {\n    anomaly_classification: anomalyClassification,\n    deployment: prev.deployment,\n    deployment_id: prev.deployment_id,\n    airtable_base_id: prev.airtable_base_id,\n    airtable_api_key: prev.airtable_api_key,\n    anthropic_api_key: prev.anthropic_api_key\n  }\n}];"
+      },
+      "id": "a1000007-0000-0000-0000-000000000007",
+      "name": "Parse Call 1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.airtable.com/v0/{{ $json.airtable_base_id }}/past_incidents",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.airtable_api_key }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1000008-0000-0000-0000-000000000008",
+      "name": "Read Past Incidents",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1780, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare input for Claude Call 2 — Historical Pattern Matching\nconst prev = $('Parse Call 1').item.json;\nconst incidentsResponse = $input.item.json;\n\nconst incidents = incidentsResponse.records.map(r => r.fields);\n\nconst userMessage = `Current Anomaly Classification:\\n${JSON.stringify(prev.anomaly_classification, null, 2)}\\n\\nHistorical Incident Database (full):\\n${JSON.stringify(incidents, null, 2)}\\n\\nFind the closest historical match. Return JSON only.`;\n\nconst systemPrompt = \"You are a pattern-matching system for a fintech engineering team. You have access to a database of past incidents. Given an anomaly classification from a post-deployment signal analysis, identify the closest historical match.\\n\\nCalculate match_confidence (0-100) using:\\n- Signal type overlap: 40% weight — how many of the same signal types are elevated?\\n- Affected segment overlap: 30% weight — same account type, same user segment?\\n- Affected flow overlap: 30% weight — same product area and flow step?\\n\\nRules:\\n- If anomaly_type is Intentional Restriction or New Baseline and no strong match exists, confirm that type and set match_confidence below 60\\n- If anomaly_type is Bug or Degradation, find the best match even if imperfect\\n- A match on all three dimensions (signal type + segment + flow) should produce match_confidence 75+\\n- A near-structural twin (same everything) should produce match_confidence 85+\\n\\nReturn valid JSON only. No explanation text outside the JSON.\\n\\nOutput fields: match_id (string or null), match_confidence (0-100 integer), matching_signals (array of signal type strings), probable_root_cause (string — specific technical hypothesis based on historical match), historical_resolution (string — what was done to fix it previously), anomaly_type_confirmed (Bug/Degradation/Intentional Restriction/New Baseline/Unknown).\";\n\nreturn [{\n  json: {\n    anomaly_classification: prev.anomaly_classification,\n    deployment: prev.deployment,\n    deployment_id: prev.deployment_id,\n    incidents,\n    call2_user_message: userMessage,\n    call2_system_prompt: systemPrompt,\n    airtable_base_id: prev.airtable_base_id,\n    airtable_api_key: prev.airtable_api_key,\n    anthropic_api_key: prev.anthropic_api_key\n  }\n}];"
+      },
+      "id": "a1000009-0000-0000-0000-000000000009",
+      "name": "Prepare Call 2 Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2000, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $json.anthropic_api_key }}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"claude-sonnet-4-6\",\n  \"max_tokens\": 2048,\n  \"system\": {{ JSON.stringify($json.call2_system_prompt) }},\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($json.call2_user_message) }}\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "a1000010-0000-0000-0000-000000000010",
+      "name": "Claude Call 2 — Pattern Matching",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [2220, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Claude Call 2 response and prepare Call 3 input\nconst prev = $('Prepare Call 2 Input').item.json;\nconst response = $input.item.json;\n\nconst content = response.content[0].text;\nlet patternMatch;\n\ntry {\n  const cleaned = content.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  patternMatch = JSON.parse(cleaned);\n} catch (e) {\n  throw new Error('Failed to parse Call 2 response: ' + content);\n}\n\nconsole.log('Call 2 result — match_id:', patternMatch.match_id, '| confidence:', patternMatch.match_confidence);\nconsole.log('Anomaly type confirmed:', patternMatch.anomaly_type_confirmed);\n\nconst userMessage = `Deployment Record:\\n${JSON.stringify(prev.deployment, null, 2)}\\n\\nAnomaly Classification (Call 1 output):\\n${JSON.stringify(prev.anomaly_classification, null, 2)}\\n\\nHistorical Pattern Match (Call 2 output):\\n${JSON.stringify(patternMatch, null, 2)}\\n\\nGenerate the impact brief. Return JSON only.`;\n\nconst systemPrompt = \"You are generating an impact brief for an engineering and product team at a fintech company. The brief will be reviewed by a human who must make a rollback, escalation, or accept decision.\\n\\nBe specific and actionable. Do not speculate beyond the evidence. State confidence level and anomaly type explicitly. The human makes the final decision — make that decision as informed as possible.\\n\\nConfidence score calculation (weighted composite):\\n- Signal Strength (40%): number of independent signals elevated + magnitude. Social trust contributes at half weight of internal signals.\\n- Segment Specificity (30%): how precisely is the anomaly localized? Broad spike = low score. Specific version + account combo + flow step = high score.\\n- Historical Match Quality (30%): how closely does the current pattern match a past incident? Signal type match only = low. Signal + segment + flow + resolution pattern = high.\\n\\nConfidence bands:\\n- 95-100: Critical\\n- 80-94: High\\n- 60-79: Medium\\n- below 60: Low\\n\\nSet low_confidence_flag to true if: confidence_score < 60 OR anomaly_type is Intentional Restriction OR anomaly_type is New Baseline.\\n\\nReturn valid JSON only. No explanation text outside the JSON.\\n\\nOutput fields: confidence_score (integer 0-100), confidence_band (Low/Medium/High/Critical), anomaly_type (Bug/Degradation/Intentional Restriction/New Baseline/Unknown), affected_flow (string), affected_segment (string), affected_users_est (integer), signal_summary (array of objects with signal_type/direction/magnitude/note), pattern_match_summary (2-4 sentence plain-language summary of historical match), pr_to_review (PR number string or null), recommended_action (string — specific, actionable, one sentence), low_confidence_flag (boolean), full_brief_text (complete formatted brief using this structure: IMPACT ALERT — {confidence_band} Confidence ({confidence_score}%) / Anomaly Type: {anomaly_type} / Deployment: {release_version} / Affected Flow: {affected_flow} / Affected Segment: {affected_segment} / Estimated Clients: ~{affected_users_est} / SIGNALS: bullet per signal / PATTERN MATCH: {pattern_match_summary} / RECOMMENDED ACTION: {recommended_action}).\";\n\nreturn [{\n  json: {\n    anomaly_classification: prev.anomaly_classification,\n    pattern_match: patternMatch,\n    deployment: prev.deployment,\n    deployment_id: prev.deployment_id,\n    call3_user_message: userMessage,\n    call3_system_prompt: systemPrompt,\n    airtable_base_id: prev.airtable_base_id,\n    airtable_api_key: prev.airtable_api_key,\n    anthropic_api_key: prev.anthropic_api_key\n  }\n}];"
+      },
+      "id": "a1000011-0000-0000-0000-000000000011",
+      "name": "Parse Call 2 + Prepare Call 3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2440, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $json.anthropic_api_key }}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"claude-sonnet-4-6\",\n  \"max_tokens\": 4096,\n  \"system\": {{ JSON.stringify($json.call3_system_prompt) }},\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($json.call3_user_message) }}\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "a1000012-0000-0000-0000-000000000012",
+      "name": "Claude Call 3 — Impact Brief",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [2660, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Call 3 and prepare Airtable write payload\nconst prev = $('Parse Call 2 + Prepare Call 3').item.json;\nconst response = $input.item.json;\n\nconst content = response.content[0].text;\nlet brief;\n\ntry {\n  const cleaned = content.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  brief = JSON.parse(cleaned);\n} catch (e) {\n  throw new Error('Failed to parse Call 3 response: ' + content);\n}\n\nconsole.log('Call 3 complete — confidence:', brief.confidence_score, '| anomaly_type:', brief.anomaly_type);\n\nconst now = new Date().toISOString();\n\nreturn [{\n  json: {\n    brief,\n    airtable_record: {\n      brief_id: brief.brief_id || `brief-${prev.deployment_id}-${Date.now()}`,\n      deployment_id: prev.deployment_id,\n      generated_at: now,\n      confidence_score: brief.confidence_score,\n      confidence_band: brief.confidence_band,\n      anomaly_type: brief.anomaly_type,\n      affected_flow: brief.affected_flow,\n      affected_segment: brief.affected_segment,\n      signal_summary: JSON.stringify(brief.signal_summary),\n      pattern_match_id: prev.pattern_match.match_id || '',\n      pattern_match_summary: brief.pattern_match_summary,\n      recommended_action: brief.recommended_action,\n      full_brief_text: brief.full_brief_text,\n      pr_to_review: brief.pr_to_review || null,\n      low_confidence_flag: brief.low_confidence_flag,\n      human_decision: 'Pending',\n      estimated_affected_users: 285000,\n      status: 'pending_review'\n    },\n    deployment_id: prev.deployment_id,\n    airtable_base_id: prev.airtable_base_id,\n    airtable_api_key: prev.airtable_api_key\n  }\n}];"
+      },
+      "id": "a1000013-0000-0000-0000-000000000013",
+      "name": "Parse Call 3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2880, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.airtable.com/v0/{{ $json.airtable_base_id }}/impact_briefs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.airtable_api_key }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"records\": [{ \"fields\": {{ JSON.stringify($json.airtable_record) }} }] }",
+        "options": {}
+      },
+      "id": "a1000014-0000-0000-0000-000000000014",
+      "name": "Write Impact Brief to Airtable",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [3100, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Find the deployment record ID to update its status\nconst prev = $('Parse Call 3').item.json;\n\nreturn [{\n  json: {\n    deployment_id: prev.deployment_id,\n    airtable_base_id: prev.airtable_base_id,\n    airtable_api_key: prev.airtable_api_key,\n    write_result: $input.item.json\n  }\n}];"
+      },
+      "id": "a1000015-0000-0000-0000-000000000015",
+      "name": "Prepare Status Update",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3320, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.airtable.com/v0/{{ $json.airtable_base_id }}/deployments?filterByFormula=AND(%7Bdeployment_id%7D%3D%27{{ $json.deployment_id }}%27)",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.airtable_api_key }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1000016-0000-0000-0000-000000000016",
+      "name": "Get Deployment Record ID",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [3540, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract Airtable record ID for deployment status update\nconst prev = $('Prepare Status Update').item.json;\nconst lookupResult = $input.item.json;\n\nif (!lookupResult.records || lookupResult.records.length === 0) {\n  throw new Error('Could not find deployment record to update status');\n}\n\nconst recordId = lookupResult.records[0].id;\n\nreturn [{\n  json: {\n    record_id: recordId,\n    airtable_base_id: prev.airtable_base_id,\n    airtable_api_key: prev.airtable_api_key\n  }\n}];"
+      },
+      "id": "a1000017-0000-0000-0000-000000000017",
+      "name": "Extract Record ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3760, 300]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://api.airtable.com/v0/{{ $json.airtable_base_id }}/deployments/{{ $json.record_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.airtable_api_key }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{ \"fields\": { \"status\": \"brief_generated\" } }",
+        "options": {}
+      },
+      "id": "a1000018-0000-0000-0000-000000000018",
+      "name": "Update Deployment Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [3980, 300]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [[{ "node": "Set Config", "type": "main", "index": 0 }]]
+    },
+    "Set Config": {
+      "main": [[{ "node": "Read Deployment Record", "type": "main", "index": 0 }]]
+    },
+    "Read Deployment Record": {
+      "main": [[{ "node": "Read Signal Feeds", "type": "main", "index": 0 }]]
+    },
+    "Read Signal Feeds": {
+      "main": [[{ "node": "Prepare Call 1 Input", "type": "main", "index": 0 }]]
+    },
+    "Prepare Call 1 Input": {
+      "main": [[{ "node": "Claude Call 1 — Anomaly Classification", "type": "main", "index": 0 }]]
+    },
+    "Claude Call 1 — Anomaly Classification": {
+      "main": [[{ "node": "Parse Call 1", "type": "main", "index": 0 }]]
+    },
+    "Parse Call 1": {
+      "main": [[{ "node": "Read Past Incidents", "type": "main", "index": 0 }]]
+    },
+    "Read Past Incidents": {
+      "main": [[{ "node": "Prepare Call 2 Input", "type": "main", "index": 0 }]]
+    },
+    "Prepare Call 2 Input": {
+      "main": [[{ "node": "Claude Call 2 — Pattern Matching", "type": "main", "index": 0 }]]
+    },
+    "Claude Call 2 — Pattern Matching": {
+      "main": [[{ "node": "Parse Call 2 + Prepare Call 3", "type": "main", "index": 0 }]]
+    },
+    "Parse Call 2 + Prepare Call 3": {
+      "main": [[{ "node": "Claude Call 3 — Impact Brief", "type": "main", "index": 0 }]]
+    },
+    "Claude Call 3 — Impact Brief": {
+      "main": [[{ "node": "Parse Call 3", "type": "main", "index": 0 }]]
+    },
+    "Parse Call 3": {
+      "main": [[{ "node": "Write Impact Brief to Airtable", "type": "main", "index": 0 }]]
+    },
+    "Write Impact Brief to Airtable": {
+      "main": [[{ "node": "Prepare Status Update", "type": "main", "index": 0 }]]
+    },
+    "Prepare Status Update": {
+      "main": [[{ "node": "Get Deployment Record ID", "type": "main", "index": 0 }]]
+    },
+    "Get Deployment Record ID": {
+      "main": [[{ "node": "Extract Record ID", "type": "main", "index": 0 }]]
+    },
+    "Extract Record ID": {
+      "main": [[{ "node": "Update Deployment Status", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "a1000000-0000-0000-0000-000000000000",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fathom-trace"
+  },
+  "id": "workflow-3-ai-analysis-chain",
+  "tags": [{ "name": "fathom-trace" }]
+}
