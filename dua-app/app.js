@@ -1,9 +1,14 @@
+// ── Storage helper (localStorage throws on content:// URIs on Android) ─
+function safeStorage(key) {
+  try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
+}
+
 // ── State ──────────────────────────────────────────────────────────
 let allDuas     = [];
 let allSections = [];
 let pool        = [];       // current filtered set
 let idx         = 0;        // index within pool
-let favIds      = new Set(JSON.parse(localStorage.getItem('dua-favs') || '[]'));
+let favIds      = new Set(safeStorage('dua-favs'));
 let activeSection = 'all';
 let showFavsOnly  = false;
 let searchQuery   = '';
@@ -315,7 +320,7 @@ btnHeart.addEventListener('click', e => {
     favIds.add(id);
     showToast('Saved ♡');
   }
-  localStorage.setItem('dua-favs', JSON.stringify([...favIds]));
+  try { localStorage.setItem('dua-favs', JSON.stringify([...favIds])); } catch {}
   updateHeartBtn();
 });
 
