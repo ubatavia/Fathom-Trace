@@ -697,7 +697,8 @@ html, body {
 
   
 <script>
-const __DUAS_DATA__ = [
+// Inline data
+var DUAS_DATA = [
     {
         "id": 1,
         "text": "O Allah, increase me in Imaan and make it firm in my heart.",
@@ -6699,7 +6700,7 @@ const __DUAS_DATA__ = [
         "sectionTitle": "Final Comprehensive Duas"
     }
 ];
-const __SECTIONS_DATA__ = [
+var SECTIONS_DATA = [
     {
         "id": "imaan-worship",
         "title": "Faith & Worship",
@@ -6981,8 +6982,8 @@ const __SECTIONS_DATA__ = [
         "order": 40
     }
 ];
-</script>
-<script>
+
+// App
 // ── State ──────────────────────────────────────────────────────────
 let allDuas     = [];
 let allSections = [];
@@ -7018,8 +7019,8 @@ const toast          = document.getElementById('toast');
 
 // ── Boot ───────────────────────────────────────────────────────────
 function init() {
-  allDuas     = __DUAS_DATA__;
-  allSections = __SECTIONS_DATA__;
+  allDuas     = DUAS_DATA;
+  allSections = SECTIONS_DATA;
   cardText.classList.remove('is-loading');
   buildChips();
   applyFilter();
