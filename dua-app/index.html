@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="1000 duas — a beautiful mobile card experience for every supplication.">
+  <meta name="theme-color" content="#07101e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>1000 Duas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app" id="app">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <span class="logo-moon">☽</span>
+        <span class="logo-text">1000 Duas</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn-icon" id="btnFavFilter" aria-label="Saved duas" title="Saved">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </button>
+        <button class="btn-icon" id="btnSearch" aria-label="Search duas" title="Search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="search-bar" id="searchBar" role="search">
+      <div class="search-inner">
+        <svg class="search-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input
+          type="search"
+          id="searchInput"
+          placeholder="Search duas…"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          aria-label="Search duas"
+        >
+        <button class="btn-icon" id="btnCloseSearch" aria-label="Close search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Card Stack Area -->
+    <main class="card-area" id="cardArea" aria-live="polite" aria-label="Dua card">
+
+      <div class="card-stack" id="cardStack">
+        <!-- Depth cards (visual only) -->
+        <div class="card card--depth2" id="cardDepth2" aria-hidden="true"></div>
+        <div class="card card--depth1" id="cardDepth1" aria-hidden="true"></div>
+
+        <!-- Active card -->
+        <div class="card card--front" id="cardFront" role="article" tabindex="0">
+          <div class="card-inner">
+            <div class="card-header-row">
+              <span class="card-category-badge" id="cardCat">Loading…</span>
+              <span class="card-num" id="cardNum">#1</span>
+            </div>
+
+            <div class="card-body">
+              <p class="card-text" id="cardText">Loading duas…</p>
+            </div>
+
+            <div class="card-footer-row">
+              <button class="btn-card btn-share" id="btnShare" aria-label="Share this dua">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                  <polyline points="16 6 12 2 8 6"/>
+                  <line x1="12" y1="2" x2="12" y2="15"/>
+                </svg>
+              </button>
+              <button class="btn-card-text" id="btnCopy" aria-label="Tap to copy">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                Copy
+              </button>
+              <button class="btn-card btn-heart" id="btnHeart" aria-label="Save this dua">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Swipe indicators -->
+      <div class="swipe-label swipe-prev" id="swipeIndicatorPrev" aria-hidden="true">← Prev</div>
+      <div class="swipe-label swipe-next" id="swipeIndicatorNext" aria-hidden="true">Next →</div>
+
+      <!-- First-time hint -->
+      <p class="swipe-hint" id="swipeHint" aria-hidden="true">swipe to explore</p>
+    </main>
+
+    <!-- Bottom Bar -->
+    <footer class="bottom-bar">
+      <div class="inspire-row">
+        <button class="btn-inspire" id="btnInspire" aria-label="Inspire me with a random dua">
+          <span class="inspire-icon">✦</span>
+          Inspire me
+        </button>
+      </div>
+      <div class="chips-track" id="chipsTrack" role="list" aria-label="Filter by category">
+        <!-- Chips injected by JS -->
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>

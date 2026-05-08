@@ -1,0 +1,282 @@
+[
+    {
+        "id": "imaan-worship",
+        "title": "Faith & Worship",
+        "range": [1, 50],
+        "count": 50,
+        "order": 1
+    },
+    {
+        "id": "forgiveness-mercy",
+        "title": "Forgiveness & Divine Mercy",
+        "range": [51, 100],
+        "count": 50,
+        "order": 2
+    },
+    {
+        "id": "health-strength",
+        "title": "Health & Vitality",
+        "range": [101, 150],
+        "count": 50,
+        "order": 3
+    },
+    {
+        "id": "wealth-rizq",
+        "title": "Provision & Sustenance",
+        "range": [151, 200],
+        "count": 50,
+        "order": 4
+    },
+    {
+        "id": "family-children",
+        "title": "Family & Children",
+        "range": [201, 250],
+        "count": 50,
+        "order": 5
+    },
+    {
+        "id": "marriage-relationships",
+        "title": "Marriage & Relationships",
+        "range": [251, 275],
+        "count": 25,
+        "order": 6
+    },
+    {
+        "id": "work-career-success",
+        "title": "Career & Success",
+        "range": [276, 300],
+        "count": 25,
+        "order": 7
+    },
+    {
+        "id": "akhirah-death-hereafter",
+        "title": "The Hereafter",
+        "range": [301, 350],
+        "count": 50,
+        "order": 8
+    },
+    {
+        "id": "protection-evil",
+        "title": "Protection from Evil",
+        "range": [351, 400],
+        "count": 50,
+        "order": 9
+    },
+    {
+        "id": "emotional-wellbeing",
+        "title": "Inner Peace & Well-being",
+        "range": [401, 450],
+        "count": 50,
+        "order": 10
+    },
+    {
+        "id": "knowledge-hifdh",
+        "title": "Knowledge & Scholarship",
+        "range": [451, 500],
+        "count": 50,
+        "order": 11
+    },
+    {
+        "id": "righteousness-piety",
+        "title": "Righteousness & Steadfastness",
+        "range": [501, 550],
+        "count": 50,
+        "order": 12
+    },
+    {
+        "id": "hajj-umrah",
+        "title": "Hajj & Spiritual Elevation",
+        "range": [551, 600],
+        "count": 50,
+        "order": 13
+    },
+    {
+        "id": "parents-family-ties",
+        "title": "Parents & Family Bonds",
+        "range": [601, 610],
+        "count": 10,
+        "order": 14
+    },
+    {
+        "id": "protection-grave",
+        "title": "The Grave & Judgment Day",
+        "range": [611, 620],
+        "count": 10,
+        "order": 15
+    },
+    {
+        "id": "jannah-hereafter",
+        "title": "Paradise & Eternal Life",
+        "range": [621, 630],
+        "count": 10,
+        "order": 16
+    },
+    {
+        "id": "miscellaneous",
+        "title": "General Supplications",
+        "range": [631, 640],
+        "count": 10,
+        "order": 17
+    },
+    {
+        "id": "protection-evil-eye",
+        "title": "Protection from Harm",
+        "range": [641, 650],
+        "count": 10,
+        "order": 18
+    },
+    {
+        "id": "steadfastness-imaan",
+        "title": "Strength in Faith",
+        "range": [651, 660],
+        "count": 10,
+        "order": 19
+    },
+    {
+        "id": "quran-knowledge",
+        "title": "Qur'an & Sacred Knowledge",
+        "range": [661, 670],
+        "count": 10,
+        "order": 20
+    },
+    {
+        "id": "scholar-spreader",
+        "title": "Islamic Leadership",
+        "range": [671, 680],
+        "count": 10,
+        "order": 21
+    },
+    {
+        "id": "righteous-offspring",
+        "title": "Righteous Descendants",
+        "range": [681, 690],
+        "count": 10,
+        "order": 22
+    },
+    {
+        "id": "trials-hardship",
+        "title": "Resilience in Adversity",
+        "range": [691, 700],
+        "count": 10,
+        "order": 23
+    },
+    {
+        "id": "guidance-barakah",
+        "title": "Divine Guidance & Blessings",
+        "range": [701, 710],
+        "count": 10,
+        "order": 24
+    },
+    {
+        "id": "spiritual-growth",
+        "title": "Spiritual Development",
+        "range": [711, 720],
+        "count": 10,
+        "order": 25
+    },
+    {
+        "id": "service-deen",
+        "title": "Service to Faith & Community",
+        "range": [721, 730],
+        "count": 10,
+        "order": 26
+    },
+    {
+        "id": "acceptance-duas",
+        "title": "Answered Prayers",
+        "range": [731, 750],
+        "count": 20,
+        "order": 27
+    },
+    {
+        "id": "career-exams-doctor",
+        "title": "Professional Excellence",
+        "range": [751, 800],
+        "count": 50,
+        "order": 28
+    },
+    {
+        "id": "righteous-death",
+        "title": "A Blessed Departure",
+        "range": [801, 842],
+        "count": 42,
+        "order": 29
+    },
+    {
+        "id": "good-character",
+        "title": "Noble Character",
+        "range": [843, 852],
+        "count": 10,
+        "order": 30
+    },
+    {
+        "id": "love-compassion",
+        "title": "Love & Compassion",
+        "range": [853, 862],
+        "count": 10,
+        "order": 31
+    },
+    {
+        "id": "excellence-worship",
+        "title": "Excellence in Devotion",
+        "range": [863, 872],
+        "count": 10,
+        "order": 32
+    },
+    {
+        "id": "barakah-time",
+        "title": "Blessed Time & Effort",
+        "range": [873, 882],
+        "count": 10,
+        "order": 33
+    },
+    {
+        "id": "righteous-death-hereafter",
+        "title": "Righteous Ending",
+        "range": [883, 892],
+        "count": 10,
+        "order": 34
+    },
+    {
+        "id": "jannah-final-abode",
+        "title": "Eternal Paradise",
+        "range": [893, 902],
+        "count": 10,
+        "order": 35
+    },
+    {
+        "id": "acceptance-hajj-umrah",
+        "title": "Accepted Pilgrimage",
+        "range": [903, 912],
+        "count": 10,
+        "order": 36
+    },
+    {
+        "id": "global-ummah",
+        "title": "Global Ummah & Justice",
+        "range": [913, 922],
+        "count": 10,
+        "order": 37
+    },
+    {
+        "id": "entire-lives",
+        "title": "Lifelong Guidance",
+        "range": [923, 932],
+        "count": 10,
+        "order": 38
+    },
+    {
+        "id": "lifetime-acceptance",
+        "title": "Lasting Legacy",
+        "range": [933, 942],
+        "count": 10,
+        "order": 39
+    },
+    {
+        "id": "final-comprehensive",
+        "title": "Comprehensive Prayers",
+        "range": [943, 1000],
+        "count": 58,
+        "order": 40
+    }
+]
