@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>حَجّ — Hajj Companion 1447</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #04080f;
+  --gold: #c9a84c;
+  --gold2: #e8c96a;
+  --green: #1f7a4c;
+  --green2: #4ec991;
+  --glass: rgba(255,255,255,0.065);
+  --glass2: rgba(255,255,255,0.10);
+  --border: rgba(255,255,255,0.11);
+  --border-gold: rgba(201,168,76,0.28);
+  --text: #f0ead6;
+  --muted: rgba(240,234,214,0.52);
+  --r: 20px;
+  --rs: 12px;
+  --shadow: 0 6px 36px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;-webkit-tap-highlight-color:transparent;}
+body{
+  font-family:-apple-system,'SF Pro Text',system-ui,sans-serif;
+  background:var(--bg);color:var(--text);overflow-x:hidden;
+  background-image:
+    radial-gradient(ellipse 110% 55% at 5% 5%, rgba(12,32,85,0.72) 0%,transparent 60%),
+    radial-gradient(ellipse 80% 60% at 95% 95%, rgba(44,12,75,0.62) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 40% at 40% 65%, rgba(8,48,28,0.22) 0%,transparent 55%);
+}
+/* stars */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.35) 0%,transparent 100%),
+    radial-gradient(1px 1px at 75% 12%, rgba(255,255,255,0.28) 0%,transparent 100%),
+    radial-gradient(1px 1px at 55% 45%, rgba(255,255,255,0.22) 0%,transparent 100%),
+    radial-gradient(1px 1px at 88% 60%, rgba(255,255,255,0.30) 0%,transparent 100%),
+    radial-gradient(1px 1px at 30% 75%, rgba(255,255,255,0.20) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 62% 85%, rgba(201,168,76,0.4) 0%,transparent 100%),
+    radial-gradient(1px 1px at 10% 88%, rgba(255,255,255,0.25) 0%,transparent 100%);
+  pointer-events:none;z-index:0;
+}
+
+#app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;position:relative;z-index:1;}
+
+/* ── Glass ── */
+.glass{
+  background:var(--glass);
+  backdrop-filter:blur(28px) saturate(160%);
+  -webkit-backdrop-filter:blur(28px) saturate(160%);
+  border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);
+}
+.glass-gold{background:rgba(201,168,76,0.07);border-color:var(--border-gold);box-shadow:var(--shadow),0 0 24px rgba(201,168,76,0.07);}
+.glass-green{background:rgba(31,122,76,0.08);border-color:rgba(31,122,76,0.22);}
+
+/* ── Header ── */
+.hdr{padding:22px 18px 0;text-align:center;}
+.hdr-bismillah{font-family:'Amiri',serif;font-size:26px;color:var(--gold);line-height:1.4;margin-bottom:4px;}
+.hdr-sub{font-size:11px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:var(--muted);}
+
+/* ── Today Banner ── */
+.today-banner{margin:14px 14px 0;padding:15px 16px;}
+.today-label{font-size:9px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.today-title{font-size:16px;font-weight:700;margin-bottom:2px;}
+.today-sub{font-size:12px;color:var(--muted);}
+.counts{display:flex;gap:8px;margin-top:13px;}
+.cbox{flex:1;background:rgba(201,168,76,0.09);border:1px solid rgba(201,168,76,0.18);border-radius:var(--rs);padding:9px 4px;text-align:center;}
+.cnum{font-size:24px;font-weight:800;color:var(--gold);line-height:1;}
+.clbl{font-size:8px;letter-spacing:0.09em;text-transform:uppercase;color:var(--muted);margin-top:3px;}
+
+/* ── Bottom Tab Bar ── */
+.tabbar{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:480px;
+  background:rgba(4,8,15,0.88);
+  backdrop-filter:blur(32px) saturate(180%);
+  -webkit-backdrop-filter:blur(32px) saturate(180%);
+  border-top:1px solid rgba(255,255,255,0.09);
+  display:flex;z-index:200;
+  padding-bottom:env(safe-area-inset-bottom, 8px);
+}
+.tab{flex:1;padding:10px 4px 6px;border:none;background:transparent;color:var(--muted);
+  font-family:inherit;font-size:10px;font-weight:600;letter-spacing:0.04em;
+  cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:color 0.2s;}
+.tab-ico{font-size:20px;line-height:1;}
+.tab.active{color:var(--gold2);}
+
+/* ── Panels ── */
+.panel{display:none;padding:12px 14px 120px;flex:1;}
+.panel.active{display:block;}
+
+/* ── Section Label ── */
+.slabel{font-size:9px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin:18px 0 9px;padding-left:2px;}
+
+/* ── Journey Day Cards ── */
+.dcard{margin-bottom:9px;border-radius:var(--r);overflow:hidden;}
+.dhdr{padding:13px 15px;cursor:pointer;display:flex;align-items:center;gap:11px;user-select:none;}
+.ddot{width:42px;height:42px;border-radius:50%;background:rgba(201,168,76,0.10);border:1.5px solid rgba(201,168,76,0.28);
+  display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.ddot.today-dot{background:rgba(201,168,76,0.22);border-color:var(--gold);box-shadow:0 0 14px rgba(201,168,76,0.32);}
+.ddot.past{opacity:0.38;}
+.dinfo{flex:1;min-width:0;}
+.dname{font-size:14px;font-weight:700;margin-bottom:2px;}
+.dmeta{font-size:11px;color:var(--muted);}
+.dbadge{font-size:9px;font-weight:800;padding:3px 8px;border-radius:7px;white-space:nowrap;flex-shrink:0;}
+.dbadge-gold{background:rgba(201,168,76,0.14);color:var(--gold);border:1px solid rgba(201,168,76,0.22);}
+.dbadge-green{background:rgba(31,122,76,0.18);color:var(--green2);border:1px solid rgba(31,122,76,0.28);}
+.dbadge-red{background:rgba(180,40,40,0.18);color:#ff8a8a;border:1px solid rgba(180,40,40,0.25);}
+.dchev{color:var(--muted);font-size:12px;transition:transform 0.22s;flex-shrink:0;}
+.dcard.open .dchev{transform:rotate(90deg);}
+.dsteps{display:none;padding:0 15px 13px;}
+.dcard.open .dsteps{display:block;}
+
+/* ── Steps ── */
+.step{padding:11px 0;border-top:1px solid rgba(255,255,255,0.055);display:flex;gap:11px;}
+.sico{width:32px;height:32px;background:rgba(255,255,255,0.06);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;margin-top:1px;}
+.sbody{flex:1;min-width:0;}
+.stitle{font-size:13px;font-weight:700;margin-bottom:4px;}
+.sdesc{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:7px;}
+.sarabic{
+  font-family:'Amiri',serif;font-size:19px;color:var(--gold);
+  direction:rtl;text-align:right;line-height:1.9;
+  padding:9px 12px;margin-bottom:5px;
+  background:rgba(201,168,76,0.055);border-radius:var(--rs);
+  border-right:2px solid rgba(201,168,76,0.3);
+}
+.strans{font-size:11px;color:var(--muted);font-style:italic;margin-bottom:3px;line-height:1.5;}
+.senglish{font-size:12px;line-height:1.55;margin-bottom:5px;}
+.surdu{font-family:'Amiri',serif;font-size:15px;color:rgba(201,168,76,0.72);direction:rtl;text-align:right;line-height:1.9;margin-bottom:4px;}
+.ssource{font-size:10px;color:rgba(201,168,76,0.42);font-weight:700;}
+.snote{margin-top:6px;padding:7px 10px;background:rgba(31,122,76,0.10);border-radius:8px;font-size:11px;color:var(--green2);border-left:2px solid rgba(31,122,76,0.4);line-height:1.5;}
+.snote-amber{background:rgba(201,168,76,0.08);color:var(--gold2);border-left-color:rgba(201,168,76,0.35);}
+
+/* ── Family Duas ── */
+.addform{padding:15px;margin-bottom:10px;}
+.flabel{font-size:11px;font-weight:700;color:var(--gold);margin-bottom:10px;}
+.finput,.ftextarea{
+  width:100%;background:rgba(255,255,255,0.07);border:1px solid var(--border);
+  border-radius:var(--rs);color:var(--text);font-family:inherit;font-size:13px;
+  padding:10px 12px;outline:none;transition:border-color 0.2s;
+}
+.ftextarea{resize:none;height:70px;line-height:1.5;}
+.finput:focus,.ftextarea:focus{border-color:rgba(201,168,76,0.38);}
+.finput::placeholder,.ftextarea::placeholder{color:var(--muted);}
+.frow{display:flex;gap:8px;margin-bottom:8px;}
+.fcol{flex:1;}
+.btn-add{width:100%;padding:11px;background:rgba(201,168,76,0.13);border:1px solid rgba(201,168,76,0.28);
+  border-radius:var(--rs);color:var(--gold2);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:background 0.18s;}
+.btn-add:active{background:rgba(201,168,76,0.24);}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.fcard{padding:13px;border-radius:var(--r);}
+.fname{font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.fcheck{width:22px;height:22px;border:1.5px solid var(--border);border-radius:50%;background:transparent;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all 0.2s;flex-shrink:0;}
+.fcheck.done{background:rgba(31,122,76,0.28);border-color:var(--green2);color:var(--green2);}
+.fdua{font-size:12px;color:var(--muted);line-height:1.5;}
+.fdel{background:none;border:none;color:rgba(255,255,255,0.18);cursor:pointer;font-size:10px;padding:0;margin-top:8px;font-family:inherit;}
+.empty{text-align:center;padding:44px 20px;color:var(--muted);font-size:13px;}
+.empty-ico{font-size:36px;opacity:0.35;margin-bottom:10px;}
+
+/* ── Adhkar ── */
+.pills{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+.pills::-webkit-scrollbar{display:none;}
+.pill{padding:7px 13px;border-radius:28px;background:var(--glass);border:1px solid var(--border);
+  color:var(--muted);font-size:11px;font-weight:700;white-space:nowrap;cursor:pointer;transition:all 0.18s;font-family:inherit;}
+.pill.active{background:rgba(201,168,76,0.13);border-color:rgba(201,168,76,0.32);color:var(--gold2);}
+.duacard{margin-bottom:11px;padding:15px;}
+.dtitle{font-size:13px;font-weight:800;margin-bottom:3px;}
+.docc{font-size:10px;font-weight:700;color:var(--gold);letter-spacing:0.05em;margin-bottom:9px;}
+.darabic{
+  font-family:'Amiri',serif;font-size:22px;color:var(--gold);
+  direction:rtl;text-align:right;line-height:2;
+  padding:12px 14px;background:rgba(201,168,76,0.05);
+  border-radius:var(--rs);border-right:2px solid rgba(201,168,76,0.25);margin-bottom:10px;
+}
+.dtrans{font-size:11px;color:var(--muted);font-style:italic;line-height:1.6;margin-bottom:7px;}
+.denglish{font-size:13px;line-height:1.6;margin-bottom:7px;}
+.durdu{font-family:'Amiri',serif;font-size:16px;color:rgba(201,168,76,0.72);direction:rtl;text-align:right;line-height:1.9;border-top:1px solid var(--border);padding-top:8px;margin-top:8px;}
+.dsource{font-size:10px;color:rgba(201,168,76,0.4);font-weight:700;margin-top:8px;}
+.ayatcard .darabic{color:var(--green2);border-right-color:rgba(31,122,76,0.4);background:rgba(31,122,76,0.06);}
+.ayatcard .docc{color:var(--green2);}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+    <div class="hdr-sub">Hajj Companion · 1447 H</div>
+  </div>
+  <div class="today-banner glass glass-gold" id="todayBanner"></div>
+
+  <div class="panel active" id="panel-journey">
+    <div class="slabel">📅 Your Journey</div>
+    <div id="journeyList"></div>
+  </div>
+
+  <div class="panel" id="panel-family">
+    <div class="slabel">🤲 Family Duas</div>
+    <div class="addform glass">
+      <div class="flabel">Add a family member's dua request</div>
+      <div class="frow">
+        <div class="fcol"><input class="finput" id="fname" placeholder="Name" /></div>
+        <div class="fcol"><input class="finput" id="frelation" placeholder="Relation" /></div>
+      </div>
+      <div style="margin-bottom:8px">
+        <textarea class="ftextarea" id="fduareq" placeholder="Their dua request (e.g. shifa, rizq, marriage, children…)"></textarea>
+      </div>
+      <button class="btn-add" onclick="addFamily()">+ Add to List</button>
+    </div>
+    <div id="familyGrid"></div>
+  </div>
+
+  <div class="panel" id="panel-adhkar">
+    <div class="slabel">📿 Duas &amp; Adhkar</div>
+    <div class="pills" id="catPills"></div>
+    <div id="duaList" style="margin-top:12px"></div>
+  </div>
+
+  <nav class="tabbar">
+    <button class="tab active" data-tab="journey" onclick="switchTab('journey')">
+      <span class="tab-ico">🗺</span>Journey
+    </button>
+    <button class="tab" data-tab="family" onclick="switchTab('family')">
+      <span class="tab-ico">🤲</span>Family
+    </button>
+    <button class="tab" data-tab="adhkar" onclick="switchTab('adhkar')">
+      <span class="tab-ico">📿</span>Adhkar
+    </button>
+  </nav>
+</div>
+
+<script>
+// ── Journey Data ──────────────────────────────────────────────
+const JOURNEY = [
+  {
+    id:'d1', date:'May 16', full:'2026-05-16', day:'Saturday',
+    hijri:'29 Dhul Qaʿdah 1447', location:'Madinah al-Munawwarah',
+    icon:'🕌', badge:'Madinah', badgeClass:'dbadge-gold',
+    steps:[
+      {ico:'✈️', title:'Arrive in Madinah',
+       desc:'Check in and freshen up. Stay in wudu throughout your time here. Lower your gaze and voice — this is the Prophet\'s ﷺ city.',
+       arabic:'اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ',
+       trans:'Allāhumma iftaḥ lī abwāba raḥmatik',
+       english:'O Allah, open for me the gates of Your mercy.',
+       urdu:'اے اللہ! میرے لیے اپنی رحمت کے دروازے کھول دے۔',
+       source:'Muslim 713'},
+      {ico:'🕌', title:'Enter Masjid al-Nabawi',
+       desc:'Enter with right foot. The mosque holds Riyad al-Jannah (the garden between the Prophet\'s ﷺ grave and his pulpit). Try to pray there.',
+       arabic:'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ',
+       trans:'Allāhumma ṣalli ʿalā Muḥammadin wa ʿalā āli Muḥammadin kamā ṣallayta ʿalā Ibrāhīm…',
+       english:'O Allah, send blessings upon Muhammad and the family of Muhammad, as You sent blessings upon Ibrahim and his family. You are the Praiseworthy, the Glorious.',
+       urdu:'اے اللہ! محمدؐ اور آل محمدؐ پر رحمت نازل فرما جیسے تو نے ابراہیم اور آل ابراہیم پر نازل فرمائی، بے شک تو تعریف والا بزرگی والا ہے۔',
+       source:'Bukhari 3370'},
+      {ico:'💚', title:'Visit Rawdha — Greet the Prophet ﷺ',
+       desc:'Face the blessed grave and offer salam softly. Make dua for yourself, family, and Ummah here.',
+       arabic:'السَّلَامُ عَلَيْكَ يَا رَسُولَ اللَّهِ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ',
+       trans:'Al-salāmu ʿalayka yā Rasūlallāh wa raḥmatullāhi wa barakātuh',
+       english:'Peace be upon you, O Messenger of Allah, and the mercy of Allah and His blessings.',
+       urdu:'آپ پر سلامتی ہو، اے اللہ کے رسول! اور اللہ کی رحمت اور اس کی برکتیں ہوں۔',
+       source:'Abu Dawud 2041'}
+    ]
+  },
+  {
+    id:'d2', date:'May 17', full:'2026-05-17', day:'Sunday',
+    hijri:'30 Dhul Qaʿdah 1447', location:'Madinah al-Munawwarah',
+    icon:'🌟', badge:'Ziyarah', badgeClass:'dbadge-gold',
+    steps:[
+      {ico:'🌙', title:'Fajr at Masjid al-Nabawi',
+       desc:'One prayer here equals 1000 prayers elsewhere (except Masjid al-Haram). Arrive early, pray in Riyad al-Jannah if possible.',
+       note:'Hadith: "One prayer in my mosque is better than a thousand prayers elsewhere, except Masjid al-Haram." — Bukhari 1190'},
+      {ico:'⚰️', title:'Visit Jannatul Baqi',
+       desc:'The cemetery beside the mosque. Visit after Fajr. Many Companions and family of the Prophet ﷺ are buried here.',
+       arabic:'السَّلَامُ عَلَيْكُمْ أَهْلَ الدِّيَارِ مِنَ الْمُؤْمِنِينَ وَالْمُسْلِمِينَ، وَإِنَّا إِنْ شَاءَ اللَّهُ بِكُمْ لَلَاحِقُونَ',
+       trans:'Al-salāmu ʿalaykum ahl al-diyāri min al-muʾminīna wal-muslimīn…',
+       english:'Peace be upon you, O believing and Muslim residents of these dwellings. We will, Allah willing, join you.',
+       urdu:'اے اس گھر کے رہنے والے مومنو اور مسلمانو! تم پر سلام ہو، انشاءاللہ ہم بھی تم سے ملنے والے ہیں۔',
+       source:'Muslim 975'},
+      {ico:'🕌', title:'Masjid Quba',
+       desc:'2 raka\'at here equals the reward of Umrah. The Prophet ﷺ visited every Saturday. A special blessed mosque.',
+       arabic:'إِنَّمَا يَعْمُرُ مَسَاجِدَ اللَّهِ مَنْ آمَنَ بِاللَّهِ وَالْيَوْمِ الْآخِرِ',
+       trans:null,
+       english:'Quran 9:18 — Only those who believe in Allah and the Last Day maintain the mosques of Allah.',
+       urdu:null,
+       source:'Tirmidhi 324'},
+      {ico:'⛰️', title:'Jabal Uhud',
+       desc:'Visit the martyrs of Uhud. Sayyiduna Hamza رضي الله عنه is buried here. Offer salam. Reflect on sacrifice for Islam.',
+       arabic:'السَّلَامُ عَلَيْكُمْ بِمَا صَبَرْتُمْ فَنِعْمَ عُقْبَى الدَّارِ',
+       trans:null,
+       english:'Quran 13:24 — "Peace be upon you for what you patiently endured. And excellent is the final home."',
+       urdu:null,
+       source:'Quran 13:24'}
+    ]
+  },
+  {
+    id:'d3', date:'May 18', full:'2026-05-18', day:'Monday',
+    hijri:'1 Dhul Ḥijjah 1447 (est.)', location:'Abyar Ali → Makkah → Aziziya',
+    icon:'🤍', badge:'UMRAH', badgeClass:'dbadge-green',
+    steps:[
+      {ico:'🛁', title:'Ghusal + Enter Ihram',
+       desc:'Perform full ghusal (bath). Apply no perfume after. Men: wear two white unstitched sheets (izar + rida). Women: modest covering, face uncovered. Go to Masjid Dhul-Hulaifah (Abyar Ali), ~9km from Madinah.',
+       arabic:'لَبَّيْكَ اللَّهُمَّ عُمْرَةً',
+       trans:'Labbayk Allāhumma ʿumratan',
+       english:'O Allah, I am responding to Your call for Umrah.',
+       urdu:'اے اللہ! میں عمرے کا احرام باندھتا / باندھتی ہوں۔',
+       source:'Muslim 1218',
+       note:'After niyyah: begin reciting Talbiyah continuously throughout travel to Makkah.'},
+      {ico:'📣', title:'Talbiyah — Repeat Constantly',
+       desc:'Say aloud (men) or softly (women) throughout the journey, at every step, until Tawaf begins.',
+       arabic:'لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ، لَبَّيْكَ لَا شَرِيكَ لَكَ لَبَّيْكَ، إِنَّ الْحَمْدَ وَالنِّعْمَةَ لَكَ وَالْمُلْكَ، لَا شَرِيكَ لَكَ',
+       trans:'Labbayk Allāhumma labbayk, labbayka lā sharīka laka labbayk, innal-ḥamda wan-niʿmata laka wal-mulk, lā sharīka lak',
+       english:'Here I am, O Allah, here I am. Here I am — You have no partner — here I am. Verily all praise, grace and sovereignty belong to You. You have no partner.',
+       urdu:'حاضر ہوں اے اللہ، حاضر ہوں۔ حاضر ہوں، تیرا کوئی شریک نہیں، حاضر ہوں۔ بے شک تمام تعریفیں، نعمتیں اور بادشاہی تیری ہے، تیرا کوئی شریک نہیں۔',
+       source:'Bukhari 1549 / Muslim 1184'},
+      {ico:'🕋', title:'First Sight of Ka\'ba — Raise Hands & Make Dua',
+       desc:'The moment you see the Ka\'ba, raise both hands and make dua. This is a moment when dua is accepted. Ask for everything.',
+       arabic:'اللَّهُمَّ زِدْ هَذَا الْبَيْتَ تَشْرِيفًا وَتَعْظِيمًا وَتَكْرِيمًا وَمَهَابَةً، وَزِدْ مَنْ حَجَّهُ أَوِ اعْتَمَرَهُ تَشْرِيفًا وَتَكْرِيمًا وَتَعْظِيمًا وَبِرًّا',
+       trans:'Allāhumma zid hādha al-bayta tashrīfan wa taʿẓīman wa takrīman wa mahābatan…',
+       english:'O Allah, increase this House in honour, reverence, nobility and awe. And increase those who perform Hajj or Umrah in honour, reverence, nobility and righteousness.',
+       urdu:'اے اللہ! اس گھر کی عزت، عظمت، تکریم اور ہیبت میں اضافہ فرما اور جو اس کا حج یا عمرہ کریں ان کی عزت، تکریم اور نیکی میں اضافہ فرما۔',
+       source:'Shafi\'i / Ibn Hibban — Hasan'},
+      {ico:'🔄', title:'Tawaf — 7 Circuits',
+       desc:'Begin at Hajar Aswad (Black Stone). Kiss, touch or point to it saying "Bismillah Allahu Akbar". Circle Ka\'ba 7 times counter-clockwise. Between Rukn Yamani and Hajar Aswad: recite Rabbana atina.',
+       arabic:'بِسْمِ اللَّهِ وَاللَّهُ أَكْبَرُ',
+       trans:'Bismillāh, wallāhu akbar',
+       english:'In the name of Allah, and Allah is the Greatest. (Say at Hajar Aswad each circuit)',
+       urdu:'اللہ کے نام سے، اور اللہ سب سے بڑا ہے۔',
+       source:'Bukhari 1613',
+       note:'Between Rukn Yamani and Hajar Aswad only: رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ (Rabbana atina fid-dunya hasanatan…) — Abu Dawud'},
+      {ico:'🙏', title:'2 Raka\'at at Maqam Ibrahim + Zamzam',
+       desc:'After Tawaf, pray 2 raka\'at behind Maqam Ibrahim (the stone with Ibrahim\'s ﷺ footprint). Then drink Zamzam.',
+       arabic:'وَاتَّخِذُوا مِن مَّقَامِ إِبْرَاهِيمَ مُصَلًّى',
+       trans:null,
+       english:'Quran 2:125 — "Take the Station of Ibrahim as a place of prayer."',
+       urdu:null,
+       source:'Quran 2:125',
+       note:'Drink Zamzam standing, facing Qibla. Make dua before drinking. "Zamzam is for whatever it is drunk for" — Ibn Majah'},
+      {ico:'🏃', title:'Sa\'i — Safa to Marwa (7 times)',
+       desc:'Stand on Safa first. Recite ayat 2:158, face Qibla, raise hands and make dhikr 3×. Walk to Marwa. Jog (men only) between the green lights. Ends at Marwa = 7th time.',
+       arabic:'إِنَّ الصَّفَا وَالْمَرْوَةَ مِن شَعَائِرِ اللَّهِ',
+       trans:'Innaṣ-ṣafā wal-marwata min shaʿāʾirillāh',
+       english:'Quran 2:158 — Indeed Safa and Marwa are among the symbols of Allah.',
+       urdu:'بے شک صفا اور مروہ اللہ کی نشانیوں میں سے ہیں۔',
+       source:'Quran 2:158 / Muslim 1218',
+       note:'On Safa & Marwa (face Qibla, 3×): لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ يُحْيِي وَيُمِيتُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ'},
+      {ico:'✂️', title:'Taqsir (Trim) → Exit Ihram ✓',
+       desc:'Trim at least 2.5cm from all sides of hair (men). Women cut a fingertip\'s length. Umrah is COMPLETE. Alhamdulillah! You may now dress normally.',
+       note:'Note: For Hajj Tamattu you are required to pay Dam (sacrificial animal). This is usually arranged through your Hajj package/Nusuk app. Confirm with your group leader.'}
+    ]
+  },
+  {
+    id:'d4', date:'May 19–24', full:'2026-05-19', day:'Tue–Sun',
+    hijri:'2–7 Dhul Ḥijjah 1447', location:'Aziziya (near Makkah)',
+    icon:'⭐', badge:'Prep', badgeClass:'dbadge-gold',
+    steps:[
+      {ico:'🕋', title:'Daily/Regular Visits to Masjid al-Haram',
+       desc:'One prayer in Masjid al-Haram = 100,000 prayers. Pray as many fard and nawafil as possible here. Extra tawaf is highly rewarded.',
+       note:'Hadith: "One prayer in Masjid al-Haram is worth 100,000 prayers elsewhere." — Ibn Majah'},
+      {ico:'💧', title:'Drink Zamzam Abundantly',
+       desc:'Zamzam water is blessed. Drink with intention. It is said to be for whatever purpose it is drunk for.',
+       arabic:'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا وَرِزْقًا وَاسِعًا وَشِفَاءً مِنْ كُلِّ دَاءٍ',
+       trans:'Allāhumma innī asʾaluka ʿilman nāfiʿan wa rizqan wāsiʿan wa shifāʾan min kulli dāʾ',
+       english:'O Allah, I ask You for beneficial knowledge, abundant provision, and cure from every illness.',
+       urdu:'اے اللہ! میں تجھ سے نفع بخش علم، وسیع رزق اور ہر بیماری سے شفا مانگتا ہوں۔',
+       source:'Zamzam dua — Ibn al-Sunni'},
+      {ico:'🌙', title:'Prepare for Hajj (Night of 24th)',
+       desc:'The night before 8 Dhul Hijjah: prepare your Ihram garments, pack minimal for Mina (tent is provided). Sleep early. The great journey begins tomorrow.',
+       note:'Keep phone charged. Carry medications. Mina can be extremely hot. Stay hydrated. Group may have specific meeting time — confirm with Hajj group.'}
+    ]
+  },
+  {
+    id:'d5', date:'May 25', full:'2026-05-25', day:'Monday',
+    hijri:'8 Dhul Ḥijjah — Yawm al-Tarwiyah', location:'Aziziya → Mina',
+    icon:'🏕️', badge:'MINA', badgeClass:'dbadge-gold',
+    steps:[
+      {ico:'🤍', title:'Enter Ihram for Hajj',
+       desc:'Perform ghusal. Wear Ihram garments again. Make niyyah for Hajj from your accommodation in Aziziya.',
+       arabic:'لَبَّيْكَ اللَّهُمَّ حَجًّا',
+       trans:'Labbayk Allāhumma ḥajjan',
+       english:'O Allah, I am responding to Your call for Hajj.',
+       urdu:'اے اللہ! میں حج کا احرام باندھتا / باندھتی ہوں۔',
+       source:'Muslim 1218',
+       note:'Resume Talbiyah. Do not stop until you begin stoning on Eid day.'},
+      {ico:'🚌', title:'Travel to Mina',
+       desc:'Mina is approximately 8km from Makkah. Stay in your assigned tent. All Hajj pilgrims gather here tonight.',
+       note:'In Mina: Pray Dhuhr, Asr, Maghrib, Isha and Fajr (next morning) — all SHORTENED (4 raka\'at → 2 raka\'at). Dhuhr and Asr are NOT combined, nor Maghrib and Isha, at Mina — perform each prayer at its proper time according to the Sunnah.'},
+      {ico:'🌃', title:'Night in Mina',
+       desc:'Spend the night in your tent. Recite Talbiyah, Quran, dhikr. This night is preparation for the greatest day of your life.',
+       arabic:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+       trans:'Rabbanā ātinā fid-dunyā ḥasanatan wa fil-ākhirati ḥasanatan wa qinā ʿadhāban-nār',
+       english:'Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.',
+       urdu:'اے ہمارے رب! ہمیں دنیا میں بھلائی دے اور آخرت میں بھی بھلائی دے اور ہمیں آگ کے عذاب سے بچا۔',
+       source:'Quran 2:201'}
+    ]
+  },
+  {
+    id:'d6', date:'May 26', full:'2026-05-26', day:'Tuesday',
+    hijri:'9 Dhul Ḥijjah — YAWM ARAFAH', location:'Mina → Arafat → Muzdalifah',
+    icon:'🌅', badge:'ARAFAT ★', badgeClass:'dbadge-red',
+    steps:[
+      {ico:'🌄', title:'Fajr in Mina → Move to Arafat',
+       desc:'After Fajr, travel to Arafat (about 14km). Settle in your tent area. The Prophet ﷺ said: "Al-Hajju Arafah" — The Hajj IS Arafat.',
+       note:'If you are not at Arafat between Dhuhr and sunset today, your Hajj is invalid. Being present here is the greatest pillar (rukn) of Hajj.'},
+      {ico:'🤲', title:'WUQUF — Stand at Arafat',
+       desc:'From midday until sunset: make dua, recite Quran, do dhikr. This is the most powerful moment of dua in the year. Weep if you can. Ask for everything — for yourself, your wife, your children, your parents, the Ummah. Dhuhr + Asr: combined and shortened at Dhuhr time.',
+       arabic:'لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
+       trans:'Lā ilāha illallāhu waḥdahū lā sharīka lah, lahul-mulku wa lahul-ḥamdu wa huwa ʿalā kulli shayʾin qadīr',
+       english:'None has the right to be worshipped except Allah alone, without partner. To Him belongs sovereignty and all praise, and He is over all things competent.',
+       urdu:'اللہ کے سوا کوئی معبود نہیں، وہ اکیلا ہے، اس کا کوئی شریک نہیں، اسی کی بادشاہی ہے اور اسی کی تعریف ہے اور وہ ہر چیز پر قادر ہے۔',
+       source:'Tirmidhi 3585 — "Best dua of Arafat day, best thing said by me and the Prophets before me"',
+       note:'Also recite: Subhanallah (x100), Alhamdulillah (x100), Allahu Akbar (x100), Astaghfirullah (x100). Make long personal dua in your own language. This moment does not come again.'},
+      {ico:'🌇', title:'After Sunset — Depart to Muzdalifah',
+       desc:'After sunset, leave calmly for Muzdalifah (~9km). Do NOT pray Maghrib at Arafat — delay it to Muzdalifah. Continue Talbiyah throughout.',
+       note:'Do not rush or push. Move calmly with your group. Muzdalifah is between Arafat and Mina.'},
+      {ico:'🌌', title:'Muzdalifah — Night Under the Sky',
+       desc:'On arrival: pray Maghrib + Isha COMBINED and SHORTENED. Collect 49–70 marble-sized pebbles. Sleep/rest here under the open sky. After Fajr: make dua at Mash\'ar al-Haram (a hill near Muzdalifah) facing Qibla.',
+       arabic:'فَإِذَا أَفَضْتُم مِّنْ عَرَفَاتٍ فَاذْكُرُوا اللَّهَ عِندَ الْمَشْعَرِ الْحَرَامِ',
+       trans:null,
+       english:'Quran 2:198 — "When you depart from Arafat, remember Allah at al-Mash\'ar al-Haram."',
+       urdu:null,
+       source:'Quran 2:198',
+       note:'Elderly and weak may leave Muzdalifah after midnight. Others should stay until after Fajr. Collect pebbles here (clean, marble-sized, ~1cm).'}
+    ]
+  },
+  {
+    id:'d7', date:'May 27', full:'2026-05-27', day:'Wednesday',
+    hijri:'10 Dhul Ḥijjah — Eid al-Aḍḥā', location:'Mina → Makkah → Mina',
+    icon:'🌙', badge:'EID + RITUALS', badgeClass:'dbadge-red',
+    steps:[
+      {ico:'🪨', title:'1. Rami — Stone Jamarat al-Aqaba',
+       desc:'Stone the large Jamarat (last pillar). Throw 7 stones one by one. Say Bismillah Allahu Akbar with EACH throw.',
+       arabic:'بِسْمِ اللَّهِ وَاللَّهُ أَكْبَرُ',
+       trans:'Bismillāh, wallāhu akbar',
+       english:'In the name of Allah, and Allah is the Greatest. (Say with each of the 7 stones)',
+       urdu:'اللہ کے نام سے، اور اللہ سب سے بڑا ہے۔ (ہر پتھر کے ساتھ)',
+       source:'Bukhari / Muslim',
+       note:'Best time: after sunrise until Dhuhr. The stones are ~1cm pebbles. Throw from the lower area. After this stoning: STOP reciting Talbiyah.'},
+      {ico:'🐑', title:'2. Nahr — Qurbani (Sacrifice)',
+       desc:'The Hady (sacrificial animal) must be slaughtered. Usually handled through your Hajj organizer or the Nusuk app. Confirm it is done before shaving.',
+       note:'Note: Dam for Hajj Tamattu is WAJIB (obligatory). Confirm payment with your Hajj package. Saudi system: you can pay and they do it on your behalf.'},
+      {ico:'✂️', title:'3. Halq or Taqsir — Shave or Trim',
+       desc:'Men: it is better (sunnah) to shave the head completely. Trimming is also valid. Women: cut a fingertip length from all hair. After this: PARTIAL Ihram exit — can wear normal clothes but avoid perfume and intercourse still.',
+       note:'Order matters: Stone → Sacrifice → Shave → Tawaf. Doing them out of order is allowed but shaving before sacrifice is not ideal.'},
+      {ico:'🕋', title:'4. Tawaf al-Ifadha — Return to Makkah',
+       desc:'Go to Masjid al-Haram. Perform 7 circuits of Tawaf. This is a PILLAR (Rukn) of Hajj — it is not valid without it.',
+       arabic:'ثُمَّ لْيَقْضُوا تَفَثَهُمْ وَلْيُوفُوا نُذُورَهُمْ وَلْيَطَّوَّفُوا بِالْبَيْتِ الْعَتِيقِ',
+       trans:null,
+       english:'Quran 22:29 — "Then let them end their untidiness, fulfill their vows, and perform tawaf around the Ancient House."',
+       urdu:null,
+       source:'Quran 22:29'},
+      {ico:'🏃', title:'5. Sa\'i — Safa to Marwa (for Hajj)',
+       desc:'Perform 7 trips between Safa and Marwa for Hajj. After this: COMPLETE Ihram exit — all restrictions are now lifted.',
+       note:'✅ FULL IHRAM EXIT COMPLETE — perfume, normal marital relations now permitted. Return to Mina for the nights of Tashreeq.'}
+    ]
+  },
+  {
+    id:'d8', date:'May 28', full:'2026-05-28', day:'Thursday',
+    hijri:'11 Dhul Ḥijjah — Ayyām al-Tashrīq I', location:'Mina',
+    icon:'🪨', badge:'Tashreeq', badgeClass:'dbadge-gold',
+    steps:[
+      {ico:'🌅', title:'Morning in Mina — Prayers & Rest',
+       desc:'Pray Fajr in Mina. Rest. Staying the nights of Tashreeq in Mina is WAJIB (obligatory).',
+       note:'5 prayers are prayed in Mina: all shortened (4 rakat → 2 rakat).'},
+      {ico:'🪨', title:'Stone All 3 Jamarat (after Dhuhr)',
+       desc:'After Dhuhr, stone all three Jamarat in order: Sughra (small) → Wusta (middle) → Aqaba (large). 7 stones each = 21 stones total.',
+       arabic:'بِسْمِ اللَّهِ وَاللَّهُ أَكْبَرُ',
+       trans:'Bismillāh, wallāhu akbar',
+       english:'Say with each stone. After Sughra and Wusta: face Qibla and make a long dua. Do NOT make dua after Aqaba.',
+       urdu:'ہر پتھر کے ساتھ یہ کہیں۔ صغریٰ اور وسطیٰ کے بعد قبلے کی طرف منہ کر کے لمبی دعا کریں۔',
+       source:'Bukhari / Muslim',
+       note:'Best time: after Dhuhr until Maghrib. Do NOT stone before Dhuhr on Tashreeq days.'}
+    ]
+  },
+  {
+    id:'d9', date:'May 29', full:'2026-05-29', day:'Friday',
+    hijri:'12 Dhul Ḥijjah — Ayyām al-Tashrīq II + Nafr Awwal', location:'Mina → Aziziya',
+    icon:'🏠', badge:'Nafr Awwal', badgeClass:'dbadge-green',
+    steps:[
+      {ico:'🪨', title:'Stone All 3 Jamarat (after Dhuhr)',
+       desc:'Same as yesterday: Sughra → Wusta → Aqaba, 7 stones each. Make dua after Sughra and Wusta.',
+       arabic:'بِسْمِ اللَّهِ وَاللَّهُ أَكْبَرُ',
+       trans:'Bismillāh, wallāhu akbar',
+       english:'Say with each stone thrown.',
+       urdu:'ہر پتھر کے ساتھ یہ کہیں۔',
+       source:'Bukhari / Muslim'},
+      {ico:'🏃', title:'Nafr Awwal — Leave Mina (before sunset)',
+       desc:'If you leave Mina before sunset on 12th, your Hajj stoning is complete. This is PERMISSIBLE and valid.',
+       arabic:'فَمَن تَعَجَّلَ فِي يَوْمَيْنِ فَلَا إِثْمَ عَلَيْهِ',
+       trans:null,
+       english:'Quran 2:203 — "Whoever hastens in two days — there is no sin upon him."',
+       urdu:null,
+       source:'Quran 2:203',
+       note:'✓ Return to Aziziya. Rest. Your Hajj rituals are now complete. Alhamdulillah!'},
+      {ico:'🕌', title:'Tawaf al-Wada — Before Leaving Makkah',
+       desc:'Before you finally leave Makkah (not immediately after Hajj — do it before your departure date), perform 7 circuits of Tawaf as your farewell.',
+       arabic:'اللَّهُمَّ إِنَّ هَذَا الْبَيْتَ بَيْتُكَ وَالْعَبْدُ عَبْدُكَ وَابْنُ عَبْدِكَ',
+       trans:'Allāhumma inna hādhal-bayta baytuka wal-ʿabdu ʿabduka wabnu ʿabdik',
+       english:'O Allah, this House is Your House and this servant is Your servant, son of Your servant.',
+       urdu:'اے اللہ! یہ گھر تیرا گھر ہے اور یہ بندہ تیرا بندہ اور تیرے بندے کا بیٹا ہے۔',
+       source:'Farewell Tawaf dua',
+       note:'Tawaf al-Wada is WAJIB. Do it as your last act in Makkah. Fill Zamzam bottles. Face the Ka\'ba at the door — make your last dua.'}
+    ]
+  }
+];
+
+// ── Duas Data ──────────────────────────────────────────────────
+const DUAS_DATA = {
+  travel: [
+    {title:'Boarding a Vehicle', occ:'When boarding any transport',
+     arabic:'بِسْمِ اللَّهِ، سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَٰذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ، وَإِنَّا إِلَى رَبِّنَا لَمُنقَلِبُونَ',
+     trans:'Bismillāh, subḥāna-lladhī sakhkhara lanā hādhā wa mā kunnā lahū muqrinīn, wa innā ilā Rabbinā lamunqalibūn',
+     english:'In the name of Allah. Glory be to He who has subjected this to us, and we could not have done it ourselves. And indeed, to our Lord we will return.',
+     urdu:'اللہ کے نام سے۔ پاک ہے وہ ذات جس نے ہمارے لیے اسے مسخر کیا، ہم اسے قابو نہیں کر سکتے تھے، اور ہمیں اپنے رب کی طرف لوٹنا ہے۔',
+     source:'Quran 43:13–14 / Abu Dawud 2602', ayat:false},
+    {title:'Dua for Safe Journey', occ:'At start of travel',
+     arabic:'اللَّهُمَّ إِنَّا نَسْأَلُكَ فِي سَفَرِنَا هَذَا الْبِرَّ وَالتَّقْوَى، وَمِنَ الْعَمَلِ مَا تَرْضَى، اللَّهُمَّ هَوِّنْ عَلَيْنَا سَفَرَنَا هَذَا وَاطْوِ عَنَّا بُعْدَهُ',
+     trans:'Allāhumma innā nasʾaluka fī safarinā hādhā al-birra wat-taqwā, wa minal-ʿamali mā tarḍā, Allāhumma hawwin ʿalaynā safaranā hādhā waṭwi ʿannā buʿdah',
+     english:'O Allah, we ask You on this journey for righteousness and taqwa, and deeds that please You. O Allah, make easy for us this journey and fold up for us its distance.',
+     urdu:'اے اللہ! ہم اس سفر میں تجھ سے نیکی اور تقوٰی مانگتے ہیں اور ایسے اعمال جو تجھے پسند ہوں۔ اے اللہ! ہمارا یہ سفر آسان کر دے اور اس کی دوری ہم سے لپیٹ دے۔',
+     source:'Muslim 1342', ayat:false},
+    {title:'Arriving at a New Place', occ:'Upon reaching any new location',
+     arabic:'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ',
+     trans:'Aʿūdhu bikalimātillāhit-tāmmāti min sharri mā khalaq',
+     english:'I seek refuge in the perfect words of Allah from the evil of what He has created.',
+     urdu:'میں اللہ کے مکمل کلمات کی پناہ لیتا ہوں اس چیز کے شر سے جو اس نے پیدا کی ہے۔',
+     source:'Muslim 2708', ayat:false},
+    {title:'Returning Home (End of Journey)', occ:'When returning',
+     arabic:'آيِبُونَ، تَائِبُونَ، عَابِدُونَ، لِرَبِّنَا حَامِدُونَ',
+     trans:'Āʾibūna tāʾibūna ʿābidūna li Rabbinā ḥāmidūn',
+     english:'We are returning, repenting, worshipping, and praising our Lord.',
+     urdu:'ہم لوٹ رہے ہیں، توبہ کرتے ہوئے، عبادت کرتے ہوئے، اپنے رب کی تعریف کرتے ہوئے۔',
+     source:'Muslim 1342', ayat:false}
+  ],
+  madinah: [
+    {title:'Entering Masjid al-Nabawi', occ:'When entering any mosque',
+     arabic:'اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ',
+     trans:'Allāhumma iftaḥ lī abwāba raḥmatik',
+     english:'O Allah, open for me the gates of Your mercy.',
+     urdu:'اے اللہ! میرے لیے اپنی رحمت کے دروازے کھول دے۔',
+     source:'Muslim 713', ayat:false},
+    {title:'Durood Ibrahim — Salawat', occ:'Send blessings on the Prophet ﷺ abundantly in Madinah',
+     arabic:'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ',
+     trans:'Allāhumma ṣalli ʿalā Muḥammadin wa ʿalā āli Muḥammad…',
+     english:'O Allah, send blessings upon Muhammad and the family of Muhammad, as You sent blessings upon Ibrahim and the family of Ibrahim — You are indeed Praiseworthy and Glorious.',
+     urdu:'اے اللہ! محمدؐ اور آل محمدؐ پر رحمت نازل فرما جیسے ابراہیم اور آل ابراہیم پر نازل فرمائی۔ بے شک تو تعریف والا، بزرگی والا ہے۔',
+     source:'Bukhari 3370 / Muslim 406', ayat:false},
+    {title:'Greeting the Prophet ﷺ at Rawdha', occ:'Standing before the blessed grave',
+     arabic:'السَّلَامُ عَلَيْكَ يَا رَسُولَ اللَّهِ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ، أَشْهَدُ أَنَّكَ قَدْ بَلَّغْتَ الرِّسَالَةَ وَأَدَّيْتَ الْأَمَانَةَ وَنَصَحْتَ الْأُمَّةَ',
+     trans:'Al-salāmu ʿalayka yā Rasūlallāh wa raḥmatullāhi wa barakātuh…',
+     english:'Peace be upon you, O Messenger of Allah, and the mercy of Allah and His blessings. I bear witness that you conveyed the message, fulfilled the trust, and gave sincere advice to the Ummah.',
+     urdu:'آپ پر سلام ہو، اے اللہ کے رسول! اور اللہ کی رحمت و برکت ہو۔ میں گواہی دیتا ہوں کہ آپ نے پیغام پہنچایا، امانت ادا کی اور امت کی خیر خواہی فرمائی۔',
+     source:'Classical fiqh sources', ayat:false},
+    {title:'Dua for the Deceased (Baqi)', occ:'At Jannatul Baqi cemetery',
+     arabic:'السَّلَامُ عَلَيْكُمْ أَهْلَ الدِّيَارِ مِنَ الْمُؤْمِنِينَ وَالْمُسْلِمِينَ، وَإِنَّا إِنْ شَاءَ اللَّهُ بِكُمْ لَلَاحِقُونَ، يَرْحَمُ اللَّهُ الْمُسْتَقْدِمِينَ مِنَّا وَمِنْكُمْ وَالْمُسْتَأْخِرِينَ',
+     trans:'Al-salāmu ʿalaykum ahl al-diyāri min al-muʾminīna wal-muslimīn…',
+     english:'Peace be upon you O believing and Muslim residents of these dwellings. We will, Allah willing, join you. May Allah have mercy on those of us and you who have gone ahead and those who come later.',
+     urdu:'اے اس گھر کے رہنے والے مومنو اور مسلمانو! آپ پر سلام ہو۔ انشاءاللہ ہم بھی آپ سے ملنے والے ہیں۔ اللہ ہم میں سے اور آپ میں سے پہلے جانے والوں اور بعد میں آنے والوں پر رحم فرمائے۔',
+     source:'Muslim 975', ayat:false}
+  ],
+  umrah: [
+    {title:'Talbiyah — The Call of Hajj', occ:'Recite continuously from Ihram until Tawaf begins',
+     arabic:'لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ، لَبَّيْكَ لَا شَرِيكَ لَكَ لَبَّيْكَ، إِنَّ الْحَمْدَ وَالنِّعْمَةَ لَكَ وَالْمُلْكَ، لَا شَرِيكَ لَكَ',
+     trans:'Labbayk Allāhumma labbayk, labbayka lā sharīka laka labbayk, innal-ḥamda wan-niʿmata laka wal-mulk, lā sharīka lak',
+     english:'Here I am O Allah, here I am. Here I am, You have no partner, here I am. Verily all praise, grace and sovereignty belong to You. You have no partner.',
+     urdu:'حاضر ہوں اے اللہ، حاضر ہوں! حاضر ہوں، تیرا کوئی شریک نہیں، حاضر ہوں! بے شک تمام تعریفیں، نعمتیں اور بادشاہی تیری ہے، تیرا کوئی شریک نہیں۔',
+     source:'Bukhari 1549 / Muslim 1184', ayat:false},
+    {title:'At Hajar Aswad — Starting Each Circuit', occ:'At the start of each of 7 circuits of Tawaf',
+     arabic:'بِسْمِ اللَّهِ وَاللَّهُ أَكْبَرُ',
+     trans:'Bismillāh, wallāhu akbar',
+     english:'In the name of Allah, and Allah is the Greatest.',
+     urdu:'اللہ کے نام سے، اور اللہ سب سے بڑا ہے۔',
+     source:'Bukhari 1613', ayat:false},
+    {title:'Rabbana Atina — Between Rukn Yamani & Hajar Aswad', occ:'In the last stretch of each Tawaf circuit',
+     arabic:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+     trans:'Rabbanā ātinā fid-dunyā ḥasanatan wa fil-ākhirati ḥasanatan wa qinā ʿadhāban-nār',
+     english:'Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.',
+     urdu:'اے ہمارے رب! ہمیں دنیا میں بھلائی دے اور آخرت میں بھی بھلائی دے اور ہمیں آگ کے عذاب سے بچا۔',
+     source:'Quran 2:201 / Abu Dawud 1892', ayat:true},
+    {title:'At Safa — Beginning Sa\'i', occ:'Standing on Mount Safa before starting Sa\'i',
+     arabic:'إِنَّ الصَّفَا وَالْمَرْوَةَ مِن شَعَائِرِ اللَّهِ ۖ أَبْدَأُ بِمَا بَدَأَ اللَّهُ بِهِ',
+     trans:'Innaṣ-ṣafā wal-marwata min shaʿāʾirillāh. Abdaʾu bimā badaʾallāhu bih',
+     english:'Indeed Safa and Marwa are among the symbols of Allah. I begin with what Allah began with.',
+     urdu:'بے شک صفا اور مروہ اللہ کی نشانیوں میں سے ہیں۔ میں اس سے شروع کرتا ہوں جس سے اللہ نے شروع کیا۔',
+     source:'Quran 2:158 / Muslim 1218', ayat:true},
+    {title:'Dhikr on Safa and Marwa', occ:'Face Qibla on each mount, say 3 times',
+     arabic:'لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ يُحْيِي وَيُمِيتُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ أَنجَزَ وَعْدَهُ وَنَصَرَ عَبْدَهُ وَهَزَمَ الْأَحْزَابَ وَحْدَهُ',
+     trans:'Lā ilāha illallāhu waḥdahū lā sharīka lah, lahul-mulku wa lahul-ḥamdu yuḥyī wa yumītu wa huwa ʿalā kulli shayʾin qadīr, lā ilāha illallāhu waḥdah, anjaza waʿdah, wa naṣara ʿabdah, wa hazamal-aḥzāba waḥdah',
+     english:'None has the right to be worshipped except Allah, alone, without partner. To Him belongs sovereignty and praise. He gives life and causes death and is over all things competent. None has the right to be worshipped except Allah, alone. He fulfilled His promise, gave victory to His servant, and defeated the confederates alone.',
+     urdu:'اللہ کے سوا کوئی معبود نہیں، وہ اکیلا، بے شریک ہے، اسی کی بادشاہی ہے اور اسی کی تعریف ہے، وہ جِلاتا اور مارتا ہے اور ہر چیز پر قادر ہے۔ اللہ کے سوا کوئی معبود نہیں، اکیلے نے اپنا وعدہ پورا کیا، اپنے بندے کی مدد کی اور دشمنوں کو اکیلے شکست دی۔',
+     source:'Muslim 1218', ayat:false}
+  ],
+  arafat: [
+    {title:'Best Dua of Arafat Day', occ:'Repeat abundantly throughout Arafat wuquf',
+     arabic:'لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
+     trans:'Lā ilāha illallāhu waḥdahū lā sharīka lah, lahul-mulku wa lahul-ḥamdu wa huwa ʿalā kulli shayʾin qadīr',
+     english:'None has the right to be worshipped except Allah alone, without partner. To Him belongs all sovereignty and praise, and He is over all things competent.',
+     urdu:'اللہ کے سوا کوئی معبود نہیں، وہ اکیلا ہے، اس کا کوئی شریک نہیں، اسی کی بادشاہی ہے اور اسی کی تعریف ہے، اور وہ ہر چیز پر قادر ہے۔',
+     source:'Tirmidhi 3585 — "The best dua is the dua of Arafat day. The best thing I and the Prophets before me have said."', ayat:false},
+    {title:'Sayyid al-Istighfar — Master of Forgiveness', occ:'Morning & evening, especially at Arafat',
+     arabic:'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ',
+     trans:'Allāhumma anta Rabbī lā ilāha illā ant, khalaqtanī wa anā ʿabduk, wa anā ʿalā ʿahdika wa waʿdika mastaṭaʿt, aʿūdhu bika min sharri mā ṣanaʿt, abūʾu laka biniʿmatika ʿalayy, wa abūʾu bidhambī faghfir lī fa-innahū lā yaghfiru adh-dhunūba illā ant',
+     english:'O Allah, You are my Lord. There is no god but You. You created me and I am Your slave. I am upon Your covenant and promise as best I can. I seek refuge in You from the evil of what I have done. I acknowledge Your blessings upon me, and I acknowledge my sin — so forgive me, for none forgives sins except You.',
+     urdu:'اے اللہ! تو ہی میرا رب ہے، تیرے سوا کوئی معبود نہیں۔ تو نے مجھے پیدا کیا اور میں تیرا بندہ ہوں۔ میں جتنا ہو سکے تیرے عہد پر قائم ہوں۔ میں اپنے کیے کے شر سے تیری پناہ مانگتا ہوں۔ میں تیری نعمتوں کا اقرار کرتا ہوں اور اپنے گناہوں کا بھی — پس مجھے معاف فرما کہ تیرے سوا کوئی گناہ معاف نہیں کرتا۔',
+     source:'Bukhari 6306 — "Whoever says this by day with certainty and dies before evening enters Jannah."', ayat:false},
+    {title:'Dua of Prophet Yunus ﷺ — For Deliverance', occ:'In moments of distress and need',
+     arabic:'لَّا إِلَٰهَ إِلَّا أَنتَ سُبْحَانَكَ إِنِّي كُنتُ مِنَ الظَّالِمِينَ',
+     trans:'Lā ilāha illā anta subḥānaka innī kuntu minaz-ẓālimīn',
+     english:'There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers.',
+     urdu:'تیرے سوا کوئی معبود نہیں، تو پاک ہے، بے شک میں ظالموں میں سے تھا۔',
+     source:'Quran 21:87 — "No Muslim calls upon Allah with these words for any matter except that Allah responds to him." — Tirmidhi', ayat:true},
+    {title:'Dua for Parents & Family', occ:'Make this dua at Arafat for your loved ones',
+     arabic:'رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ وَلِلْمُؤْمِنِينَ يَوْمَ يَقُومُ الْحِسَابُ',
+     trans:'Rabbigh-fir lī wa liwālidayya wa lil-muʾminīna yawma yaqūmul-ḥisāb',
+     english:'My Lord, forgive me and my parents and the believers on the Day when the account is established.',
+     urdu:'اے میرے رب! مجھے، میرے والدین کو اور مومنوں کو اس دن معاف فرما جب حساب قائم ہوگا۔',
+     source:'Quran 14:41', ayat:true}
+  ],
+  dhikr: [
+    {title:'Ayat al-Kursi — Verse of the Throne', occ:'After every fard prayer and morning/evening',
+     arabic:'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ',
+     trans:'Allāhu lā ilāha illā huw, al-ḥayyu al-qayyūm, lā taʾkhudhuhū sinatun wa lā nawm…',
+     english:'Allah — there is no deity except Him, the Ever-Living, the Sustainer of existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth… And He is the Most High, the Most Great.',
+     urdu:'اللہ — اس کے سوا کوئی معبود نہیں، ہمیشہ زندہ، سب کو تھامنے والا۔ اسے نہ اونگھ آتی ہے نہ نیند۔ آسمانوں اور زمین میں جو کچھ ہے سب اسی کا ہے… اور وہ بلند و بزرگ ہے۔',
+     source:'Quran 2:255 — "Whoever recites Ayat al-Kursi after every obligatory prayer, nothing stands between him and entering Jannah except death." — Nasa\'i', ayat:true},
+    {title:'Subhanallah / Alhamdulillah / Allahu Akbar', occ:'After every prayer, 33 times each',
+     arabic:'سُبْحَانَ اللَّهِ ٣٣ × \nاَلْحَمْدُ لِلَّهِ ٣٣ × \nاَللَّهُ أَكْبَرُ ٣٣ ×\nلَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
+     trans:'Subḥānallāh (×33), Alḥamdulillāh (×33), Allāhu akbar (×33), then: Lā ilāha illallāhu waḥdah…',
+     english:'Glory be to Allah (×33), All praise is for Allah (×33), Allah is the Greatest (×33), then: None has the right to be worshipped but Allah alone, without partner. To Him belongs dominion and praise, and He is over all things competent.',
+     urdu:'اللہ پاک ہے (٣٣ بار)، سب تعریف اللہ کے لیے ہے (٣٣ بار)، اللہ سب سے بڑا ہے (٣٣ بار)، پھر: اللہ کے سوا کوئی معبود نہیں، اکیلا، بے شریک…',
+     source:'Muslim 597', ayat:false},
+    {title:'Surah Al-Ikhlas × 3', occ:'Morning, evening, after Fajr & Maghrib',
+     arabic:'قُلْ هُوَ اللَّهُ أَحَدٌ ۞ اللَّهُ الصَّمَدُ ۞ لَمْ يَلِدْ وَلَمْ يُولَدْ ۞ وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ',
+     trans:'Qul huwa Allāhu aḥad, Allāhu ṣ-ṣamad, lam yalid wa lam yūlad, wa lam yakun lahū kufuwan aḥad',
+     english:'Say: He is Allah, the One. Allah, the Eternal Refuge. He neither begets nor is born. Nor is there to Him any equivalent.',
+     urdu:'کہو: وہ اللہ ایک ہے۔ اللہ بے نیاز ہے۔ نہ اس کی اولاد ہے نہ وہ کسی کی اولاد ہے۔ اور نہ کوئی اس کا ہم سر ہے۔',
+     source:'Quran 112 — Equals 1/3 of the Quran in reward (Bukhari)', ayat:true},
+    {title:'Last Two Verses of Al-Baqarah', occ:'Before sleeping every night',
+     arabic:'آمَنَ الرَّسُولُ بِمَا أُنزِلَ إِلَيْهِ مِن رَّبِّهِ وَالْمُؤْمِنُونَ ۚ كُلٌّ آمَنَ بِاللَّهِ وَمَلَائِكَتِهِ وَكُتُبِهِ وَرُسُلِهِ لَا نُفَرِّقُ بَيْنَ أَحَدٍ مِّن رُّسُلِهِ ۚ وَقَالُوا سَمِعْنَا وَأَطَعْنَا ۖ غُفْرَانَكَ رَبَّنَا وَإِلَيْكَ الْمَصِيرُ',
+     trans:'Āmanar-rasūlu bimā unzila ilayhi mir Rabbihī wal-muʾminūn…',
+     english:'The Messenger has believed in what was revealed to him from his Lord, and so have the believers — all of them believe in Allah, His angels, His books and His messengers… "We hear and we obey. Grant us Your forgiveness, our Lord, and to You is the final destination."',
+     urdu:'رسول نے مانا جو اتارا گیا اپنے رب کی طرف سے اور مومنوں نے بھی — سب اللہ، فرشتوں، کتابوں اور رسولوں پر ایمان لائے… کہا: ہم نے سنا اور مانا، اے ہمارے رب تیری بخشش ہو اور تیری ہی طرف لوٹنا ہے۔',
+     source:'Quran 2:285–286 — "Whoever recites the last two verses of Surah Baqarah at night, they will suffice him." — Bukhari', ayat:true},
+    {title:'Istighfar — Seek Forgiveness', occ:'100 times daily, especially at Hajj',
+     arabic:'أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ',
+     trans:'Astaghfirullāha wa atūbu ilayh',
+     english:'I seek forgiveness from Allah and repent to Him.',
+     urdu:'میں اللہ سے مغفرت مانگتا ہوں اور اس کی طرف توبہ کرتا ہوں۔',
+     source:'Bukhari — The Prophet ﷺ said: "I seek forgiveness 100 times a day."', ayat:false}
+  ],
+  general: [
+    {title:'Dua for Good in Dunya & Akhirah', occ:'Most comprehensive dua in the Quran — say often',
+     arabic:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+     trans:'Rabbanā ātinā fid-dunyā ḥasanatan wa fil-ākhirati ḥasanatan wa qinā ʿadhāban-nār',
+     english:'Our Lord, grant us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.',
+     urdu:'اے ہمارے رب! ہمیں دنیا میں بھلائی دے اور آخرت میں بھی بھلائی دے اور ہمیں آگ کے عذاب سے بچا۔',
+     source:'Quran 2:201 — The Prophet ﷺ made dua with this most often (Bukhari)', ayat:true},
+    {title:'Dua for Guidance & Steadfastness', occ:'Especially powerful to recite after prayers',
+     arabic:'رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِن لَّدُنكَ رَحْمَةً ۚ إِنَّكَ أَنتَ الْوَهَّابُ',
+     trans:'Rabbanā lā tuzigh qulūbanā baʿda idh hadaytanā wa hab lanā min ladunka raḥmah, innaka antal-wahhāb',
+     english:'Our Lord, do not let our hearts deviate after You have guided us and grant us from Yourself mercy. Indeed, You are the Bestower.',
+     urdu:'اے ہمارے رب! ہمیں ہدایت دینے کے بعد ہمارے دلوں کو ٹیڑھا نہ کر اور ہمیں اپنے پاس سے رحمت عطا فرما۔ بے شک تو ہی بڑا عطا کرنے والا ہے۔',
+     source:'Quran 3:8', ayat:true},
+    {title:'Dua for Health & Wellbeing', occ:'For yourself, family and Ummah',
+     arabic:'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَهَ إِلَّا أَنْتَ',
+     trans:'Allāhumma ʿāfinī fī badanī, Allāhumma ʿāfinī fī samʿī, Allāhumma ʿāfinī fī baṣarī, lā ilāha illā ant',
+     english:'O Allah, grant me health in my body. O Allah, grant me health in my hearing. O Allah, grant me health in my sight. There is no god but You.',
+     urdu:'اے اللہ! مجھے میرے جسم میں عافیت دے۔ اے اللہ! مجھے میری سماعت میں عافیت دے۔ اے اللہ! مجھے میری بصارت میں عافیت دے۔ تیرے سوا کوئی معبود نہیں۔',
+     source:'Abu Dawud 5090', ayat:false},
+    {title:'Dua for Acceptance of Hajj', occ:'After all rituals are complete',
+     arabic:'اللَّهُمَّ تَقَبَّلْ مِنَّا إِنَّكَ أَنتَ السَّمِيعُ الْعَلِيمُ',
+     trans:'Allāhumma taqabbal minnā innaka antas-samīʿul-ʿalīm',
+     english:'O Allah, accept from us. Indeed, You are the All-Hearing, All-Knowing.',
+     urdu:'اے اللہ! ہم سے قبول فرما۔ بے شک تو سننے والا، جاننے والا ہے۔',
+     source:'Quran 2:127 — Same words Ibrahim ﷺ said when building the Ka\'ba', ayat:true}
+  ]
+};
+
+const CATS = [
+  {id:'travel',  label:'✈️ Travel'},
+  {id:'madinah', label:'🕌 Madinah'},
+  {id:'umrah',   label:'🕋 Umrah'},
+  {id:'arafat',  label:'🌅 Arafat'},
+  {id:'dhikr',   label:'📿 Adhkar'},
+  {id:'general', label:'🤲 General'}
+];
+
+// ── App State ──────────────────────────────────────────────────
+let currentTab = 'journey';
+let selectedCat = 'travel';
+let familyDuas = JSON.parse(localStorage.getItem('hajj-family') || '[]');
+
+// ── Countdown ──────────────────────────────────────────────────
+function renderTodayBanner() {
+  const now = new Date();
+  const arafat = new Date('2026-05-26');
+  const madinah = new Date('2026-05-16');
+  const eid = new Date('2026-05-27');
+  const startDay = new Date(now); startDay.setHours(0,0,0,0);
+  const diff = d => Math.ceil((d - startDay) / 86400000);
+  const dA = diff(arafat), dM = diff(madinah), dE = diff(eid);
+
+  let title = 'May Allah accept your Hajj', sub = 'Hajj Mabrur, inshāAllah';
+  if (dM > 0) { title = `${dM} day${dM>1?'s':''} until Madinah`; sub = 'May 16 — Journey begins'; }
+  else if (dA > 0 && dM <= 0) { title = `${dA} day${dA>1?'s':''} until Arafat`; sub = 'The greatest day of Hajj'; }
+  else if (dE === 0) { title = 'Eid Mubarak! 🌙'; sub = 'Today: Rami · Qurbani · Halq · Tawaf Ifadha'; }
+  else if (dA === 0) { title = 'Today is Yawm Arafah!'; sub = 'Stand at Arafat — make all your duas'; }
+
+  const boxes = dM > 0
+    ? [{n:dM,l:'Madinah'},{n:diff(new Date('2026-05-18')),l:'Umrah'},{n:dA,l:'Arafat'},{n:dE,l:'Eid'}]
+    : [{n:Math.max(0,dA),l:'Arafat'},{n:Math.max(0,dE),l:'Eid'},{n:Math.max(0,diff(new Date('2026-05-25'))),l:'Mina'},{n:Math.max(0,diff(new Date('2026-05-29'))),l:'Nafr'}];
+
+  document.getElementById('todayBanner').innerHTML = `
+    <div class="today-label">Today · ${now.toLocaleDateString('en',{month:'long',day:'numeric',year:'numeric'})}</div>
+    <div class="today-title">${title}</div>
+    <div class="today-sub">${sub}</div>
+    <div class="counts">${boxes.map(b=>`<div class="cbox"><div class="cnum">${b.n}</div><div class="clbl">${b.l}</div></div>`).join('')}</div>`;
+}
+
+// ── Journey ────────────────────────────────────────────────────
+function renderJourney() {
+  const now = new Date(); now.setHours(0,0,0,0);
+  const html = JOURNEY.map(d => {
+    const fd = new Date(d.full);
+    const isToday = fd.getTime() === now.getTime();
+    const isPast  = fd < now;
+    const dotCls  = isToday ? 'ddot today-dot' : isPast ? 'ddot past' : 'ddot';
+    const badge   = d.badge ? `<span class="dbadge ${d.badgeClass}">${d.badge}</span>` : '';
+    const steps   = d.steps.map(s => {
+      let duaBlock = '';
+      if (s.arabic) {
+        duaBlock = `<div class="sarabic">${s.arabic}</div>`;
+        if (s.trans)   duaBlock += `<div class="strans">${s.trans}</div>`;
+        if (s.english) duaBlock += `<div class="senglish">${s.english}</div>`;
+        if (s.urdu)    duaBlock += `<div class="surdu">${s.urdu}</div>`;
+        if (s.source)  duaBlock += `<div class="ssource">— ${s.source}</div>`;
+      }
+      const noteBlock = s.note ? `<div class="snote">${s.note}</div>` : '';
+      const descBlock = s.desc ? `<div class="sdesc">${s.desc}</div>` : '';
+      return `<div class="step">
+        <div class="sico">${s.ico||'📌'}</div>
+        <div class="sbody">
+          <div class="stitle">${s.title}</div>
+          ${descBlock}${duaBlock}${noteBlock}
+        </div></div>`;
+    }).join('');
+    return `<div class="dcard glass${isToday?' glass-gold':''}" id="${d.id}">
+      <div class="dhdr" onclick="toggleDay('${d.id}')">
+        <div class="${dotCls}">${d.icon}</div>
+        <div class="dinfo">
+          <div class="dname">${d.date} · ${d.day}</div>
+          <div class="dmeta">${d.hijri} · ${d.location}</div>
+        </div>
+        ${badge}
+        <div class="dchev">›</div>
+      </div>
+      <div class="dsteps">${steps}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('journeyList').innerHTML = html;
+  // auto-open today
+  const todayEl = JOURNEY.find(d => new Date(d.full).setHours(0,0,0,0) === now.getTime());
+  if (todayEl) toggleDay(todayEl.id, true);
+}
+
+function toggleDay(id, forceOpen) {
+  const el = document.getElementById(id);
+  if (forceOpen) el.classList.add('open');
+  else el.classList.toggle('open');
+}
+
+// ── Family Duas ────────────────────────────────────────────────
+function saveFamily() { localStorage.setItem('hajj-family', JSON.stringify(familyDuas)); }
+
+function addFamily() {
+  const name = document.getElementById('fname').value.trim();
+  const rel  = document.getElementById('frelation').value.trim();
+  const dua  = document.getElementById('fduareq').value.trim();
+  if (!name || !dua) return;
+  familyDuas.unshift({id: Date.now(), name, rel, dua, done: false});
+  saveFamily();
+  document.getElementById('fname').value = '';
+  document.getElementById('frelation').value = '';
+  document.getElementById('fduareq').value = '';
+  renderFamily();
+}
+
+function toggleFamilyDone(id) {
+  const f = familyDuas.find(x => x.id === id);
+  if (f) { f.done = !f.done; saveFamily(); renderFamily(); }
+}
+
+function deleteFamily(id) {
+  familyDuas = familyDuas.filter(x => x.id !== id);
+  saveFamily(); renderFamily();
+}
+
+function renderFamily() {
+  const grid = document.getElementById('familyGrid');
+  if (!familyDuas.length) {
+    grid.innerHTML = `<div class="empty"><div class="empty-ico">🤲</div>Add your family members above.<br>Their duas will be remembered in your Hajj.</div>`;
+    return;
+  }
+  grid.innerHTML = `<div class="fgrid">${familyDuas.map(f => `
+    <div class="fcard glass${f.done?' glass-green':''}">
+      <div class="fname">
+        <span>${f.name}${f.rel?` <span style="font-weight:400;opacity:0.6;font-size:11px">(${f.rel})</span>`:''}</span>
+        <button class="fcheck${f.done?' done':''}" onclick="toggleFamilyDone(${f.id})">${f.done?'✓':''}</button>
+      </div>
+      <div class="fdua">${f.dua}</div>
+      <button class="fdel" onclick="deleteFamily(${f.id})">✕ remove</button>
+    </div>`).join('')}</div>`;
+}
+
+// ── Adhkar ─────────────────────────────────────────────────────
+function renderCatPills() {
+  document.getElementById('catPills').innerHTML = CATS.map(c =>
+    `<button class="pill${c.id===selectedCat?' active':''}" onclick="selectCat('${c.id}')">${c.label}</button>`
+  ).join('');
+}
+
+function selectCat(id) {
+  selectedCat = id;
+  renderCatPills();
+  renderDuas();
+}
+
+function renderDuas() {
+  const list = DUAS_DATA[selectedCat] || [];
+  document.getElementById('duaList').innerHTML = list.map(d => `
+    <div class="duacard glass${d.ayat?' ayatcard':''}">
+      <div class="dtitle">${d.title}</div>
+      <div class="docc">${d.occ}</div>
+      <div class="darabic">${d.arabic}</div>
+      ${d.trans ? `<div class="dtrans">${d.trans}</div>` : ''}
+      <div class="denglish">${d.english}</div>
+      ${d.urdu ? `<div class="durdu">${d.urdu}</div>` : ''}
+      <div class="dsource">— ${d.source}</div>
+    </div>`).join('');
+}
+
+// ── Tab Switching ──────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+  currentTab = tab;
+}
+
+// ── Init ───────────────────────────────────────────────────────
+renderTodayBanner();
+renderJourney();
+renderFamily();
+renderCatPills();
+renderDuas();
+</script>
+</body>
+</html>
