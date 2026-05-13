@@ -1,0 +1,19 @@
+{
+  "name": "Hajj Companion 1447",
+  "short_name": "Hajj 1447",
+  "description": "Hajj Tamattu guide, family duas, adhkar library and tasbih counter for Hajj 1447.",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#04080f",
+  "theme_color": "#c9a84c",
+  "categories": ["lifestyle", "religion"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%2304080f'/%3E%3Ccircle cx='256' cy='200' r='90' fill='none' stroke='%23c9a84c' stroke-width='18'/%3E%3Cpath d='M256 110 L256 40 M220 120 L180 68 M292 120 L332 68' stroke='%23c9a84c' stroke-width='18' stroke-linecap='round'/%3E%3Crect x='196' y='280' width='120' height='160' rx='20' fill='%23c9a84c'/%3E%3C/svg%3E",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
