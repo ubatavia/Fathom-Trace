@@ -190,6 +190,8 @@ textarea.fin{resize:none;height:68px;line-height:1.5}
       <div style="margin-bottom:8px"><textarea class="fin" id="fduainp" placeholder="Their request — shifa, rizq, marriage, children…"></textarea></div>
       <button class="badd" onclick="addFam()">+ Add to List</button>
       <button class="badd bexp" onclick="exportFam()">↓ Export as Text</button>
+      <input type="file" id="csvIn" accept=".csv" style="display:none" onchange="importCSV(this)">
+      <button class="badd" style="background:rgba(76,168,201,.13);border-color:rgba(76,168,201,.28);color:#4ca8c9" onclick="document.getElementById('csvIn').click()">↑ Import CSV</button>
     </div>
     <div id="famGrid"></div>
   </div>
@@ -371,8 +373,27 @@ const TZ=[
   {ar:'اَللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ',l:'Allahumma salli…',en:'O Allah, send blessings on Muhammad ﷺ',vt:'"Whoever sends one salawat, Allah sends 10 blessings" — Muslim 408',tg:[100,1000]}
 ];
 
+// ── Seed data from family dua form ─────────────────────────────
+const SEED=[
+  {id:1747165022000,n:'Amna',r:'',du:'1) Behetri in life partner, whenever its meant to be\n2) Wellbeing and better health for myself & parents\n3) Better job opportunity — one that aligns with my goals and gives peace of mind & financial security',done:false},
+  {id:1747165063000,n:'Yumna',r:'',du:'For good health and long lives of my family & for my CARMS match. May Allah accept your Hajj and all prayers.',done:false},
+  {id:1747165219000,n:'Raffia Jawaid',r:'',du:'Please remember Ami Zakia — Allah unko Jannat me alaa muqaam de. Pray for Mustafa Musa Khizer and mine healthy long life. Barakah in all aspects, save us from hardship in Duniya and Akhirah. Strength to pass Canadian license exam in first attempt and get into residency. Heal our illness. May Allah call us on Hajj with spouse. Patience with kids — raise them with love and wisdom. Good job and financial stability for me and Mustafa.',done:false},
+  {id:1747165339000,n:'Saira',r:'',du:'Dua for health and kids.',done:false},
+  {id:1747165579000,n:'Moin',r:'',du:'Allah give wisdom to all Muslims to live their lives according to the Quran. Muslims wake up from delusion.',done:false},
+  {id:1747165740000,n:'Muhammad Khurram',r:'',du:'May Allah give barakah in life and find suitable rishta for daughters in coming years. Pray for health of all family members.',done:false},
+  {id:1747168464000,n:'Nasser Ba Break',r:'',du:'Ya Allah, You are the most forgiving, and You love forgiveness, so forgive Nasser and his family and all Muslims.',done:false},
+  {id:1747170660000,n:'Aimen',r:'',du:'Please make dua for my mother — may Allah give ease during her cancer treatment and make her cancer free soon. Pray for long healthy happy life of my parents, husband and kids.',done:false},
+  {id:1747179360000,n:'Rabia Akram',r:'',du:'Call us for Hajj next year; call my maa for Hajj; forgiveness of sins; place in Jannah; long life, health, protection, success of children and mothers; kids be coolness of our eyes on siraat-e-mustaqeem; health of siblings and families; abundant halal rizq; barkat in relationship; complete shifaa for all sick; freedom for Gaza, Kashmir, Sudan, Iran and all oppressed; no child sleep hungry; shifaa for all kids in hospitals; mercy on Day of Judgement.',done:false},
+  {id:1747181760000,n:'Beenish',r:'',du:'May Allah accept all ibadah and duas during Hajj and entire life. Provide good health and wealth.',done:false},
+  {id:1747183980000,n:'Shafaq Waqas',r:'',du:'May Allah accept your Hajj and make this journey full of blessings, peace, and spiritual growth. Remember us in your prayers.',done:false},
+  {id:1747186320000,n:'Rubaina',r:'',du:'Ya Al-Wadud: place deep affection and sincere romantic love in heart of the one she wants to be with; unite them with clarity, tenderness and emotional peace. Ya Al-Fattah: grant her barakah in time, ease in schedule, balance between work, rest and worship. Ya Al-Razzaq: open for her friend Reem doors of a righteous job with growth, dignity and barakah. Ya Al-Latif: soften hearts in her family, gentleness between her and her mother, replace tension with compassion and love.',done:false},
+  {id:1747191960000,n:'Hira Khan',r:'',du:'May Allah invite us for Hajj and Umrah, and bless Maryam with a sister or brother. Mery ami abu ka super visa abhi tak security verification mein hy — dua karna wo jaldi say ajayein.',done:false},
+  {id:1747213448000,n:'Farooq Khan',r:'',du:'1) Health, barakah and aafiat for Farooq/Nazia and children Aisha and Yusuf, and their guidance.\n2) Health and wellness for parents Tahira/Akhtar and Mother-in-law Surraya.\n3) Health for Nazia\'s elder sister who is sick and in ICU.\n4) Yusuf\'s decision of choice of university.\n5) Hajj next year inshAllah.\n6) Prayers for children of Nazia\'s deceased brother.',done:false}
+];
+
 // ── State ──────────────────────────────────────────────────────
-let fam=JSON.parse(localStorage.getItem('hj-fam')||'[]');
+let fam=JSON.parse(localStorage.getItem('hj-fam')||'null');
+if(!fam){fam=SEED;localStorage.setItem('hj-fam',JSON.stringify(fam));}
 let cat=localStorage.getItem('hj-cat')||'sabah';
 let theme=localStorage.getItem('hj-theme')||'dark';
 let ti=+localStorage.getItem('hj-ti')||0;
@@ -431,8 +452,34 @@ function togFam(id){const f=fam.find(x=>x.id===id);if(f){f.done=!f.done;saveFam(
 function delFam(id){fam=fam.filter(x=>x.id!==id);saveFam();renderFam();}
 function exportFam(){
   if(!fam.length)return;
-  const txt=fam.map(f=>`${f.n}${f.r?' ('+f.r+')':''}: ${f.du}${f.done?' ✓':''}`).join('\n');
+  const txt=fam.map(f=>`${f.n}${f.r?' ('+f.r+')':''}: ${f.du}${f.done?' ✓':''}`).join('\n\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));a.download='hajj-family-duas.txt';a.click();
+}
+function parseCSV(t){
+  const rows=[];let row=[],field='',inQ=false;
+  for(let i=0;i<t.length;i++){const c=t[i],nx=t[i+1];
+    if(inQ){if(c==='"'&&nx==='"'){field+='"';i++;}else if(c==='"'){inQ=false;}else field+=c;}
+    else{if(c==='"')inQ=true;else if(c===','){row.push(field);field='';}else if(c==='\n'||c==='\r'){if(c==='\r'&&nx==='\n')i++;row.push(field);if(row.some(x=>x))rows.push(row);row=[];field='';}else field+=c;}}
+  if(field||row.length>1)rows.push([...row,field]);
+  return rows;
+}
+function importCSV(inp){
+  const file=inp.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    const rows=parseCSV(e.target.result);
+    let added=0;
+    rows.slice(1).forEach(row=>{
+      const n=(row[1]||'').trim(),du=(row[2]||'').trim();
+      if(!n||!du)return;
+      if(fam.some(x=>x.n.toLowerCase()===n.toLowerCase()))return;
+      fam.push({id:Date.now()+added,n,r:'',du,done:false});added++;
+    });
+    saveFam();renderFam();
+    inp.value='';
+    if(added)alert(`✓ Imported ${added} request${added>1?'s':''}`);else alert('No new entries found (already imported or empty).');
+  };
+  r.readAsText(file);
 }
 function renderFam(){
   const g=document.getElementById('famGrid');
