@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#c9a84c">
+<title>Dua & Dhikr</title>
+<link rel="manifest" href="./manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080d18;--c1:rgba(255,255,255,.055);--bd:rgba(255,255,255,.1);--tx:#f0ede8;--mu:rgba(240,237,232,.45);--g1:#c9a84c;--g2:#e2c97e;--r:16px;--rs:10px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:-apple-system,system-ui,sans-serif;overflow:hidden}
+.app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:480px;margin:0 auto}
+/* Header */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;padding-top:calc(14px + env(safe-area-inset-top));flex-shrink:0;border-bottom:1px solid var(--bd)}
+.hdr-t{font-family:'Amiri',serif;font-size:22px;color:var(--g1);font-weight:700}
+.hdr-s{font-size:10px;color:var(--mu);margin-top:1px}
+.hbtn{background:var(--c1);border:1px solid var(--bd);border-radius:8px;color:var(--tx);font-size:13px;padding:6px 10px;cursor:pointer;font-family:inherit;white-space:nowrap}
+/* Tabs */
+.tabs{display:flex;border-bottom:1px solid var(--bd);flex-shrink:0}
+.tab{flex:1;padding:10px 4px 8px;border:none;background:transparent;color:var(--mu);font-family:inherit;font-size:10px;font-weight:700;letter-spacing:.04em;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .2s;border-bottom:2px solid transparent}
+.tab.on{color:var(--g2);border-bottom-color:var(--g1)}
+.tab-i{font-size:18px}
+/* Panels */
+.panels{flex:1;overflow:hidden;position:relative}
+.pnl{position:absolute;inset:0;overflow-y:auto;padding:14px 14px calc(20px + env(safe-area-inset-bottom));display:none;-webkit-overflow-scrolling:touch}
+.pnl.on{display:block}
+/* Glass */
+.gl{background:var(--c1);border:1px solid var(--bd);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:var(--r)}
+/* Section */
+.sec{font-size:10px;font-weight:800;color:var(--mu);letter-spacing:.08em;text-transform:uppercase;margin:14px 0 8px}
+/* Pills */
+.plls{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;flex-shrink:0;margin-bottom:10px}
+.plls::-webkit-scrollbar{display:none}
+.pll{padding:7px 14px;border-radius:28px;background:var(--c1);border:1px solid var(--bd);color:var(--mu);font-size:11px;font-weight:700;white-space:nowrap;cursor:pointer;transition:all .18s;font-family:inherit;flex-shrink:0}
+.pll.on{background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.4);color:var(--g2)}
+/* Dua card */
+.dcrd{margin-bottom:11px;padding:16px;border-radius:var(--r);cursor:pointer}
+.dcrd-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:0}
+.dtl{font-size:14px;font-weight:800;margin-bottom:2px}
+.docc{font-size:10px;font-weight:700;color:var(--g1);letter-spacing:.05em;margin-bottom:0}
+.dfav{background:none;border:none;font-size:18px;cursor:pointer;padding:0;line-height:1;flex-shrink:0;opacity:.4;transition:opacity .2s}
+.dfav.on{opacity:1}
+.dbody{display:none;margin-top:12px}
+.dcrd.op .dbody{display:block}
+.dar{font-family:'Amiri',serif;font-size:22px;color:var(--g1);direction:rtl;text-align:right;line-height:2;padding:12px 14px;background:rgba(201,168,76,.05);border-radius:var(--rs);border-right:2px solid rgba(201,168,76,.25);margin-bottom:10px}
+.den{font-size:13px;line-height:1.65;color:var(--tx);margin-bottom:8px}
+.dur{font-family:'Amiri',serif;font-size:15px;color:rgba(201,168,76,.65);direction:rtl;text-align:right;line-height:1.9;border-top:1px solid var(--bd);padding-top:8px;margin-bottom:8px}
+.dso{font-size:10px;color:rgba(201,168,76,.4);font-weight:700}
+.dvt{font-size:11px;color:var(--mu);font-style:italic;line-height:1.5;margin-top:6px;padding:8px 10px;background:rgba(255,255,255,.04);border-radius:var(--rs)}
+/* Azkar mode */
+.azk-sel{display:flex;gap:8px;margin-bottom:14px}
+.azk-btn{flex:1;padding:13px;border-radius:var(--r);background:var(--c1);border:1px solid var(--bd);color:var(--mu);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
+.azk-btn.on{background:rgba(201,168,76,.13);border-color:rgba(201,168,76,.35);color:var(--g2)}
+.azk-wrap{display:flex;flex-direction:column;gap:10px}
+.azk-crd{padding:18px;border-radius:var(--r);position:relative}
+.azk-crd.done{opacity:.4}
+.azk-num{font-size:10px;font-weight:800;color:var(--g1);letter-spacing:.07em;margin-bottom:8px}
+.azk-ar{font-family:'Amiri',serif;font-size:24px;color:var(--g1);direction:rtl;text-align:right;line-height:2.1;margin-bottom:10px}
+.azk-en{font-size:13px;line-height:1.6;margin-bottom:10px}
+.azk-so{font-size:10px;color:rgba(201,168,76,.4);font-weight:700;margin-bottom:10px}
+.azk-cnt{display:flex;align-items:center;gap:10px}
+.azk-tap{flex:1;padding:12px;background:rgba(201,168,76,.1);border:1.5px solid rgba(201,168,76,.25);border-radius:var(--rs);color:var(--g2);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:transform .08s}
+.azk-tap:active{transform:scale(.97)}
+.azk-prog{font-size:22px;font-weight:900;color:var(--g2);min-width:40px;text-align:center}
+.azk-tot{font-size:11px;color:var(--mu)}
+.azk-rst{background:none;border:none;color:var(--mu);font-size:11px;cursor:pointer;font-family:inherit;margin-top:6px}
+/* Tasbih */
+.tb-sel{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.tb-z{padding:12px 14px;border-radius:var(--rs);background:var(--c1);border:1px solid var(--bd);cursor:pointer;transition:all .2s}
+.tb-z.on{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.35)}
+.tb-z-ar{font-family:'Amiri',serif;font-size:18px;color:var(--g1);direction:rtl;line-height:1.6}
+.tb-z-l{font-size:11px;color:var(--mu);margin-top:2px}
+.tb-main{position:sticky;top:0;z-index:10;padding:14px;margin-bottom:12px;text-align:center}
+.tb-ar{font-family:'Amiri',serif;font-size:26px;color:var(--g1);line-height:1.6;margin-bottom:4px}
+.tb-l{font-size:13px;font-weight:700;margin-bottom:2px}
+.tb-en{font-size:12px;color:var(--mu);margin-bottom:12px}
+.tb-ring{position:relative;width:200px;height:200px;margin:0 auto 14px}
+.tb-ring svg{position:absolute;inset:0;width:200px;height:200px}
+.rbg{fill:none;stroke:rgba(255,255,255,.07);stroke-width:10}
+.rpg{fill:none;stroke:var(--g1);stroke-width:10;stroke-dasharray:565.5;stroke-dashoffset:565.5;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset .25s ease}
+.tb-btn{position:absolute;inset:14px;border-radius:50%;background:rgba(255,255,255,.06);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--bd);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:transform .08s;-webkit-tap-highlight-color:transparent}
+.tb-btn:active{transform:scale(.96)}
+.tb-cnt{font-size:52px;font-weight:900;color:var(--tx);line-height:1}
+.tb-sub{font-size:12px;color:var(--mu)}
+.tb-meta{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-radius:var(--rs);background:var(--c1);border:1px solid var(--bd);margin-bottom:10px;font-size:12px}
+.tb-tgts{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.tb-tgt{padding:7px 14px;border-radius:20px;background:var(--c1);border:1px solid var(--bd);color:var(--mu);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .18s}
+.tb-tgt.on{background:rgba(201,168,76,.13);border-color:rgba(201,168,76,.35);color:var(--g2)}
+.tb-rst{background:none;border:none;color:var(--mu);font-size:11px;cursor:pointer;font-family:inherit}
+/* Favs */
+.emp{text-align:center;padding:40px 20px;color:var(--mu);font-size:13px;line-height:1.8}
+/* Verse tag */
+.ayat .dar{color:#5ec47a;border-right-color:rgba(94,196,122,.4);background:rgba(94,196,122,.05)}
+.ayat .docc{color:#5ec47a}
+/* Light mode */
+.light{--bg:#f5f0e8;--c1:rgba(0,0,0,.05);--bd:rgba(0,0,0,.1);--tx:#1a1510;--mu:rgba(26,21,16,.5)}
+.light .rbg{stroke:rgba(0,0,0,.08)}
+.light .tb-btn{background:rgba(0,0,0,.04)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div>
+      <div class="hdr-t">دعاء و ذكر</div>
+      <div class="hdr-s">Dua &amp; Dhikr · Daily Remembrance</div>
+    </div>
+    <div style="display:flex;gap:7px">
+      <button class="hbtn" id="themeBtn" onclick="toggleTheme()">☀</button>
+      <button class="hbtn" onclick="installApp()">⬇ Install</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab on" data-p="duas" onclick="sw('duas')"><span class="tab-i">🤲</span>DUAS</button>
+    <button class="tab" data-p="azkar" onclick="sw('azkar')"><span class="tab-i">🌅</span>AZKAR</button>
+    <button class="tab" data-p="tasbih" onclick="sw('tasbih')"><span class="tab-i">📿</span>TASBIH</button>
+    <button class="tab" data-p="favs" onclick="sw('favs')"><span class="tab-i">⭐</span>SAVED</button>
+  </div>
+  <div class="panels">
+    <div class="pnl on" id="panel-duas">
+      <div class="plls" id="catPills"></div>
+      <div id="duaList"></div>
+    </div>
+    <div class="pnl" id="panel-azkar">
+      <div class="azk-sel">
+        <button class="azk-btn on" id="btnSabah" onclick="selAzk('sabah')">🌄 Morning Adhkar</button>
+        <button class="azk-btn" id="btnMasa" onclick="selAzk('masa')">🌇 Evening Adhkar</button>
+      </div>
+      <div id="azkList"></div>
+    </div>
+    <div class="pnl" id="panel-tasbih">
+      <div class="tb-main gl" id="tbMain"></div>
+      <div class="tb-meta"><span>Session <b id="tsess">0</b></span><span>Total <b id="ttot">0</b></span><button class="tb-rst" onclick="resetTb()">↺ Reset</button></div>
+      <div class="tb-tgts" id="tTgts"></div>
+      <div class="sec">Choose Zikr</div>
+      <div class="tb-sel" id="tbSel"></div>
+    </div>
+    <div class="pnl" id="panel-favs">
+      <div id="favList"></div>
+    </div>
+  </div>
+</div>
+<script>
+// ── DATA ───────────────────────────────────────────────────────────────────
+
+const CATS=[
+  {id:'sabah',l:'🌄 Morning'},
+  {id:'masa',l:'🌇 Evening'},
+  {id:'salah',l:'🙏 After Salah'},
+  {id:'nawm',l:'🌙 Sleep'},
+  {id:'daily',l:'☀️ Daily Life'},
+  {id:'travel',l:'✈️ Travel'},
+  {id:'distress',l:'💙 Distress'},
+  {id:'tawbah',l:'🌿 Forgiveness'},
+  {id:'health',l:'🤍 Protection'},
+  {id:'quran',l:'📖 Quranic Duas'},
+  {id:'special',l:'✨ Special'},
+];
+
+const D={
+sabah:[
+  {t:'Waking Up',o:'First words upon waking — Bukhari 6312',ar:'الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ',en:'All praise is for Allah who gave us life after having taken it from us, and unto Him is the resurrection.',ur:'تمام تعریف اللہ کے لیے جس نے ہمیں موت کے بعد زندگی دی، اور اسی کی طرف لوٹنا ہے۔',so:'Bukhari 6312'},
+  {t:'Morning Remembrance — Master Dua',o:'Say 3× each morning & evening — Bukhari 6306',ar:'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ لَكَ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ',en:'O Allah, You are my Lord, there is no god but You. You created me and I am Your servant. I am upon Your covenant and promise to the best of my ability. I seek refuge in You from the evil I have done. I acknowledge Your favour upon me, and I acknowledge my sin, so forgive me, for none forgives sins except You.',so:'Bukhari 6306',vt:'"Whoever says it in the morning with certainty and dies that day before evening shall be among the people of Paradise." — Bukhari 6306'},
+  {t:'Morning — Allahumma bika asbahna',o:'Every morning — Abu Dawud 5068',ar:'اللَّهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ',en:'O Allah, by You we enter the morning and by You we enter the evening, by You we live and by You we die, and unto You is the resurrection.',so:'Abu Dawud 5068'},
+  {t:'Protection from All Harm',o:'Say 3× every morning & evening — Abu Dawud 5088',ar:'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ',en:'In the name of Allah with whose name nothing can cause harm on earth or in the heavens, and He is the All-Hearing, All-Knowing.',so:'Abu Dawud 5088',vt:'"Whoever says this three times in the morning will not be afflicted by any sudden calamity until evening." — Abu Dawud 5088'},
+  {t:'Morning — Ask for Wellbeing',o:'Say 3× — Tirmidhi 3388',ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ',en:'O Allah, I ask You for pardon and well-being in this world and the next.',so:'Tirmidhi 3388'},
+  {t:'Morning — 10× La ilaha illallah',o:'Recite 10× after Fajr — Tirmidhi 3474',ar:'لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',en:'None has the right to be worshipped but Allah, alone without partner. To Him belongs all sovereignty and praise, and He is over all things omnipotent.',so:'Tirmidhi 3474',vt:'"Whoever says this 10× in the morning: Allah writes for him 10 good deeds, erases 10 sins, raises him 10 ranks, and protects him from Shaytan until evening." — Tirmidhi 3474'},
+  {t:'Morning — Seek Knowledge & Provision',o:'Every morning — Ibn Majah 925',ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا وَرِزْقًا طَيِّبًا وَعَمَلًا مُتَقَبَّلًا',en:'O Allah, I ask You for beneficial knowledge, good provision, and accepted deeds.',so:'Ibn Majah 925'},
+  {t:'Morning — Rely on Allah',o:'Every morning — Abu Dawud 5075',ar:'حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ',en:'Allah is sufficient for me; there is no god but He. In Him I put my trust, and He is the Lord of the Mighty Throne.',so:'Abu Dawud 5075',vt:'"Whoever says this 7× morning and evening, Allah will spare him whatever worries him." — Abu Dawud 5075'},
+  {t:'Al-Ikhlas, Al-Falaq, An-Nas',o:'Recite 3× every morning & evening — Abu Dawud 5082',ar:'قُلْ هُوَ اللَّهُ أَحَدٌ ۝ قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ قُلْ أَعُوذُ بِرَبِّ النَّاسِ',en:'Recite: Qul Huwa Allahu Ahad · Qul A\'udhu bi Rabb il-Falaq · Qul A\'udhu bi Rabb in-Nas — each three times.',so:'Abu Dawud 5082',vt:'"They suffice you against everything." — Abu Dawud 5082'},
+  {t:'Ayat al-Kursi',o:'After every obligatory prayer and every morning/evening — Bukhari 2311',ar:'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ',en:'Allah — there is no deity except Him, the Ever-Living, the Sustainer of existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His Kursi extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Most Great.',so:'Quran 2:255',vt:'"Whoever recites Ayat al-Kursi after every obligatory prayer, nothing stands between him and entering Paradise except death." — Nasa\'i (Sahih)'},
+  {t:'Morning — Seek Refuge (4×)',o:'Say 4× morning & evening — Abu Dawud 5090',ar:'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ',en:'I seek refuge in the perfect words of Allah from the evil of what He has created.',so:'Muslim 2708'},
+  {t:'Morning — SubhanAllah wa bihamdih',o:'Say 100× — Bukhari 6405',ar:'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ',en:'Glory be to Allah and praise be to Him.',so:'Bukhari 6405',vt:'"Whoever says SubhanAllah wa bihamdih 100× in the morning and evening, no one will come on the Day of Resurrection with better deeds — except one who said the same or more." — Muslim 2692'},
+],
+masa:[
+  {t:'Evening — Allahumma bika amsayna',o:'Every evening — Abu Dawud 5068',ar:'اللَّهُمَّ بِكَ أَمْسَيْنَا وَبِكَ أَصْبَحْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ الْمَصِيرُ',en:'O Allah, by You we enter the evening and by You we enter the morning, by You we live and by You we die, and unto You is the final destination.',so:'Abu Dawud 5068'},
+  {t:'Evening — Master Dua (Sayyid al-Istighfar)',o:'Say every evening — Bukhari 6306',ar:'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ لَكَ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ',en:'O Allah, You are my Lord, there is no god but You. You created me and I am Your servant. I am upon Your covenant and promise to the best of my ability. I seek refuge in You from the evil I have done. I acknowledge Your favour upon me, and I acknowledge my sin, so forgive me, for none forgives sins except You.',so:'Bukhari 6306',vt:'"Whoever says it in the evening with certainty and dies that night before morning shall be among the people of Paradise." — Bukhari 6306'},
+  {t:'Evening — Protection from Harm (3×)',o:'Say 3× every evening — Abu Dawud 5088',ar:'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ',en:'In the name of Allah with whose name nothing can cause harm on earth or in the heavens, and He is the All-Hearing, All-Knowing.',so:'Abu Dawud 5088'},
+  {t:'Evening — 10× La ilaha illallah',o:'Recite 10× after Maghrib — Tirmidhi 3474',ar:'لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',en:'None has the right to be worshipped but Allah, alone without partner. To Him belongs all sovereignty and praise, and He is over all things omnipotent.',so:'Tirmidhi 3474'},
+  {t:'Evening — Ask for Wellbeing (3×)',o:'Tirmidhi 3388',ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ',en:'O Allah, I ask You for pardon and well-being in this world and the next.',so:'Tirmidhi 3388'},
+  {t:'Evening — Hasbiyallah (7×)',o:'Say 7× morning & evening — Abu Dawud 5075',ar:'حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ',en:'Allah is sufficient for me; there is no god but He. In Him I put my trust, and He is the Lord of the Mighty Throne.',so:'Abu Dawud 5075'},
+  {t:'Evening — Gratitude for Blessings',o:'Abu Dawud 5073',ar:'اللَّهُمَّ مَا أَمْسَى بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ',en:'O Allah, whatever blessing I or any of Your creation received this evening is from You alone, with no partner. So to You is all praise and to You is all gratitude.',so:'Abu Dawud 5073'},
+  {t:'Al-Ikhlas, Al-Falaq, An-Nas (3×)',o:'Every evening — Abu Dawud 5082',ar:'قُلْ هُوَ اللَّهُ أَحَدٌ ۝ قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ قُلْ أَعُوذُ بِرَبِّ النَّاسِ',en:'Recite: Al-Ikhlas, Al-Falaq, An-Nas — each three times.',so:'Abu Dawud 5082'},
+  {t:'Ayat al-Kursi',o:'Every evening — Bukhari 2311',ar:'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ',en:'Allah — there is no deity except Him, the Ever-Living, the Sustainer. (Recite full Ayat al-Kursi — Quran 2:255)',so:'Quran 2:255'},
+  {t:'Evening — Seek Refuge (3×)',o:'Muslim 2708',ar:'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ',en:'I seek refuge in the perfect words of Allah from the evil of what He has created.',so:'Muslim 2708'},
+],
+salah:[
+  {t:'Seeking Forgiveness (3×)',o:'After every salah — Muslim 591',ar:'أَسْتَغْفِرُ اللَّهَ',en:'I seek forgiveness from Allah. (3×)',so:'Muslim 591'},
+  {t:'SubhanAllah · Alhamdulillah · Allahu Akbar',o:'33× each after every prayer — Muslim 597',ar:'سُبْحَانَ اللَّهِ ۝ الْحَمْدُ لِلَّهِ ۝ اللَّهُ أَكْبَرُ',en:'Glory be to Allah (33×) · All praise is for Allah (33×) · Allah is the Greatest (33×) then: La ilaha illallah wahdahu la sharika lahu, lahu l-mulku wa lahu l-hamd, wa huwa ala kulli shay\'in qadir (1×)',so:'Muslim 597'},
+  {t:'After Salah — Best Dua',o:'Abu Dawud 1522',ar:'اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ',en:'O Allah, help me to remember You, to give thanks to You, and to worship You in an excellent manner.',so:'Abu Dawud 1522'},
+  {t:'Ayat al-Kursi After Fard',o:'After every obligatory prayer — Nasa\'i (Sahih)',ar:'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ',en:'Recite Ayat al-Kursi (2:255) after every obligatory prayer.',so:'Nasa\'i (Sahih)',vt:'"Whoever recites Ayat al-Kursi after every obligatory prayer — nothing stands between him and Paradise except death." — Nasa\'i'},
+  {t:'Dua after Tashahhud (before Salam)',o:'Bukhari 833',ar:'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ وَمِنْ عَذَابِ النَّارِ وَمِنْ فِتْنَةِ الْمَحْيَا وَالْمَمَاتِ وَمِنْ شَرِّ فِتْنَةِ الْمَسِيحِ الدَّجَّالِ',en:'O Allah, I seek refuge in You from the punishment of the grave, the punishment of Hellfire, the trials of life and death, and the evil trial of the False Messiah.',so:'Bukhari 833'},
+  {t:'Durood Ibrahim',o:'Recite after every salah',ar:'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ',en:'O Allah, send blessings upon Muhammad and the family of Muhammad, as You sent blessings upon Ibrahim and the family of Ibrahim. Truly You are Praiseworthy and Glorious. O Allah, bless Muhammad and the family of Muhammad as You blessed Ibrahim and the family of Ibrahim. Truly You are Praiseworthy and Glorious.',so:'Bukhari 3370'},
+],
+nawm:[
+  {t:'Before Sleeping',o:'Every night — Bukhari 6311',ar:'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا',en:'In Your name, O Allah, I die and I live.',so:'Bukhari 6311'},
+  {t:'Ayat al-Kursi Before Sleep',o:'Bukhari 2311',ar:'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ',en:'Recite Ayat al-Kursi (2:255) before sleeping.',so:'Bukhari 2311',vt:'"A guardian from Allah will keep watch over you and Shaytan will not come near you until morning." — Bukhari 2311'},
+  {t:'Al-Ikhlas, Al-Falaq, An-Nas Before Sleep',o:'Bukhari 5017',ar:'قُلْ هُوَ اللَّهُ أَحَدٌ ۝ قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ قُلْ أَعُوذُ بِرَبِّ النَّاسِ',en:'Blow into cupped hands after reciting each, then wipe over the body — starting with the head, face and front of the body. Repeat 3×.',so:'Bukhari 5017'},
+  {t:'SubhanAllah · Alhamdulillah · Allahu Akbar',o:'33 · 33 · 34 times before sleep — Bukhari 5362',ar:'سُبْحَانَ اللَّهِ ۝ الْحَمْدُ لِلَّهِ ۝ اللَّهُ أَكْبَرُ',en:'SubhanAllah 33× · Alhamdulillah 33× · Allahu Akbar 34× before sleeping.',so:'Bukhari 5362',vt:'"This is better for you than a servant." — Bukhari 5362'},
+  {t:'Entrust Yourself to Allah',o:'Muslim 2710',ar:'اللَّهُمَّ أَسْلَمْتُ نَفْسِي إِلَيْكَ، وَفَوَّضْتُ أَمْرِي إِلَيْكَ، وَوَجَّهْتُ وَجْهِي إِلَيْكَ، وَأَلْجَأْتُ ظَهْرِي إِلَيْكَ، رَغْبَةً وَرَهْبَةً إِلَيْكَ، لَا مَلْجَأَ وَلَا مَنْجَى مِنْكَ إِلَّا إِلَيْكَ، آمَنْتُ بِكِتَابِكَ الَّذِي أَنْزَلْتَ، وَبِنَبِيِّكَ الَّذِي أَرْسَلْتَ',en:'O Allah, I submit myself to You, I entrust my affairs to You, I turn my face toward You, and I lay myself down depending upon You, in hope and fear of You. There is no refuge or escape from You except to You. I believe in Your Book that You revealed and Your Prophet that You sent.',so:'Muslim 2710',vt:'"If you die that night you will die upon the fitrah." — Muslim 2710'},
+  {t:'Before Sleeping — Al-Kafirun',o:'Tirmidhi 3403',ar:'قُلْ يَا أَيُّهَا الْكَافِرُونَ',en:'Recite Surah Al-Kafirun (Chapter 109) before sleeping. It is a declaration of freedom from shirk.',so:'Tirmidhi 3403'},
+],
+daily:[
+  {t:'Entering the Home',o:'Muslim 2018',ar:'بِسْمِ اللَّهِ وَلَجْنَا، وَبِسْمِ اللَّهِ خَرَجْنَا، وَعَلَى اللَّهِ رَبِّنَا تَوَكَّلْنَا',en:'In the name of Allah we enter, in the name of Allah we leave, and upon Allah our Lord we rely.',so:'Muslim 2018'},
+  {t:'Leaving the Home',o:'Abu Dawud 5095',ar:'بِسْمِ اللَّهِ، تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',en:'In the name of Allah, I place my trust in Allah, and there is no might or power except with Allah.',so:'Abu Dawud 5095',vt:'"It will be said to him: You are guided, protected and provided for, and the Shaytan moves away from him." — Abu Dawud 5095'},
+  {t:'Before Eating',o:'Abu Dawud 3767',ar:'بِسْمِ اللَّهِ',en:'In the name of Allah. (If you forget, say: Bismillahi awwalahu wa akhirahu — In Allah\'s name at its beginning and end.)',so:'Abu Dawud 3767'},
+  {t:'After Eating',o:'Abu Dawud 3849',ar:'الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنِي هَذَا وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ',en:'All praise is for Allah who fed me this and provided it for me without any might or power on my part.',so:'Abu Dawud 3849',vt:'"His previous sins will be forgiven." — Abu Dawud 3849'},
+  {t:'Entering the Masjid',o:'Muslim 713',ar:'اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ',en:'O Allah, open for me the gates of Your mercy.',so:'Muslim 713'},
+  {t:'Leaving the Masjid',o:'Muslim 713',ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ',en:'O Allah, I ask You of Your bounty.',so:'Muslim 713'},
+  {t:'Entering the Bathroom',o:'Bukhari 142',ar:'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ',en:'O Allah, I seek refuge in You from the male and female evil ones (jinn).',so:'Bukhari 142'},
+  {t:'When Looking in the Mirror',o:'Ibn al-Sunni 168',ar:'اللَّهُمَّ أَنْتَ حَسَّنْتَ خَلْقِي فَحَسِّنْ خُلُقِي',en:'O Allah, just as You made my external form beautiful, make my character beautiful as well.',so:'Ibn al-Sunni 168'},
+  {t:'When Sneezing',o:'Bukhari 6224',ar:'الْحَمْدُ لِلَّهِ',en:'Alhamdulillah. The listener replies: Yarhamukallah (May Allah have mercy on you). The sneezer replies: Yahdikumullahu wa yuslihu balakum (May Allah guide you and set your affairs in order).',so:'Bukhari 6224'},
+  {t:'Dua for Parents',o:'Quran 17:24',ar:'رَبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا',en:'My Lord, have mercy on them both as they raised me when I was small.',so:'Quran 17:24',ay:true},
+],
+travel:[
+  {t:'Leaving Home for Journey',o:'Abu Dawud 5095',ar:'بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، اللَّهُمَّ إِنِّي أَعُوذُ بِكَ أَنْ أَضِلَّ أَوْ أُضَلَّ، أَوْ أَزِلَّ أَوْ أُزَلَّ، أَوْ أَظْلِمَ أَوْ أُظْلَمَ، أَوْ أَجْهَلَ أَوْ يُجْهَلَ عَلَيَّ',en:'In the name of Allah, I place my trust in Allah. O Allah, I seek refuge in You from going astray or being led astray, from slipping or being tripped, from wronging or being wronged, from acting foolishly or being treated foolishly.',so:'Abu Dawud 5095'},
+  {t:'Boarding a Vehicle',o:'Quran 43:13',ar:'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ، وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ',en:'Glory be to He who has subjected this to us, and we could not have done it ourselves. And indeed, to our Lord we will return.',so:'Quran 43:13',ay:true},
+  {t:'Dua for the Traveller',o:'Abu Dawud 2600',ar:'أَسْتَوْدِعُكَ اللَّهَ الَّذِي لَا تَضِيعُ وَدَائِعُهُ',en:'I entrust you to Allah, whose trusts are never lost.',so:'Abu Dawud 2600'},
+  {t:'Entering a New Town or City',o:'Muslim 1342',ar:'اللَّهُمَّ بَارِكْ لَنَا فِيهَا',en:'O Allah, bless us in it. (Then ask for its good, and seek refuge from its evil.)',so:'Muslim 1342'},
+  {t:'Returning Home from Travel',o:'Bukhari 3085',ar:'آيِبُونَ تَائِبُونَ عَابِدُونَ، لِرَبِّنَا حَامِدُونَ',en:'We are returning, repenting, worshipping, and to our Lord, grateful.',so:'Bukhari 3085'},
+],
+distress:[
+  {t:'Dua of Yunus ﷺ — In Darkness',o:'Tirmidhi 3505 — recite in any distress',ar:'لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ',en:'There is no deity except You; glory be to You. Indeed, I have been among the wrongdoers.',so:'Quran 21:87 / Tirmidhi 3505',ay:true,vt:'"No Muslim ever prays to his Lord with these words for anything except Allah responds to him." — Tirmidhi 3505'},
+  {t:'Relief from Worry & Grief',o:'Abu Dawud 1555',ar:'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ',en:'O Allah, I seek refuge in You from anxiety and sorrow, from weakness and laziness, from cowardice and miserliness, and from the overpowering of debt and the oppression of people.',so:'Abu Dawud 1555'},
+  {t:'Trust in Allah Alone',o:'Quran 3:173',ar:'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ',en:'Allah is sufficient for us, and He is the best Disposer of affairs.',so:'Quran 3:173',ay:true,vt:'Ibrahim ﷺ said this when thrown into the fire. The Prophet ﷺ said it too. — Bukhari 4563'},
+  {t:'No Power Except with Allah',o:'Bukhari 6384',ar:'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',en:'There is no might nor power except with Allah.',so:'Bukhari 6384',vt:'"It is a treasure from the treasures of Paradise." — Bukhari 6384'},
+  {t:'Dua of Ayyub ﷺ — In Hardship',o:'Quran 21:83',ar:'رَبِّ إِنِّي مَسَّنِيَ الضُّرُّ وَأَنتَ أَرْحَمُ الرَّاحِمِينَ',en:'My Lord, adversity has touched me, and You are the Most Merciful of the merciful.',so:'Quran 21:83',ay:true},
+  {t:'Dua of Yaqub ﷺ — Grief',o:'Quran 12:86',ar:'إِنَّمَا أَشْكُو بَثِّي وَحُزْنِي إِلَى اللَّهِ',en:'I only complain of my suffering and my grief to Allah.',so:'Quran 12:86',ay:true},
+  {t:'When Things Feel Impossible',o:'Bukhari 6346',ar:'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الْحَزْنَ إِذَا شِئْتَ سَهْلًا',en:'O Allah, there is no ease except what You make easy, and You make the difficult easy when You will.',so:'Ibn Hibban (Sahih)'},
+],
+tawbah:[
+  {t:'Sayyid al-Istighfar — Master Forgiveness Dua',o:'Every morning and evening — Bukhari 6306',ar:'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ لَكَ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ',en:'O Allah, You are my Lord, there is no god but You. You created me and I am Your servant. I am upon Your covenant and promise to the best of my ability. I seek refuge in You from the evil I have done. I acknowledge Your favour upon me, and I acknowledge my sin, so forgive me, for none forgives sins except You.',so:'Bukhari 6306'},
+  {t:'Simple Istighfar',o:'Repeat abundantly — Bukhari 6307',ar:'أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ',en:'I seek forgiveness from Allah and I repent to Him.',so:'Bukhari 6307',vt:'"I seek Allah\'s forgiveness 100 times a day." — The Prophet ﷺ, Bukhari 6307'},
+  {t:'Complete Tawbah Dua',o:'Quran 7:23',ar:'رَبَّنَا ظَلَمْنَا أَنفُسَنَا وَإِن لَّمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ الْخَاسِرِينَ',en:'Our Lord, we have wronged ourselves. If You do not forgive us and have mercy upon us, we will surely be among the losers.',so:'Quran 7:23',ay:true},
+  {t:'Forgiveness for Everything',o:'Tirmidhi 3513',ar:'اللَّهُمَّ اغْفِرْ لِي مَا قَدَّمْتُ وَمَا أَخَّرْتُ، وَمَا أَسْرَرْتُ وَمَا أَعْلَنْتُ، وَمَا أَسْرَفْتُ، وَمَا أَنْتَ أَعْلَمُ بِهِ مِنِّي، أَنْتَ الْمُقَدِّمُ وَأَنْتَ الْمُؤَخِّرُ لَا إِلَهَ إِلَّا أَنْتَ',en:'O Allah, forgive me what I have put forward and what I have left behind, what I have concealed and what I have made public, and what I have exceeded in, and what You know better than I. You are the Advancer and the Delayer. There is no deity except You.',so:'Muslim 771'},
+  {t:'Dua for Forgiveness — Yunus ﷺ',o:'Tirmidhi 3505',ar:'لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ',en:'There is no deity except You; glory be to You. Indeed, I have been among the wrongdoers.',so:'Quran 21:87',ay:true},
+  {t:'Allah Loves Forgiveness',o:'Tirmidhi 3513',ar:'اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي',en:'O Allah, You are the Pardoner and You love pardon, so pardon me.',so:'Tirmidhi 3513',vt:'Aisha رضي الله عنها asked: "What should I say on Laylat al-Qadr?" The Prophet ﷺ replied with this dua. — Tirmidhi 3513'},
+],
+health:[
+  {t:'Ruqyah — Al-Fatiha',o:'Bukhari 5736',ar:'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ ۝ الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',en:'Recite Surah Al-Fatiha (the Opening) with intention of healing. Blow on the affected area.',so:'Bukhari 5736',vt:'"And what made you know that Al-Fatiha is a ruqyah?" — Bukhari 5736'},
+  {t:'Complete Protection (3×)',o:'Abu Dawud 5088',ar:'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ',en:'In the name of Allah with whose name nothing can cause harm on earth or in the heavens, and He is the All-Hearing, All-Knowing.',so:'Abu Dawud 5088'},
+  {t:'Dua for Healing of the Body',o:'Abu Dawud 3106',ar:'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَهَ إِلَّا أَنْتَ',en:'O Allah, grant me health in my body. O Allah, grant me health in my hearing. O Allah, grant me health in my sight. There is no deity except You.',so:'Abu Dawud 3106'},
+  {t:'When Visiting the Sick',o:'Bukhari 5675',ar:'اللَّهُمَّ رَبَّ النَّاسِ أَذْهِبِ الْبَأْسَ، اشْفِ أَنْتَ الشَّافِي لَا شِفَاءَ إِلَّا شِفَاؤُكَ شِفَاءً لَا يُغَادِرُ سَقَمًا',en:'O Allah, Lord of mankind, remove the difficulty and grant healing — You are the Healer, there is no healing except Your healing, a healing that leaves no trace of illness.',so:'Bukhari 5675'},
+  {t:'Ruqyah — Self-Healing',o:'Muslim 2202',ar:'أَعُوذُ بِعِزَّةِ اللَّهِ وَقُدْرَتِهِ مِنْ شَرِّ مَا أَجِدُ وَأُحَاذِرُ',en:'I seek refuge in Allah\'s might and power from the evil of what I feel and what I fear.',so:'Muslim 2202',vt:'Place your hand on the area of pain and say 7×.'},
+],
+quran:[
+  {t:'For Beneficial Knowledge',o:'Quran 20:114',ar:'رَبِّ زِدْنِي عِلْمًا',en:'My Lord, increase me in knowledge.',so:'Quran 20:114',ay:true},
+  {t:'For Good in Both Worlds',o:'Quran 2:201',ar:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',en:'Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.',so:'Quran 2:201',ay:true},
+  {t:'For Sustenance & Contentment',o:'Quran 28:24',ar:'رَبِّ إِنِّي لِمَا أَنزَلْتَ إِلَيَّ مِنْ خَيْرٍ فَقِيرٌ',en:'My Lord, indeed I am in need of whatever good You send down to me.',so:'Quran 28:24',ay:true},
+  {t:'For a Righteous Family',o:'Quran 25:74',ar:'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا',en:'Our Lord, grant us from among our wives and offspring comfort to our eyes and make us an example for the righteous.',so:'Quran 25:74',ay:true},
+  {t:'For Guidance & Steadfastness',o:'Quran 3:8',ar:'رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِن لَّدُنكَ رَحْمَةً ۚ إِنَّكَ أَنتَ الْوَهَّابُ',en:'Our Lord, do not let our hearts deviate after You have guided us, and grant us from Yourself mercy. Indeed, You are the Bestower.',so:'Quran 3:8',ay:true},
+  {t:'Dua of Musa ﷺ — For Help',o:'Quran 28:24',ar:'رَبِّ إِنِّي لِمَا أَنزَلْتَ إِلَيَّ مِنْ خَيْرٍ فَقِيرٌ',en:'My Lord, truly I am in need of whatever good you send down to me.',so:'Quran 28:24',ay:true},
+  {t:'For Gratitude',o:'Quran 27:19',ar:'رَبِّ أَوْزِعْنِي أَنْ أَشْكُرَ نِعْمَتَكَ الَّتِي أَنْعَمْتَ عَلَيَّ وَعَلَى وَالِدَيَّ وَأَنْ أَعْمَلَ صَالِحًا تَرْضَاهُ',en:'My Lord, enable me to be grateful for Your favour which You have bestowed upon me and upon my parents, and to do good deeds that will please You.',so:'Quran 27:19',ay:true},
+  {t:'For Allah\'s Mercy',o:'Quran 2:286',ar:'رَبَّنَا لَا تُؤَاخِذْنَا إِن نَّسِينَا أَوْ أَخْطَأْنَا ۚ رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَا إِصْرًا كَمَا حَمَلْتَهُ عَلَى الَّذِينَ مِن قَبْلِنَا',en:'Our Lord, do not impose blame upon us if we forget or make an error. Our Lord, lay not upon us a burden like that which You laid upon those before us.',so:'Quran 2:286',ay:true},
+],
+special:[
+  {t:'Laylat al-Qadr',o:'Tirmidhi 3513 — The Night of Power',ar:'اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي',en:'O Allah, You are the Pardoner and You love pardon, so pardon me.',so:'Tirmidhi 3513'},
+  {t:'Dua at Arafat',o:'Tirmidhi 3585 — Best dua of Arafat day',ar:'لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',en:'None has the right to be worshipped except Allah, alone without partner. To Him belongs all sovereignty and praise, and He is over all things competent.',so:'Tirmidhi 3585',vt:'"The best supplication is the supplication of the Day of Arafah." — Tirmidhi 3585'},
+  {t:'Opening Dua in Salah (Istiftah)',o:'Muslim 601',ar:'سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ وَتَبَارَكَ اسْمُكَ وَتَعَالَى جَدُّكَ وَلَا إِلَهَ غَيْرُكَ',en:'Glory be to You, O Allah, and praise. Blessed is Your name and exalted is Your majesty, and there is no god other than You.',so:'Muslim 601'},
+  {t:'Dua Before Making Dua',o:'Abu Dawud 1481',ar:'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ، وَالصَّلَاةُ وَالسَّلَامُ عَلَى مُحَمَّدٍ',en:'Begin dua with praise of Allah, then send salawat on the Prophet ﷺ, then ask what you need.',so:'Abu Dawud 1481',vt:'"Every dua is suspended until you send salawat on the Prophet." — Tirmidhi 486'},
+  {t:'Dua Between Adhan and Iqamah',o:'Abu Dawud 521',ar:'اللَّهُمَّ رَبَّ هَذِهِ الدَّعْوَةِ التَّامَّةِ وَالصَّلَاةِ الْقَائِمَةِ آتِ مُحَمَّدًا الْوَسِيلَةَ وَالْفَضِيلَةَ',en:'O Allah, Lord of this perfect call and established prayer, grant Muhammad the intercession and favour.',so:'Bukhari 614'},
+  {t:'Drinking Zamzam',o:'Ibn al-Sunni',ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا وَرِزْقًا وَاسِعًا وَشِفَاءً مِنْ كُلِّ دَاءٍ',en:'O Allah, I ask You for beneficial knowledge, abundant provision, and healing from every illness.',so:'Ibn al-Sunni'},
+]
+};
+
+// ── Morning / Evening Azkar Sets ───────────────────────────────
+const AZK={
+sabah:[
+  {ar:'أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ ۝ اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ',en:'Seek refuge from Shaytan, then recite Ayat al-Kursi (2:255) — 1×',so:'Bukhari 2311',rep:1,done:0},
+  {ar:'قُلْ هُوَ اللَّهُ أَحَدٌ',en:'Al-Ikhlas — 3×',so:'Abu Dawud 5082',rep:3,done:0},
+  {ar:'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ',en:'Al-Falaq — 3×',so:'Abu Dawud 5082',rep:3,done:0},
+  {ar:'قُلْ أَعُوذُ بِرَبِّ النَّاسِ',en:'An-Nas — 3×',so:'Abu Dawud 5082',rep:3,done:0},
+  {ar:'اللَّهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ',en:'O Allah, by You we enter the morning and by You we enter the evening... — 1×',so:'Abu Dawud 5068',rep:1,done:0},
+  {ar:'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ',en:'Sayyid al-Istighfar (Master Forgiveness Dua) — 1×',so:'Bukhari 6306',rep:1,done:0},
+  {ar:'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ',en:'Bismillah alladhi la yadurru... — 3×',so:'Abu Dawud 5088',rep:3,done:0},
+  {ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ',en:'O Allah, I ask You for pardon and well-being in this world and the next — 3×',so:'Tirmidhi 3388',rep:3,done:0},
+  {ar:'لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',en:'La ilaha illallah wahdahu... — 10×',so:'Tirmidhi 3474',rep:10,done:0},
+  {ar:'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ',en:'SubhanAllah wa bihamdih — 100×',so:'Muslim 2692',rep:100,done:0},
+  {ar:'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ',en:'A\'udhu bi kalimatillah il-tammat... — 3×',so:'Muslim 2708',rep:3,done:0},
+  {ar:'حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ',en:'Hasbiyallahu la ilaha illa hu... — 7×',so:'Abu Dawud 5075',rep:7,done:0},
+],
+masa:[
+  {ar:'أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ ۝ اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ',en:'Ayat al-Kursi — 1×',so:'Bukhari 2311',rep:1,done:0},
+  {ar:'قُلْ هُوَ اللَّهُ أَحَدٌ',en:'Al-Ikhlas — 3×',so:'Abu Dawud 5082',rep:3,done:0},
+  {ar:'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ',en:'Al-Falaq — 3×',so:'Abu Dawud 5082',rep:3,done:0},
+  {ar:'قُلْ أَعُوذُ بِرَبِّ النَّاسِ',en:'An-Nas — 3×',so:'Abu Dawud 5082',rep:3,done:0},
+  {ar:'اللَّهُمَّ بِكَ أَمْسَيْنَا وَبِكَ أَصْبَحْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ الْمَصِيرُ',en:'O Allah, by You we enter the evening... — 1×',so:'Abu Dawud 5068',rep:1,done:0},
+  {ar:'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ',en:'Sayyid al-Istighfar — 1×',so:'Bukhari 6306',rep:1,done:0},
+  {ar:'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ',en:'Bismillah alladhi la yadurru... — 3×',so:'Abu Dawud 5088',rep:3,done:0},
+  {ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ',en:'O Allah, I ask for pardon and well-being — 3×',so:'Tirmidhi 3388',rep:3,done:0},
+  {ar:'لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',en:'La ilaha illallah wahdahu... — 10×',so:'Tirmidhi 3474',rep:10,done:0},
+  {ar:'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ',en:'SubhanAllah wa bihamdih — 100×',so:'Muslim 2692',rep:100,done:0},
+  {ar:'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ',en:'A\'udhu bi kalimatillah... — 3×',so:'Muslim 2708',rep:3,done:0},
+  {ar:'اللَّهُمَّ مَا أَمْسَى بِي مِنْ نِعْمَةٍ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ',en:'O Allah, whatever blessing I received this evening is from You alone... — 1×',so:'Abu Dawud 5073',rep:1,done:0},
+]
+};
+
+// ── Tasbih ─────────────────────────────────────────────────────
+const TZ=[
+  {ar:'سُبْحَانَ اللَّهِ',l:'SubhanAllah',en:'Glory be to Allah',tg:[33,100],vt:'Bukhari 6405'},
+  {ar:'الْحَمْدُ لِلَّهِ',l:'Alhamdulillah',en:'All praise is for Allah',tg:[33,100],vt:'Muslim 597'},
+  {ar:'اللَّهُ أَكْبَرُ',l:'Allahu Akbar',en:'Allah is the Greatest',tg:[33,34,100],vt:'Muslim 597'},
+  {ar:'لَا إِلَهَ إِلَّا اللَّهُ',l:'La ilaha illallah',en:'There is no god but Allah',tg:[100],vt:'Tirmidhi 3553'},
+  {ar:'أَسْتَغْفِرُ اللَّهَ',l:'Astaghfirullah',en:'I seek forgiveness from Allah',tg:[70,100],vt:'Bukhari 6307'},
+  {ar:'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',l:'La hawla wa la quwwata',en:'No might except with Allah',tg:[100],vt:'Bukhari 6384'},
+  {ar:'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ',l:'SubhanAllah wa bihamdih',en:'Glory and praise to Allah',tg:[100],vt:'Muslim 2692'},
+  {ar:'سُبْحَانَ اللَّهِ الْعَظِيمِ',l:'SubhanAllahil-Azim',en:'Glory to Allah the Magnificent',tg:[100],vt:'Bukhari 6682'},
+  {ar:'اَللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ',l:'Allahumma salli ala Muhammad',en:'O Allah, send blessings on Muhammad ﷺ',tg:[100,1000],vt:'Muslim 408'},
+];
+
+// ── State ──────────────────────────────────────────────────────
+let cat=localStorage.getItem('dd-cat')||'sabah';
+let favs=JSON.parse(localStorage.getItem('dd-favs')||'[]');
+let theme=localStorage.getItem('dd-theme')||'dark';
+let azkSet=localStorage.getItem('dd-azk')||'sabah';
+let azkState=JSON.parse(localStorage.getItem('dd-azkst')||'{}');
+let ti=+localStorage.getItem('dd-ti')||0;
+let tc=+localStorage.getItem('dd-tc')||0;
+let tt=+localStorage.getItem('dd-tt')||0;
+let tgt=+localStorage.getItem('dd-tgt')||33;
+let deferredPrompt;
+const C=565.5;
+
+if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();
+if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;});
+
+function applyTheme(){document.documentElement.classList.toggle('light',theme==='light');document.getElementById('themeBtn').textContent=theme==='light'?'🌙':'☀';}
+function toggleTheme(){theme=theme==='dark'?'light':'dark';localStorage.setItem('dd-theme',theme);applyTheme();}
+function installApp(){
+  if(deferredPrompt){deferredPrompt.prompt();deferredPrompt=null;return;}
+  alert('To install:\n\nAndroid Chrome: ⋮ menu → Add to Home screen\n\niOS Safari: Share → Add to Home Screen');
+}
+function sw(p){
+  document.querySelectorAll('.pnl').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  document.getElementById('panel-'+p).classList.add('on');
+  document.querySelector(`[data-p="${p}"]`).classList.add('on');
+}
+
+// ── Duas ───────────────────────────────────────────────────────
+function isFav(cat,idx){return favs.some(f=>f.cat===cat&&f.idx===idx);}
+function toggleFav(cat,idx){
+  const i=favs.findIndex(f=>f.cat===cat&&f.idx===idx);
+  if(i>=0)favs.splice(i,1);else favs.push({cat,idx});
+  localStorage.setItem('dd-favs',JSON.stringify(favs));
+  document.querySelector(`[data-fav="${cat}-${idx}"]`)?.classList.toggle('on',isFav(cat,idx));
+}
+function togDua(id){document.getElementById(id)?.classList.toggle('op');}
+function renderCats(){
+  document.getElementById('catPills').innerHTML=CATS.map(c=>`<button class="pll${c.id===cat?' on':''}" onclick="selCat('${c.id}')">${c.l}</button>`).join('');
+}
+function selCat(id){cat=id;localStorage.setItem('dd-cat',id);renderCats();renderDuas();}
+function renderDuas(){
+  const list=D[cat]||[];
+  document.getElementById('duaList').innerHTML=list.map((d,i)=>{
+    const fv=isFav(cat,i);
+    return`<div class="dcrd gl${d.ay?' ayat':''}" id="dc-${cat}-${i}">
+      <div class="dcrd-hdr" onclick="togDua('dc-${cat}-${i}')">
+        <div><div class="dtl">${d.t}</div><div class="docc">${d.o}</div></div>
+        <button class="dfav${fv?' on':''}" data-fav="${cat}-${i}" onclick="event.stopPropagation();toggleFav('${cat}',${i})">${fv?'⭐':'☆'}</button>
+      </div>
+      <div class="dbody">
+        <div class="dar">${d.ar}</div>
+        <div class="den">${d.en}</div>
+        ${d.ur?`<div class="dur">${d.ur}</div>`:''}
+        <div class="dso">— ${d.so}</div>
+        ${d.vt?`<div class="dvt">${d.vt}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderFavs(){
+  const el=document.getElementById('favList');
+  if(!favs.length){el.innerHTML='<div class="emp">☆<br>Tap the star on any dua to save it here.<br>Access your favourites instantly.</div>';return;}
+  el.innerHTML=favs.map(f=>{
+    const d=(D[f.cat]||[])[f.idx];
+    if(!d)return'';
+    return`<div class="dcrd gl${d.ay?' ayat':''}" id="fv-${f.cat}-${f.idx}">
+      <div class="dcrd-hdr" onclick="togDua('fv-${f.cat}-${f.idx}')">
+        <div><div class="dtl">${d.t}</div><div class="docc">${CATS.find(c=>c.id===f.cat)?.l||''} · ${d.o}</div></div>
+        <button class="dfav on" onclick="event.stopPropagation();toggleFav('${f.cat}',${f.idx});renderFavs()">⭐</button>
+      </div>
+      <div class="dbody">
+        <div class="dar">${d.ar}</div>
+        <div class="den">${d.en}</div>
+        ${d.ur?`<div class="dur">${d.ur}</div>`:''}
+        <div class="dso">— ${d.so}</div>
+        ${d.vt?`<div class="dvt">${d.vt}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Azkar ──────────────────────────────────────────────────────
+function selAzk(s){
+  azkSet=s;localStorage.setItem('dd-azk',s);
+  document.getElementById('btnSabah').classList.toggle('on',s==='sabah');
+  document.getElementById('btnMasa').classList.toggle('on',s==='masa');
+  renderAzk();
+}
+function getAzkState(set,i){return azkState[`${set}-${i}`]||0;}
+function tapAzk(set,i){
+  const rep=AZK[set][i].rep;
+  const cur=getAzkState(set,i);
+  const next=Math.min(cur+1,rep);
+  azkState[`${set}-${i}`]=next;
+  localStorage.setItem('dd-azkst',JSON.stringify(azkState));
+  const card=document.getElementById(`azk-${set}-${i}`);
+  if(card){
+    card.querySelector('.azk-prog').textContent=next;
+    if(next>=rep)card.classList.add('done');
+  }
+}
+function resetAzk(set,i){
+  azkState[`${set}-${i}`]=0;
+  localStorage.setItem('dd-azkst',JSON.stringify(azkState));
+  const card=document.getElementById(`azk-${set}-${i}`);
+  if(card){card.querySelector('.azk-prog').textContent=0;card.classList.remove('done');}
+}
+function resetAllAzk(){
+  Object.keys(azkState).filter(k=>k.startsWith(azkSet)).forEach(k=>delete azkState[k]);
+  localStorage.setItem('dd-azkst',JSON.stringify(azkState));
+  renderAzk();
+}
+function renderAzk(){
+  document.getElementById('azkList').innerHTML=AZK[azkSet].map((a,i)=>{
+    const cur=getAzkState(azkSet,i),done=cur>=a.rep;
+    return`<div class="azk-crd gl${done?' done':''}" id="azk-${azkSet}-${i}">
+      <div class="azk-num">${i+1} of ${AZK[azkSet].length} · ${a.so}</div>
+      <div class="azk-ar">${a.ar}</div>
+      <div class="azk-en">${a.en}</div>
+      <div class="azk-cnt">
+        <button class="azk-tap" onclick="tapAzk('${azkSet}',${i})">${done?'✓ Done':'Tap to count'}</button>
+        <div class="azk-prog">${cur}</div>
+        <span class="azk-tot">/ ${a.rep}</span>
+        <button class="azk-rst" onclick="resetAzk('${azkSet}',${i})">↺</button>
+      </div>
+    </div>`;
+  }).join('')+`<button class="azk-rst" style="display:block;width:100%;padding:10px;margin-top:4px;border-radius:var(--rs)" onclick="resetAllAzk()">↺ Reset All ${azkSet==='sabah'?'Morning':'Evening'} Adhkar</button>`;
+}
+
+// ── Tasbih ─────────────────────────────────────────────────────
+function saveTb(){localStorage.setItem('dd-ti',ti);localStorage.setItem('dd-tc',tc);localStorage.setItem('dd-tt',tt);localStorage.setItem('dd-tgt',tgt);}
+function updateRing(){
+  const o=C*(1-Math.min(tc/tgt,1));
+  document.getElementById('rpg').style.strokeDashoffset=o;
+  document.getElementById('tc').textContent=tc;
+  document.getElementById('tsess').textContent=tc;
+  document.getElementById('ttot').textContent=tt;
+}
+function tap(){
+  tc++;tt++;
+  if(navigator.vibrate)navigator.vibrate(8);
+  if(tc>=tgt){document.getElementById('rpg').style.stroke='var(--g1)';setTimeout(()=>{tc=0;updateRing();saveTb();},600);}
+  else{updateRing();saveTb();}
+}
+function setTgt(t){tgt=t;saveTb();renderTbTgts();updateRing();}
+function selTz(i){ti=i;tc=0;saveTb();renderTbMain();renderTbTgts();renderTbSel();updateRing();}
+function resetTb(){tc=0;tt=0;saveTb();updateRing();}
+function renderTbMain(){
+  const z=TZ[ti];
+  document.getElementById('tbMain').innerHTML=`
+    <div style="padding:16px;text-align:center">
+      <div class="tb-ar">${z.ar}</div>
+      <div class="tb-l">${z.l}</div>
+      <div class="tb-en">${z.en}</div>
+      <div class="tb-ring">
+        <svg viewBox="0 0 200 200"><circle class="rbg" cx="100" cy="100" r="90"/><circle class="rpg" id="rpg" cx="100" cy="100" r="90"/></svg>
+        <button class="tb-btn" onclick="tap()">
+          <div class="tb-cnt" id="tc">${tc}</div>
+          <div class="tb-sub">tap</div>
+        </button>
+      </div>
+    </div>`;
+  updateRing();
+}
+function renderTbTgts(){
+  document.getElementById('tTgts').innerHTML=TZ[ti].tg.map(t=>`<button class="tb-tgt${t===tgt?' on':''}" onclick="setTgt(${t})">${t}</button>`).join('');
+}
+function renderTbSel(){
+  document.getElementById('tbSel').innerHTML=TZ.map((z,i)=>`<div class="tb-z${i===ti?' on':''}" onclick="selTz(${i})"><div class="tb-z-ar">${z.ar}</div><div class="tb-z-l">${z.l} · ${z.vt}</div></div>`).join('');
+}
+
+// ── Init ───────────────────────────────────────────────────────
+applyTheme();
+renderCats();
+renderDuas();
+renderAzk();
+renderTbMain();
+renderTbTgts();
+renderTbSel();
+renderFavs();
+</script>
+</body>
+</html>
