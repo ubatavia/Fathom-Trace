@@ -202,7 +202,7 @@ textarea.fin{resize:none;height:68px;line-height:1.5}
       <div class="hdr-sub">Hajj Companion · 1447 H</div>
     </div>
     <div class="hdr-btns">
-      <button class="hdr-btn" id="installBtn" onclick="installApp()" style="display:none">⬇ Install</button>
+      <button class="hdr-btn" id="installBtn" onclick="installApp()">⬇ Install</button>
       <button class="hdr-btn" id="themeBtn" onclick="toggleTheme()">☀</button>
     </div>
   </div>
@@ -492,7 +492,10 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPro
 // ── Theme ──────────────────────────────────────────────────────
 function applyTheme(){document.documentElement.classList.toggle('light',theme==='light');document.getElementById('themeBtn').textContent=theme==='light'?'🌙':'☀';}
 function toggleTheme(){theme=theme==='dark'?'light':'dark';localStorage.setItem('hj-theme',theme);applyTheme();}
-function installApp(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt=null;}}
+function installApp(){
+  if(deferredPrompt){deferredPrompt.prompt();deferredPrompt=null;return;}
+  alert('To install:\n\nAndroid: Tap ⋮ menu → "Add to Home screen"\n\niOS Safari: Tap Share → "Add to Home Screen"');
+}
 
 // ── Tabs ───────────────────────────────────────────────────────
 function sw(p){document.querySelectorAll('.pnl').forEach(x=>x.classList.remove('on'));document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));document.getElementById('panel-'+p).classList.add('on');document.querySelector(`[data-p="${p}"]`).classList.add('on');}
