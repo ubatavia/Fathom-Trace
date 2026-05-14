@@ -526,7 +526,25 @@ function renderJourney(){
   if(td)document.getElementById(td.id).classList.add('op');
 }
 function tog(id){document.getElementById(id).classList.toggle('op');}
-function togStep(k){jchk[k]=!jchk[k];if(!jchk[k])delete jchk[k];localStorage.setItem('hj-jchk',JSON.stringify(jchk));renderJourney();}
+function togStep(k){
+  jchk[k]=!jchk[k];
+  if(!jchk[k])delete jchk[k];
+  localStorage.setItem('hj-jchk',JSON.stringify(jchk));
+  const ck=!!jchk[k];
+  const btn=document.querySelector(`button[onclick="togStep('${k}')"]`);
+  if(btn){
+    btn.classList.toggle('dn',ck);
+    btn.textContent=ck?'✓':'';
+    btn.closest('.stp').classList.toggle('ck',ck);
+  }
+  const dId=k.substring(0,k.lastIndexOf('-'));
+  const day=J.find(d=>d.id===dId);
+  if(day){
+    const done=day.steps.filter((_,si)=>jchk[`${day.id}-${si}`]).length;
+    const card=document.getElementById(day.id);
+    if(card){const dn=card.querySelector('.dn');if(dn)dn.innerHTML=`${day.dt} · ${day.dy}<span style="font-size:10px;color:var(--mu);margin-left:6px">${done}/${day.steps.length}</span>`;}
+  }
+}
 function saveNote(id,v){notes[id]=v;localStorage.setItem('hj-notes',JSON.stringify(notes));}
 
 // ── Family ─────────────────────────────────────────────────────
