@@ -515,7 +515,7 @@ function renderJourney(){
     const fd=new Date(d.fd);const isT=fd.getTime()===now.getTime(),isP=fd<now;
     const steps=d.steps.map((s,si)=>{
       const k=`${d.id}-${si}`,ck=jchk[k];
-      return`<div class="stp${ck?' ck':''}"><button class="sck${ck?' dn':''}" onclick="togStep('${k}')">${ck?'✓':''}</button><div class="sb"><div class="st">${s.t}</div>${s.d?`<div class="sd">${s.d}</div>`:''}${s.ar?`<div class="sar">${s.ar}</div>`:''}${s.en?`<div class="sen">${s.en}</div>`:''}${s.ur?`<div class="sur">${s.ur}</div>`:''}${s.so?`<div class="sso">— ${s.so}</div>`:''}${s.nt?`<div class="snt">${s.nt}</div>`:''}</div></div>`;
+      return`<div class="stp${ck?' ck':''}"><button class="sck${ck?' dn':''}" onclick="togStep('${k}')">${ck?'✓':''}</button><div class="si">${s.i||'📌'}</div><div class="sb"><div class="st">${s.t}</div>${s.d?`<div class="sd">${s.d}</div>`:''}${s.ar?`<div class="sar">${s.ar}</div>`:''}${s.en?`<div class="sen">${s.en}</div>`:''}${s.ur?`<div class="sur">${s.ur}</div>`:''}${s.so?`<div class="sso">— ${s.so}</div>`:''}${s.nt?`<div class="snt">${s.nt}</div>`:''}</div></div>`;
     }).join('');
     const doneCount=d.steps.filter((_,si)=>jchk[`${d.id}-${si}`]).length;
     const prog=d.steps.length>0?`<span style="font-size:10px;color:var(--mu);margin-left:6px">${doneCount}/${d.steps.length}</span>`:'';
@@ -580,6 +580,7 @@ function renderFam(){
 function getDom(){
   const now=new Date(),d=now.toISOString().slice(0,10);
   const map=[
+    {from:'2000-01-01',to:'2026-05-15',cat:'travel',lbl:'Prepare your heart — Hajj begins soon'},
     {from:'2026-05-16',to:'2026-05-17',cat:'madinah',lbl:'You are in Madinah al-Munawwarah'},
     {from:'2026-05-18',to:'2026-05-18',cat:'umrah',lbl:'Umrah Day — Ihram & Tawaf'},
     {from:'2026-05-19',to:'2026-05-24',cat:'makkah',lbl:'Days in Makkah — seek extra worship'},
