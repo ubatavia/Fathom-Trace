@@ -1,0 +1,19 @@
+{
+  "name": "Dua & Dhikr — Daily Remembrance",
+  "short_name": "Dua & Dhikr",
+  "description": "Authentic duas, morning & evening adhkar, and tasbih counter.",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080d18",
+  "theme_color": "#c9a84c",
+  "categories": ["lifestyle", "religion"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%23080d18'/%3E%3Ctext x='256' y='330' font-size='280' text-anchor='middle' fill='%23c9a84c'%3E🤲%3C/text%3E%3C/svg%3E",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
