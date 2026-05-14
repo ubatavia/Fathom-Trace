@@ -135,6 +135,32 @@ textarea.fin{resize:none;height:68px;line-height:1.5}
 .dso{font-size:10px;color:rgba(201,168,76,.4);font-weight:700;margin-top:7px}
 .ayat .dar{color:var(--gr2);border-right-color:rgba(31,122,76,.4);background:rgba(31,122,76,.06)}
 .ayat .doc{color:var(--gr2)}
+/* Step check + Notes */
+.sck{width:20px;height:20px;border:1.5px solid rgba(255,255,255,.2);border-radius:50%;background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .2s;margin-top:3px}
+.sck.dn{background:rgba(31,122,76,.3);border-color:var(--gr2);color:var(--gr2)}
+.stp.ck .st{opacity:.4;text-decoration:line-through}.stp.ck .sd,.stp.ck .sar{opacity:.25}
+.nta{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--bd);border-radius:var(--rs);color:var(--tx);font-family:inherit;font-size:12px;padding:8px 10px;outline:none;resize:none;height:52px;margin-top:8px;box-sizing:border-box;transition:border-color .2s}
+.nta:focus{border-color:rgba(201,168,76,.3)}.nta::placeholder{color:var(--mu)}
+/* Dua of moment */
+.dom{padding:13px 14px;margin-bottom:12px;border-left:3px solid var(--g1)}
+.dom-lbl{font-size:10px;font-weight:800;color:var(--g1);letter-spacing:.08em;margin-bottom:5px;text-transform:uppercase}
+.dom-t{font-size:13px;font-weight:800;margin-bottom:4px}
+.dom-ar{font-family:'Amiri',serif;font-size:19px;color:var(--g1);direction:rtl;text-align:right;line-height:2;margin:7px 0 5px}
+.dom-en{font-size:12px;color:var(--mu);line-height:1.55}
+/* Info tab */
+.icrd{padding:14px;margin-bottom:10px}
+.itl{font-size:10px;font-weight:800;color:var(--g1);letter-spacing:.07em;text-transform:uppercase;margin-bottom:9px}
+.irow{display:flex;gap:8px;margin-bottom:5px;align-items:baseline}
+.ilbl{font-size:10px;color:var(--mu);width:72px;flex-shrink:0}
+.ival{font-size:12px;font-weight:700;flex:1}
+.ctct{display:flex;flex-direction:column;gap:6px}
+.ccrd{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--c1);border:1px solid var(--bd);border-radius:var(--rs);text-decoration:none;color:var(--tx)}
+.cname{flex:1;font-size:12px;font-weight:700;line-height:1.3}
+.cnum2{font-size:11px;color:var(--mu)}
+.cico{font-size:18px}
+.sos{padding:14px;text-align:center;border:1px solid rgba(220,53,69,.3);border-radius:var(--r)}
+.sos-t{font-size:22px;font-weight:900;color:#ff4757;margin-bottom:4px}
+.sos-s{font-size:12px;color:var(--mu);margin-bottom:11px}
 /* Tasbih */
 .tbdsp{padding:16px;margin-bottom:12px;text-align:center}
 .tbar{font-family:'Amiri',serif;font-size:28px;color:var(--g1);line-height:1.6;margin-bottom:4px}
@@ -197,6 +223,7 @@ textarea.fin{resize:none;height:68px;line-height:1.5}
   </div>
   <div class="pnl" id="panel-adhkar">
     <div class="sec">📿 Duas &amp; Adhkar</div>
+    <div class="dom gl" id="domCard"></div>
     <div class="plls" id="catPills"></div>
     <div id="duaList" style="margin-top:12px"></div>
   </div>
@@ -217,11 +244,63 @@ textarea.fin{resize:none;height:68px;line-height:1.5}
     <div class="sec">Switch Zikr</div>
     <div class="tsel" id="tsel"></div>
   </div>
+  <div class="pnl" id="panel-info">
+    <div class="sec">🆔 Info & Emergency</div>
+    <div class="sos gl">
+      <div class="sos-t">🚨 Saudi Emergency</div>
+      <div class="sos-s">Police 999 · Ambulance 997 · Civil Defence 998</div>
+      <div class="ctct">
+        <a class="ccrd" href="tel:999"><span class="cico">👮</span><span class="cname">Police<br><span class="cnum2">Saudi Arabia</span></span><b>999</b></a>
+        <a class="ccrd" href="tel:997"><span class="cico">🚑</span><span class="cname">Ambulance<br><span class="cnum2">Saudi Arabia</span></span><b>997</b></a>
+      </div>
+    </div>
+    <div class="icrd gl">
+      <div class="itl">Your Details — Muhammad Usama Yousuf</div>
+      <div class="irow"><span class="ilbl">Passport</span><span class="ival">AG6910295</span></div>
+      <div class="irow"><span class="ilbl">Visa No.</span><span class="ival">6164846466</span></div>
+      <div class="irow"><span class="ilbl">Hajj ID</span><span class="ival">MUS.3109.1383.(2)</span></div>
+      <div class="irow"><span class="ilbl">Package</span><span class="ival">PRIME 15 (MUS)</span></div>
+      <div class="irow"><span class="ilbl">Camp</span><span class="ival">Mina Camp 14-8</span></div>
+    </div>
+    <div class="icrd gl">
+      <div class="itl">Wife — Oraiba Usama</div>
+      <div class="irow"><span class="ilbl">Passport</span><span class="ival">EJ2859691</span></div>
+      <div class="irow"><span class="ilbl">Visa No.</span><span class="ival">6164846525</span></div>
+      <div class="irow"><span class="ilbl">DOB</span><span class="ival">04 Sept 1993</span></div>
+    </div>
+    <div class="icrd gl">
+      <div class="itl">Hotels</div>
+      <div class="irow"><span class="ilbl">Madinah</span><span class="ival">Anwar Al-Medinah Movenpick</span></div>
+      <div class="irow"><span class="ilbl">Aziziya</span><span class="ival">Rafahya Hotel, Azizia</span></div>
+      <div class="irow"><span class="ilbl">Mina</span><span class="ival">Camp 14-8</span></div>
+      <div class="irow"><span class="ilbl">Airport MP</span><span class="ival">McDonald's / Zain Kiosk</span></div>
+    </div>
+    <div class="icrd gl">
+      <div class="itl">Al-Khair (#HajjwithKHAIR) Reps</div>
+      <div class="ctct">
+        <a class="ccrd" href="tel:+966555268296"><span class="cico">📞</span><span class="cname">Ahmed Najeeb<br><span class="cnum2">Madinah Rep 1</span></span><span class="cnum2">+966 55 526 8296</span></a>
+        <a class="ccrd" href="tel:+966593715514"><span class="cico">📞</span><span class="cname">Sadaqat Ali<br><span class="cnum2">Madinah Rep 2</span></span><span class="cnum2">+966 59 371 5514</span></a>
+        <a class="ccrd" href="tel:+966599203153"><span class="cico">📞</span><span class="cname">Hamza Rafiqu<br><span class="cnum2">Madinah Rep 3</span></span><span class="cnum2">+966 59 920 3153</span></a>
+        <a class="ccrd" href="tel:+966509325015"><span class="cico">📞</span><span class="cname">Rowaida Akram<br><span class="cnum2">Madinah Rep 4</span></span><span class="cnum2">+966 50 932 5015</span></a>
+        <a class="ccrd" href="tel:+966531431276"><span class="cico">📞</span><span class="cname">Al-Khair Aziziya<br><span class="cnum2">Makkah/Aziziya office</span></span><span class="cnum2">+966 53 143 1276</span></a>
+        <a class="ccrd" href="tel:+923008250600"><span class="cico">📞</span><span class="cname">Al-Khair Pakistan<br><span class="cnum2">WhatsApp/Call</span></span><span class="cnum2">+92 300 825 0600</span></a>
+        <a class="ccrd" href="tel:+923021234909"><span class="cico">💬</span><span class="cname">Wasif Ahmad<br><span class="cnum2">WhatsApp only</span></span><span class="cnum2">+92 302 123 4909</span></a>
+      </div>
+    </div>
+    <div class="icrd gl">
+      <div class="itl">Package & Booking</div>
+      <div class="irow"><span class="ilbl">Company</span><span class="ival">Al-Musani International</span></div>
+      <div class="irow"><span class="ilbl">Receipt</span><span class="ival">FC-1383 R#14917</span></div>
+      <div class="irow"><span class="ilbl">SPO</span><span class="ival">Adeel Sethi</span></div>
+      <div class="irow"><span class="ilbl">IATA</span><span class="ival">2730870-2</span></div>
+    </div>
+  </div>
   <nav class="tabbar">
     <button class="tab on" data-p="journey" onclick="sw('journey')"><span class="tab-i">🗺</span>Journey</button>
     <button class="tab" data-p="family" onclick="sw('family')"><span class="tab-i">🤲</span>Family</button>
     <button class="tab" data-p="adhkar" onclick="sw('adhkar')"><span class="tab-i">📚</span>Adhkar</button>
     <button class="tab" data-p="tasbih" onclick="sw('tasbih')"><span class="tab-i">📿</span>Tasbih</button>
+    <button class="tab" data-p="info" onclick="sw('info')"><span class="tab-i">🆔</span>Info</button>
   </nav>
 </div>
 <script>
@@ -394,6 +473,8 @@ const SEED=[
 // ── State ──────────────────────────────────────────────────────
 let fam=JSON.parse(localStorage.getItem('hj-fam')||'null');
 if(!fam){fam=SEED;localStorage.setItem('hj-fam',JSON.stringify(fam));}
+let jchk=JSON.parse(localStorage.getItem('hj-jchk')||'{}');
+let notes=JSON.parse(localStorage.getItem('hj-notes')||'{}');
 let cat=localStorage.getItem('hj-cat')||'sabah';
 let theme=localStorage.getItem('hj-theme')||'dark';
 let ti=+localStorage.getItem('hj-ti')||0;
@@ -432,13 +513,21 @@ function renderJourney(){
   const now=new Date();now.setHours(0,0,0,0);
   document.getElementById('journeyList').innerHTML=J.map(d=>{
     const fd=new Date(d.fd);const isT=fd.getTime()===now.getTime(),isP=fd<now;
-    const steps=d.steps.map(s=>`<div class="stp"><div class="si">${s.i||'📌'}</div><div class="sb"><div class="st">${s.t}</div>${s.d?`<div class="sd">${s.d}</div>`:''}${s.ar?`<div class="sar">${s.ar}</div>`:''}${s.en?`<div class="sen">${s.en}</div>`:''}${s.ur?`<div class="sur">${s.ur}</div>`:''}${s.so?`<div class="sso">— ${s.so}</div>`:''}${s.nt?`<div class="snt">${s.nt}</div>`:''}${s.ntc==='amber'?`<div class="snt snta">${s.ntc}</div>`:''}</div></div>`).join('');
-    return`<div class="dcard gl${isT?' gl-g':''}" id="${d.id}"><div class="dhdr" onclick="tog('${d.id}')"><div class="ddot${isT?' tod':isP?' pst':''}">${d.ic}</div><div class="di"><div class="dn">${d.dt} · ${d.dy}</div><div class="dm">${d.hj} · ${d.loc}</div></div><span class="dbdg ${d.bg}">${d.bl}</span><div class="chv">›</div></div><div class="dstps">${steps}</div></div>`;
+    const steps=d.steps.map((s,si)=>{
+      const k=`${d.id}-${si}`,ck=jchk[k];
+      return`<div class="stp${ck?' ck':''}"><button class="sck${ck?' dn':''}" onclick="togStep('${k}')">${ck?'✓':''}</button><div class="sb"><div class="st">${s.t}</div>${s.d?`<div class="sd">${s.d}</div>`:''}${s.ar?`<div class="sar">${s.ar}</div>`:''}${s.en?`<div class="sen">${s.en}</div>`:''}${s.ur?`<div class="sur">${s.ur}</div>`:''}${s.so?`<div class="sso">— ${s.so}</div>`:''}${s.nt?`<div class="snt">${s.nt}</div>`:''}</div></div>`;
+    }).join('');
+    const doneCount=d.steps.filter((_,si)=>jchk[`${d.id}-${si}`]).length;
+    const prog=d.steps.length>0?`<span style="font-size:10px;color:var(--mu);margin-left:6px">${doneCount}/${d.steps.length}</span>`:'';
+    const nt=notes[d.id]||'';
+    return`<div class="dcard gl${isT?' gl-g':''}" id="${d.id}"><div class="dhdr" onclick="tog('${d.id}')"><div class="ddot${isT?' tod':isP?' pst':''}">${d.ic}</div><div class="di"><div class="dn">${d.dt} · ${d.dy}${prog}</div><div class="dm">${d.hj} · ${d.loc}</div></div><span class="dbdg ${d.bg}">${d.bl}</span><div class="chv">›</div></div><div class="dstps">${steps}<textarea class="nta" placeholder="Notes for this day…" oninput="saveNote('${d.id}',this.value)">${nt}</textarea></div></div>`;
   }).join('');
   const td=J.find(d=>{const fd=new Date(d.fd);fd.setHours(0,0,0,0);return fd.getTime()===now.getTime();});
   if(td)document.getElementById(td.id).classList.add('op');
 }
 function tog(id){document.getElementById(id).classList.toggle('op');}
+function togStep(k){jchk[k]=!jchk[k];if(!jchk[k])delete jchk[k];localStorage.setItem('hj-jchk',JSON.stringify(jchk));renderJourney();}
+function saveNote(id,v){notes[id]=v;localStorage.setItem('hj-notes',JSON.stringify(notes));}
 
 // ── Family ─────────────────────────────────────────────────────
 function saveFam(){localStorage.setItem('hj-fam',JSON.stringify(fam));}
@@ -487,6 +576,33 @@ function renderFam(){
   g.innerHTML=`<div class="fgrd">${fam.map(f=>`<div class="fcrd gl${f.done?' gl-gr':''}"><div class="fn"><span>${f.n}${f.r?` <small style="opacity:.55;font-weight:400">(${f.r})</small>`:''}</span><button class="fchk${f.done?' dn2':''}" onclick="togFam(${f.id})">${f.done?'✓':''}</button></div><div class="fdu">${f.du}</div><button class="fdl" onclick="delFam(${f.id})">✕ remove</button></div>`).join('')}</div>`;
 }
 
+// ── Dua of the Moment ──────────────────────────────────────────
+function getDom(){
+  const now=new Date(),d=now.toISOString().slice(0,10);
+  const map=[
+    {from:'2026-05-16',to:'2026-05-17',cat:'madinah',lbl:'You are in Madinah al-Munawwarah'},
+    {from:'2026-05-18',to:'2026-05-18',cat:'umrah',lbl:'Umrah Day — Ihram & Tawaf'},
+    {from:'2026-05-19',to:'2026-05-24',cat:'makkah',lbl:'Days in Makkah — seek extra worship'},
+    {from:'2026-05-25',to:'2026-05-25',cat:'dhikr',lbl:'8 Dhul Hijjah — depart to Mina'},
+    {from:'2026-05-26',to:'2026-05-26',cat:'arafat',lbl:'Yawm Arafah — the greatest day'},
+    {from:'2026-05-27',to:'2026-05-29',cat:'dhikr',lbl:'Eid days — Rami, Qurbani, Halq'},
+    {from:'2026-05-30',to:'2026-06-03',cat:'makkah',lbl:'Final days in Makkah'},
+  ];
+  const match=map.find(m=>d>=m.from&&d<=m.to);
+  if(!match)return null;
+  const pool=D[match.cat]||[];
+  if(!pool.length)return null;
+  const idx=Math.floor((now-new Date(match.from))/86400000)%pool.length;
+  return{...pool[idx],lbl:match.lbl};
+}
+function renderDom(){
+  const dom=getDom();
+  const el=document.getElementById('domCard');
+  if(!dom){el.style.display='none';return;}
+  el.style.display='';
+  el.innerHTML=`<div class="dom-lbl">📍 Dua for Today · ${dom.lbl}</div><div class="dom-t">${dom.t}</div><div class="dom-ar">${dom.ar}</div><div class="dom-en">${dom.en}</div>`;
+}
+
 // ── Adhkar ─────────────────────────────────────────────────────
 function renderPills(){document.getElementById('catPills').innerHTML=CATS.map(c=>`<button class="pll${c.id===cat?' on':''}" onclick="selCat('${c.id}')">${c.l}</button>`).join('');}
 function selCat(id){cat=id;localStorage.setItem('hj-cat',id);renderPills();renderDuas();}
@@ -520,6 +636,7 @@ renderJourney();
 renderFam();
 renderPills();
 renderDuas();
+renderDom();
 renderTbDisplay();
 renderTbTargets();
 renderTbSel();
