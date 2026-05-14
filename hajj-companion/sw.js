@@ -1,4 +1,4 @@
-const CACHE = 'hajj-1447-v3';
+const CACHE = 'hajj-1447-v4';
 const ASSETS = ['./index.html', './manifest.json'];
 const FONT_CACHE = 'hajj-fonts-v1';
 const FONT_ORIGINS = ['https://fonts.googleapis.com', 'https://fonts.gstatic.com'];
