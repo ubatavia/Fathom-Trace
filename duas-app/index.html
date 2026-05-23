@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>دُعَاء — Islamic Duas</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:          #070c14;
+  --gold:        #c9a84c;
+  --gold2:       #e8c96a;
+  --gold-dim:    rgba(201,168,76,0.18);
+  --gold-line:   rgba(201,168,76,0.30);
+  --green:       #1b6e45;
+  --green2:      #4ec991;
+  --green-dim:   rgba(31,122,76,0.14);
+  --teal:        #2fa89a;
+  --card:        rgba(255,255,255,0.058);
+  --card-hover:  rgba(255,255,255,0.085);
+  --border:      rgba(255,255,255,0.09);
+  --text:        #f0ead6;
+  --muted:       rgba(240,234,214,0.50);
+  --muted2:      rgba(240,234,214,0.35);
+  --r:           18px;
+  --rs:          11px;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { height:100%; scroll-behavior:smooth; }
+body {
+  font-family:'Inter', -apple-system, system-ui, sans-serif;
+  background:var(--bg); color:var(--text);
+  min-height:100vh; overflow-x:hidden;
+  background-image:
+    radial-gradient(ellipse 100% 50% at 10% 0%,   rgba(12,32,85,0.70) 0%, transparent 60%),
+    radial-gradient(ellipse 70%  55% at 90% 100%,  rgba(44,12,75,0.55) 0%, transparent 65%),
+    radial-gradient(ellipse 55%  40% at 45%  60%,  rgba(8,48,28,0.20)  0%, transparent 55%);
+  -webkit-tap-highlight-color: transparent;
+}
+/* stars */
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    radial-gradient(1px 1px at 15% 18%, rgba(255,255,255,0.32) 0%, transparent 100%),
+    radial-gradient(1px 1px at 78% 10%, rgba(255,255,255,0.26) 0%, transparent 100%),
+    radial-gradient(1px 1px at 52% 42%, rgba(255,255,255,0.20) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 58%, rgba(255,255,255,0.28) 0%, transparent 100%),
+    radial-gradient(1px 1px at 28% 72%, rgba(255,255,255,0.18) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 65% 82%, rgba(201,168,76,0.38) 0%, transparent 100%),
+    radial-gradient(1px 1px at 8%  90%, rgba(255,255,255,0.22) 0%, transparent 100%),
+    radial-gradient(1px 1px at 40% 5%,  rgba(255,255,255,0.18) 0%, transparent 100%);
+}
+
+#app { max-width:520px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; position:relative; z-index:1; padding-bottom:90px; }
+
+/* ── Header ── */
+.hdr {
+  text-align:center; padding:28px 20px 16px;
+}
+.hdr-arabic {
+  font-family:'Amiri', serif; font-size:28px; color:var(--gold);
+  line-height:1.5; margin-bottom:6px; letter-spacing:0.01em;
+}
+.hdr-title { font-size:11px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+.hdr-sub   { font-size:12px; color:var(--muted2); }
+
+/* ── Search ── */
+.search-wrap { padding:0 14px 10px; }
+.search-box {
+  width:100%; background:var(--card); border:1px solid var(--border);
+  border-radius:var(--r); color:var(--text); font-family:'Inter',sans-serif;
+  font-size:14px; padding:11px 16px 11px 42px; outline:none;
+  transition:border-color 0.2s, background 0.2s;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7' stroke='%23f0ead680' stroke-width='2'/%3E%3Cpath d='M16.5 16.5 21 21' stroke='%23f0ead680' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:14px 50%;
+}
+.search-box:focus { border-color:var(--gold-line); background-color:var(--card-hover); }
+.search-box::placeholder { color:var(--muted2); }
+
+/* ── Category Pills ── */
+.cats {
+  display:flex; gap:7px; overflow-x:auto; padding:0 14px 12px;
+  scrollbar-width:none;
+}
+.cats::-webkit-scrollbar { display:none; }
+.cat-pill {
+  display:flex; align-items:center; gap:5px; white-space:nowrap;
+  padding:7px 14px; border-radius:28px;
+  background:var(--card); border:1px solid var(--border);
+  color:var(--muted); font-size:12px; font-weight:600;
+  cursor:pointer; transition:all 0.18s; font-family:inherit;
+  flex-shrink:0;
+}
+.cat-pill.active {
+  background:var(--gold-dim); border-color:var(--gold-line); color:var(--gold2);
+}
+.cat-pill:hover:not(.active) { background:var(--card-hover); color:var(--text); }
+
+/* ── Grid / List area ── */
+.duas-area { padding:0 14px; }
+.section-label {
+  font-size:9px; font-weight:800; letter-spacing:0.16em; text-transform:uppercase;
+  color:var(--gold); margin:14px 0 10px 2px;
+}
+.count-badge {
+  display:inline-block; padding:2px 7px; border-radius:20px;
+  background:var(--gold-dim); color:var(--gold2); font-size:9px;
+  font-weight:700; margin-left:7px; vertical-align:middle;
+}
+
+/* ── Dua Card ── */
+.dua-card {
+  background:var(--card); border:1px solid var(--border); border-radius:var(--r);
+  margin-bottom:12px; overflow:hidden; transition:border-color 0.2s, background 0.2s;
+  cursor:pointer;
+}
+.dua-card:hover  { background:var(--card-hover); }
+.dua-card.ayat   { border-left:3px solid var(--green); }
+.dua-card.active { background:rgba(255,255,255,0.09); }
+
+/* Card Header (always visible) */
+.card-head {
+  display:flex; align-items:flex-start; gap:12px; padding:15px 15px 13px;
+}
+.card-icon {
+  width:40px; height:40px; border-radius:12px; flex-shrink:0;
+  background:var(--gold-dim); border:1px solid var(--gold-line);
+  display:flex; align-items:center; justify-content:center; font-size:18px;
+  margin-top:1px;
+}
+.dua-card.ayat .card-icon { background:var(--green-dim); border-color:rgba(31,122,76,0.30); }
+.card-meta { flex:1; min-width:0; }
+.card-title {
+  font-size:14px; font-weight:700; color:var(--text); margin-bottom:4px;
+  line-height:1.35;
+}
+.card-occ {
+  font-size:11px; color:var(--gold); font-weight:600; letter-spacing:0.03em;
+}
+.dua-card.ayat .card-occ { color:var(--green2); }
+.card-expand { flex-shrink:0; color:var(--muted2); font-size:12px; margin-top:3px; transition:transform 0.22s; }
+.dua-card.open .card-expand { transform:rotate(90deg); }
+
+/* Arabic preview (one line, always visible) */
+.arabic-preview {
+  font-family:'Amiri', serif; font-size:18px; color:var(--gold);
+  direction:rtl; text-align:right; padding:0 15px 13px;
+  line-height:1.8; overflow:hidden;
+  white-space:nowrap; text-overflow:ellipsis; opacity:0.72;
+}
+.dua-card.ayat .arabic-preview { color:var(--green2); }
+
+/* Card Body (expanded) */
+.card-body { display:none; padding:0 15px 15px; }
+.dua-card.open .card-body { display:block; }
+.card-body .divider { height:1px; background:var(--border); margin-bottom:14px; }
+
+/* Arabic full */
+.arabic-full {
+  font-family:'Amiri', serif; font-size:23px; color:var(--gold);
+  direction:rtl; text-align:right; line-height:2;
+  padding:14px 16px; margin-bottom:12px;
+  background:rgba(201,168,76,0.05);
+  border-radius:var(--rs); border-right:2.5px solid var(--gold-line);
+}
+.dua-card.ayat .arabic-full {
+  color:var(--green2); border-right-color:rgba(31,122,76,0.38);
+  background:rgba(31,122,76,0.06);
+}
+
+/* Transliteration */
+.trans-block {
+  padding:10px 14px; margin-bottom:10px;
+  background:rgba(255,255,255,0.035); border-radius:var(--rs);
+  border-left:2px solid var(--gold-line);
+}
+.dua-card.ayat .trans-block { border-left-color:rgba(31,122,76,0.38); }
+.trans-label {
+  font-size:9px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--muted2); margin-bottom:5px;
+}
+.trans-text {
+  font-size:13px; color:var(--muted); font-style:italic; line-height:1.65;
+}
+
+/* English */
+.english-block { margin-bottom:12px; }
+.meaning-label {
+  font-size:9px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--muted2); margin-bottom:5px;
+}
+.english-text { font-size:13px; color:var(--text); line-height:1.65; }
+
+/* Urdu */
+.urdu-block {
+  padding:12px 14px; margin-bottom:12px;
+  background:rgba(201,168,76,0.045); border-radius:var(--rs);
+  border-right:2.5px solid rgba(201,168,76,0.22);
+}
+.dua-card.ayat .urdu-block {
+  background:rgba(31,122,76,0.05);
+  border-right-color:rgba(31,122,76,0.28);
+}
+.urdu-label {
+  font-size:9px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--muted2); text-align:right; direction:rtl; margin-bottom:6px;
+}
+.urdu-text {
+  font-family:'Amiri', serif; font-size:17px; color:rgba(240,234,214,0.78);
+  direction:rtl; text-align:right; line-height:2;
+}
+
+/* Source + Copy row */
+.card-footer {
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  margin-top:4px;
+}
+.source-text {
+  font-size:10px; color:rgba(201,168,76,0.45); font-weight:600;
+  flex:1; min-width:0;
+}
+.copy-btn {
+  display:flex; align-items:center; gap:4px;
+  padding:5px 10px; border-radius:8px;
+  background:var(--gold-dim); border:1px solid var(--gold-line);
+  color:var(--gold2); font-size:10px; font-weight:700;
+  cursor:pointer; font-family:inherit; transition:all 0.18s; white-space:nowrap;
+  flex-shrink:0;
+}
+.copy-btn:active, .copy-btn.copied { background:rgba(201,168,76,0.30); }
+.copy-btn.copied { color:#7fffb0; border-color:rgba(31,122,76,0.40); background:var(--green-dim); }
+
+/* ── Empty state ── */
+.empty {
+  text-align:center; padding:56px 20px; color:var(--muted);
+}
+.empty-ico { font-size:44px; opacity:0.30; margin-bottom:12px; }
+.empty-text { font-size:14px; }
+
+/* ── Bottom Tab Bar ── */
+.tabbar {
+  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:520px;
+  background:rgba(7,12,20,0.90);
+  backdrop-filter:blur(32px) saturate(180%);
+  -webkit-backdrop-filter:blur(32px) saturate(180%);
+  border-top:1px solid var(--border);
+  display:flex; z-index:200;
+  padding-bottom:env(safe-area-inset-bottom, 8px);
+}
+.tab {
+  flex:1; padding:10px 4px 7px; border:none; background:transparent;
+  color:var(--muted); font-family:'Inter',sans-serif; font-size:10px;
+  font-weight:600; letter-spacing:0.03em;
+  cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px;
+  transition:color 0.2s;
+}
+.tab-ico { font-size:20px; line-height:1; }
+.tab.active { color:var(--gold2); }
+
+/* ── Panels ── */
+.panel { display:none; }
+.panel.active { display:block; }
+
+/* ── Family Duas panel ── */
+.family-wrap { padding:0 14px; }
+.add-form {
+  background:var(--card); border:1px solid var(--border); border-radius:var(--r);
+  padding:16px; margin-bottom:14px;
+}
+.form-label { font-size:11px; font-weight:700; color:var(--gold); margin-bottom:11px; }
+.form-row { display:flex; gap:8px; margin-bottom:8px; }
+.form-col { flex:1; }
+.finput, .ftextarea {
+  width:100%; background:rgba(255,255,255,0.07); border:1px solid var(--border);
+  border-radius:var(--rs); color:var(--text); font-family:'Inter',sans-serif;
+  font-size:13px; padding:10px 12px; outline:none;
+  transition:border-color 0.2s;
+}
+.ftextarea { resize:none; height:68px; line-height:1.5; }
+.finput:focus, .ftextarea:focus { border-color:var(--gold-line); }
+.finput::placeholder, .ftextarea::placeholder { color:var(--muted2); }
+.btn-add {
+  width:100%; padding:11px; margin-top:2px;
+  background:var(--gold-dim); border:1px solid var(--gold-line);
+  border-radius:var(--rs); color:var(--gold2); font-family:'Inter',sans-serif;
+  font-size:13px; font-weight:700; cursor:pointer; transition:background 0.18s;
+}
+.btn-add:active { background:rgba(201,168,76,0.30); }
+.family-grid { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+.fcard {
+  background:var(--card); border:1px solid var(--border); border-radius:var(--r);
+  padding:13px;
+}
+.fcard.done-card { background:var(--green-dim); border-color:rgba(31,122,76,0.28); }
+.fname-row {
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;
+}
+.fname-text { font-size:13px; font-weight:800; }
+.frel { font-size:11px; font-weight:400; opacity:0.58; }
+.fcheck {
+  width:22px; height:22px; border:1.5px solid var(--border); border-radius:50%;
+  background:transparent; cursor:pointer; display:flex; align-items:center;
+  justify-content:center; font-size:11px; transition:all 0.2s; flex-shrink:0;
+  font-family:inherit;
+}
+.fcheck.done { background:rgba(31,122,76,0.28); border-color:var(--green2); color:var(--green2); }
+.fdua-text { font-size:12px; color:var(--muted); line-height:1.5; }
+.fdel {
+  background:none; border:none; color:rgba(255,255,255,0.20);
+  cursor:pointer; font-size:10px; padding:0; margin-top:8px;
+  font-family:'Inter',sans-serif;
+}
+
+/* scrollbar */
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.12); border-radius:4px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- Header -->
+  <div class="hdr">
+    <div class="hdr-arabic">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+    <div class="hdr-title">Islamic Duas</div>
+    <div class="hdr-sub">Arabic · Transliteration · English · Urdu</div>
+  </div>
+
+  <!-- Adhkar Panel -->
+  <div class="panel active" id="panel-duas">
+    <div class="search-wrap">
+      <input class="search-box" id="searchInput" type="search" placeholder="Search duas…" oninput="onSearch(this.value)" autocomplete="off" />
+    </div>
+    <div class="cats" id="catPills"></div>
+    <div class="duas-area">
+      <div class="section-label" id="sectionLabel">
+        Duas <span class="count-badge" id="countBadge">0</span>
+      </div>
+      <div id="duaList"></div>
+    </div>
+  </div>
+
+  <!-- Family Duas Panel -->
+  <div class="panel" id="panel-family">
+    <div class="family-wrap">
+      <div class="section-label" style="margin-top:10px">Family Duas</div>
+      <div class="add-form">
+        <div class="form-label">Add a dua request for a loved one</div>
+        <div class="form-row">
+          <div class="form-col"><input class="finput" id="fname" placeholder="Name" /></div>
+          <div class="form-col"><input class="finput" id="frelation" placeholder="Relation" /></div>
+        </div>
+        <textarea class="ftextarea" id="fduareq" placeholder="Their dua request (e.g. shifa, rizq, hidayah, marriage…)"></textarea>
+        <button class="btn-add" onclick="addFamily()">+ Add to List</button>
+      </div>
+      <div id="familyGrid"></div>
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <nav class="tabbar">
+    <button class="tab active" data-tab="duas" onclick="switchTab('duas')">
+      <span class="tab-ico">📿</span>Duas
+    </button>
+    <button class="tab" data-tab="family" onclick="switchTab('family')">
+      <span class="tab-ico">🤲</span>Family
+    </button>
+  </nav>
+</div>
+
+<script>
+// ── Data ──────────────────────────────────────────────────────────────────────
+const CATS = [
+  { id:'all',     label:'All',         icon:'✨' },
+  { id:'daily',   label:'Daily',       icon:'☀️' },
+  { id:'quran',   label:'Quranic',     icon:'📖' },
+  { id:'travel',  label:'Travel',      icon:'✈️' },
+  { id:'morning', label:'Morning',     icon:'🌅' },
+  { id:'evening', label:'Evening',     icon:'🌙' },
+  { id:'hajj',    label:'Hajj/Umrah',  icon:'🕋' },
+  { id:'dua',     label:'Supplications', icon:'🌿' },
+];
+
+const DUAS = [
+  // ── Daily / General ───────────────────────────────────────────
+  {
+    id:1, cats:['daily','quran'],
+    icon:'🌿', ayat:true,
+    title:'Rabbana Atina — The Comprehensive Dua',
+    occ:'Most recited dua of the Prophet ﷺ — say often',
+    arabic:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+    trans:'Rabbanā ātinā fid-dunyā ḥasanatan wa fil-ākhirati ḥasanatan wa qinā ʿadhāban-nār',
+    english:'Our Lord, grant us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.',
+    urdu:'اے ہمارے رب! ہمیں دنیا میں بھلائی دے اور آخرت میں بھی بھلائی دے اور ہمیں آگ کے عذاب سے بچا۔',
+    source:'Quran 2:201 — The Prophet ﷺ made this dua most often (Bukhari)'
+  },
+  {
+    id:2, cats:['daily'],
+    icon:'🤲', ayat:false,
+    title:'Sayyid al-Istighfar — Master of Forgiveness',
+    occ:'Morning and evening — one of the greatest duas',
+    arabic:'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ',
+    trans:'Allāhumma anta Rabbī lā ilāha illā ant, khalaqtanī wa anā ʿabduk, wa anā ʿalā ʿahdika wa waʿdika mastaṭaʿt, aʿūdhu bika min sharri mā ṣanaʿt, abūʾu laka biniʿmatika ʿalayy, wa abūʾu bidhambī faghfir lī fa-innahū lā yaghfiru adh-dhunūba illā ant',
+    english:'O Allah, You are my Lord. There is no god but You. You created me and I am Your slave. I am upon Your covenant and promise as best I can. I seek refuge in You from the evil of what I have done. I acknowledge Your blessings upon me, and I acknowledge my sin — so forgive me, for none forgives sins except You.',
+    urdu:'اے اللہ! تو ہی میرا رب ہے، تیرے سوا کوئی معبود نہیں۔ تو نے مجھے پیدا کیا اور میں تیرا بندہ ہوں۔ میں اپنے عہد پر قائم ہوں جتنا ہو سکے۔ میں اپنے کیے کے شر سے تیری پناہ مانگتا ہوں، تیری نعمتوں کا اقرار کرتا ہوں اور اپنے گناہوں کا بھی — پس مجھے معاف فرما کہ تیرے سوا کوئی گناہ معاف نہیں کرتا۔',
+    source:'Bukhari 6306 — "Whoever says this with certainty and dies before evening enters Jannah."'
+  },
+  {
+    id:3, cats:['daily','quran'],
+    icon:'📿', ayat:false,
+    title:'Tasbeeh — Post-Prayer Dhikr',
+    occ:'After every fard (obligatory) prayer, 33 times each',
+    arabic:'سُبْحَانَ اللَّهِ ٣٣× • اَلْحَمْدُ لِلَّهِ ٣٣× • اَللَّهُ أَكْبَرُ ٣٣×\nلَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
+    trans:'Subḥānallāh ×33 • Alḥamdulillāh ×33 • Allāhu akbar ×33\nThen: Lā ilāha illallāhu waḥdahū lā sharīka lah, lahul-mulku wa lahul-ḥamdu wa huwa ʿalā kulli shayʾin qadīr',
+    english:'Glory be to Allah (×33) • All praise is for Allah (×33) • Allah is the Greatest (×33)\nThen: None has the right to be worshipped but Allah alone, without partner. To Him belongs dominion and praise, and He is over all things competent.',
+    urdu:'اللہ پاک ہے (٣٣ بار) • تمام تعریف اللہ کے لیے (٣٣ بار) • اللہ سب سے بڑا ہے (٣٣ بار)\nپھر: اللہ کے سوا کوئی معبود نہیں، اکیلا، بے شریک، اسی کی بادشاہی ہے اور اسی کی تعریف ہے اور وہ ہر چیز پر قادر ہے۔',
+    source:'Muslim 597'
+  },
+  {
+    id:4, cats:['daily'],
+    icon:'🙏', ayat:false,
+    title:'Istighfar — Seeking Forgiveness',
+    occ:'At least 100 times a day, as the Prophet ﷺ did',
+    arabic:'أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ',
+    trans:'Astaghfirullāha wa atūbu ilayh',
+    english:'I seek forgiveness from Allah and I repent to Him.',
+    urdu:'میں اللہ سے مغفرت مانگتا ہوں اور اس کی طرف توبہ کرتا ہوں۔',
+    source:'Bukhari — The Prophet ﷺ said: "I seek forgiveness 100 times a day."'
+  },
+
+  // ── Quranic ───────────────────────────────────────────────────
+  {
+    id:5, cats:['daily','quran'],
+    icon:'📖', ayat:true,
+    title:'Ayat al-Kursi — Verse of the Throne',
+    occ:'After every fard prayer and before sleeping',
+    arabic:'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ',
+    trans:'Allāhu lā ilāha illā huw, al-ḥayyu al-qayyūm, lā taʾkhudhuhū sinatun wa lā nawm, lahū mā fis-samāwāti wa mā fil-arḍ, man dhallad̲ī yashfaʿu ʿindahū illā biʾidh̲nih, yaʿlamu mā bayna aydīhim wa mā khalfahum, wa lā yuḥīṭūna bişayʾin min ʿilmihī illā bimā shāʾ, wasiʿa kursiyyuhus-samāwāti wal-arḍ, wa lā yaʾūduhū ḥifẓuhumā, wa huwal-ʿaliyyul-ʿaẓīm',
+    english:'Allah — there is no deity except Him, the Ever-Living, the Sustainer of existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His Kursi extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Most Great.',
+    urdu:'اللہ — اس کے سوا کوئی معبود نہیں، ہمیشہ زندہ، سب کو تھامنے والا۔ اسے نہ اونگھ آتی ہے نہ نیند۔ آسمانوں اور زمین میں جو کچھ ہے سب اسی کا ہے۔ کون ہے جو اس کی اجازت کے بغیر اس کے پاس سفارش کرے؟ جو ان کے آگے ہے اور جو ان کے پیچھے ہے سب کو وہ جانتا ہے اور وہ اس کے علم میں سے کسی چیز کا احاطہ نہیں کر سکتے مگر جتنا وہ چاہے۔ اس کی کرسی آسمانوں اور زمین میں پھیلی ہوئی ہے اور ان کی حفاظت اسے تھکاتی نہیں۔ اور وہ بلند اور بزرگ ہے۔',
+    source:'Quran 2:255 — "Whoever recites it after every obligatory prayer — nothing stands between him and Jannah except death." — Nasa\'i'
+  },
+  {
+    id:6, cats:['quran'],
+    icon:'📖', ayat:true,
+    title:'Surah Al-Fatiha — The Opening',
+    occ:'17 times daily in prayer — the greatest surah',
+    arabic:'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ۞ الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ ۞ الرَّحْمَٰنِ الرَّحِيمِ ۞ مَالِكِ يَوْمِ الدِّينِ ۞ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ۞ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ۞ صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ',
+    trans:'Bismillāhir-raḥmānir-raḥīm. Al-ḥamdu lillāhi rabbil-ʿālamīn. Ar-raḥmānir-raḥīm. Māliki yawmid-dīn. Iyyāka naʿbudu wa iyyāka nastaʿīn. Ihdinas-ṣirāṭal-mustaqīm. Ṣirāṭal-ladhīna anʿamta ʿalayhim, ghayril-maghḍūbi ʿalayhim wa laḍ-ḍāllīn.',
+    english:'In the name of Allah, the Most Gracious, the Most Merciful. All praise is due to Allah, Lord of all the worlds. The Most Gracious, the Most Merciful. Master of the Day of Judgment. You alone we worship, and You alone we ask for help. Guide us to the straight path — the path of those upon whom You have bestowed favor, not of those who have evoked anger or of those who are astray.',
+    urdu:'اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے۔ تمام تعریف اللہ کے لیے جو تمام جہانوں کا رب ہے۔ بڑا مہربان، نہایت رحم والا۔ روزِ جزا کا مالک۔ ہم تیری ہی عبادت کرتے ہیں اور تجھ ہی سے مدد مانگتے ہیں۔ ہمیں سیدھا راستہ دکھا — ان لوگوں کا راستہ جن پر تو نے انعام کیا، نہ ان کا جن پر غضب ہوا اور نہ ان کا جو بھٹک گئے۔',
+    source:'Quran 1:1–7 — "The greatest surah in the Quran" (Bukhari)'
+  },
+  {
+    id:7, cats:['quran'],
+    icon:'📖', ayat:true,
+    title:'Surah Al-Ikhlas — Pure Monotheism',
+    occ:'Morning, evening, after Fajr & Maghrib — recite 3×',
+    arabic:'قُلْ هُوَ اللَّهُ أَحَدٌ ۞ اللَّهُ الصَّمَدُ ۞ لَمْ يَلِدْ وَلَمْ يُولَدْ ۞ وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ',
+    trans:'Qul huwa Allāhu aḥad. Allāhu ṣ-ṣamad. Lam yalid wa lam yūlad. Wa lam yakun lahū kufuwan aḥad.',
+    english:'Say: He is Allah, the One. Allah, the Eternal Refuge. He neither begets nor is born. Nor is there to Him any equivalent.',
+    urdu:'کہو: وہ اللہ ایک ہے۔ اللہ بے نیاز ہے۔ نہ اس کی اولاد ہے نہ وہ کسی کی اولاد۔ اور نہ کوئی اس کے برابر ہے۔',
+    source:'Quran 112 — Equals 1/3 of the Quran in reward (Bukhari 6643)'
+  },
+  {
+    id:8, cats:['quran'],
+    icon:'📖', ayat:true,
+    title:'Dua of Prophet Yunus ﷺ — For Deliverance',
+    occ:'In moments of distress, hardship, or need',
+    arabic:'لَّا إِلَٰهَ إِلَّا أَنتَ سُبْحَانَكَ إِنِّي كُنتُ مِنَ الظَّالِمِينَ',
+    trans:'Lā ilāha illā anta subḥānaka innī kuntu minaz-ẓālimīn',
+    english:'There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers.',
+    urdu:'تیرے سوا کوئی معبود نہیں، تو پاک ہے، بے شک میں ظالموں میں سے تھا۔',
+    source:'Quran 21:87 — "No Muslim calls upon Allah with these words for any matter except that Allah responds." — Tirmidhi 3505'
+  },
+  {
+    id:9, cats:['quran','dua'],
+    icon:'🌿', ayat:true,
+    title:'Dua for Guidance & Steadfastness',
+    occ:'After every prayer — especially powerful',
+    arabic:'رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِن لَّدُنكَ رَحْمَةً ۚ إِنَّكَ أَنتَ الْوَهَّابُ',
+    trans:'Rabbanā lā tuzigh qulūbanā baʿda idh hadaytanā wa hab lanā min ladunka raḥmah, innaka antal-wahhāb',
+    english:'Our Lord, do not let our hearts deviate after You have guided us and grant us from Yourself mercy. Indeed, You are the Bestower.',
+    urdu:'اے ہمارے رب! ہمیں ہدایت دینے کے بعد ہمارے دلوں کو ٹیڑھا نہ کر اور ہمیں اپنے پاس سے رحمت عطا فرما۔ بے شک تو ہی بڑا عطا کرنے والا ہے۔',
+    source:'Quran 3:8'
+  },
+  {
+    id:10, cats:['quran','dua'],
+    icon:'📖', ayat:true,
+    title:'Dua for Parents',
+    occ:'Recite daily for your parents, living or deceased',
+    arabic:'رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ وَلِلْمُؤْمِنِينَ يَوْمَ يَقُومُ الْحِسَابُ',
+    trans:'Rabbigh-fir lī wa liwālidayya wa lil-muʾminīna yawma yaqūmul-ḥisāb',
+    english:'My Lord, forgive me and my parents and the believers on the Day when the account is established.',
+    urdu:'اے میرے رب! مجھے، میرے والدین کو اور مومنوں کو اس دن معاف فرما جب حساب قائم ہوگا۔',
+    source:'Quran 14:41'
+  },
+  {
+    id:11, cats:['quran','dua'],
+    icon:'📖', ayat:true,
+    title:'Dua of Ibrahim ﷺ — For Acceptance',
+    occ:'After any act of worship — same words Ibrahim ﷺ used at the Ka\'ba',
+    arabic:'رَبَّنَا تَقَبَّلْ مِنَّا ۖ إِنَّكَ أَنتَ السَّمِيعُ الْعَلِيمُ',
+    trans:'Rabbanā taqabbal minnā, innaka antas-samīʿul-ʿalīm',
+    english:'Our Lord, accept from us. Indeed, You are the All-Hearing, All-Knowing.',
+    urdu:'اے ہمارے رب! ہم سے قبول فرما۔ بے شک تو سننے والا، جاننے والا ہے۔',
+    source:'Quran 2:127'
+  },
+
+  // ── Morning Adhkar ────────────────────────────────────────────
+  {
+    id:12, cats:['morning'],
+    icon:'🌅', ayat:false,
+    title:'Morning Dhikr — Entering the Day',
+    occ:'Say 3 times after Fajr prayer',
+    arabic:'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
+    trans:'Aṣbaḥnā wa aṣbaḥal-mulku lillāh, wal-ḥamdu lillāh, lā ilāha illallāhu waḥdahū lā sharīka lah, lahul-mulku wa lahul-ḥamdu wa huwa ʿalā kulli shayʾin qadīr',
+    english:'We have entered the morning, and the sovereignty belongs to Allah. All praise is for Allah. There is no deity but Allah, alone, without partner. To Him belongs sovereignty and all praise, and He is over all things competent.',
+    urdu:'ہم نے صبح کی اور بادشاہی اللہ کے لیے ہے۔ تمام تعریف اللہ کے لیے ہے۔ اللہ کے سوا کوئی معبود نہیں، اکیلا، بے شریک، اسی کی بادشاہی اور اسی کی تعریف اور وہ ہر چیز پر قادر ہے۔',
+    source:'Abu Dawud 5076 / Muslim 2723'
+  },
+  {
+    id:13, cats:['morning'],
+    icon:'🌅', ayat:false,
+    title:'Morning Dua — Protection & Wellbeing',
+    occ:'Say once each morning for protection',
+    arabic:'اللَّهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ',
+    trans:'Allāhumma bika aṣbaḥnā wa bika amsaynā wa bika naḥyā wa bika namūtu wa ilayka n-nushūr',
+    english:'O Allah, by You we enter the morning and by You we enter the evening, by You we live and by You we die, and to You is the resurrection.',
+    urdu:'اے اللہ! تیری مدد سے ہم نے صبح کی اور تیری مدد سے شام کی، تیری مدد سے ہم جیتے ہیں اور تیری مدد سے مرتے ہیں، اور تیری طرف ہی اٹھنا ہے۔',
+    source:'Tirmidhi 3391 / Abu Dawud 5068'
+  },
+  {
+    id:14, cats:['morning','dua'],
+    icon:'🛡️', ayat:false,
+    title:'Dua for Health (Morning)',
+    occ:'Say 3 times each morning for protection',
+    arabic:'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَهَ إِلَّا أَنْتَ',
+    trans:'Allāhumma ʿāfinī fī badanī, Allāhumma ʿāfinī fī samʿī, Allāhumma ʿāfinī fī baṣarī, lā ilāha illā ant',
+    english:'O Allah, grant me health in my body. O Allah, grant me health in my hearing. O Allah, grant me health in my sight. There is no god but You.',
+    urdu:'اے اللہ! مجھے میرے جسم میں عافیت دے۔ اے اللہ! مجھے میری سماعت میں عافیت دے۔ اے اللہ! مجھے میری بصارت میں عافیت دے۔ تیرے سوا کوئی معبود نہیں۔',
+    source:'Abu Dawud 5090'
+  },
+  {
+    id:15, cats:['morning'],
+    icon:'🌅', ayat:false,
+    title:'Dua of Seeking Refuge (Morning)',
+    occ:'Say in the morning for complete protection',
+    arabic:'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ',
+    trans:'Aʿūdhu bikalimātillāhit-tāmmāti min sharri mā khalaq',
+    english:'I seek refuge in the perfect words of Allah from the evil of what He has created.',
+    urdu:'میں اللہ کے مکمل کلمات کی پناہ مانگتا ہوں ہر اس چیز کے شر سے جو اس نے پیدا کی ہے۔',
+    source:'Muslim 2708 — Whoever says this 3× in the evening: nothing will harm him that night'
+  },
+
+  // ── Evening Adhkar ────────────────────────────────────────────
+  {
+    id:16, cats:['evening'],
+    icon:'🌙', ayat:false,
+    title:'Evening Dhikr — Entering the Night',
+    occ:'After Asr or Maghrib prayer, 3 times',
+    arabic:'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
+    trans:'Amsaynā wa amsal-mulku lillāh, wal-ḥamdu lillāh, lā ilāha illallāhu waḥdahū lā sharīka lah, lahul-mulku wa lahul-ḥamdu wa huwa ʿalā kulli shayʾin qadīr',
+    english:'We have entered the evening and the sovereignty belongs to Allah. All praise is for Allah. There is no deity but Allah, alone, without partner. To Him belongs sovereignty and all praise, and He is over all things competent.',
+    urdu:'ہم نے شام کی اور بادشاہی اللہ کے لیے ہے۔ تمام تعریف اللہ کے لیے ہے۔ اللہ کے سوا کوئی معبود نہیں، اکیلا، بے شریک، اسی کی بادشاہی اور اسی کی تعریف اور وہ ہر چیز پر قادر ہے۔',
+    source:'Abu Dawud 5076 / Muslim 2723'
+  },
+  {
+    id:17, cats:['evening','quran'],
+    icon:'📖', ayat:true,
+    title:'Last Two Verses of Al-Baqarah',
+    occ:'Before sleeping every night — a protection',
+    arabic:'آمَنَ الرَّسُولُ بِمَا أُنزِلَ إِلَيْهِ مِن رَّبِّهِ وَالْمُؤْمِنُونَ ۚ كُلٌّ آمَنَ بِاللَّهِ وَمَلَائِكَتِهِ وَكُتُبِهِ وَرُسُلِهِ لَا نُفَرِّقُ بَيْنَ أَحَدٍ مِّن رُّسُلِهِ ۚ وَقَالُوا سَمِعْنَا وَأَطَعْنَا ۖ غُفْرَانَكَ رَبَّنَا وَإِلَيْكَ الْمَصِيرُ',
+    trans:'Āmanar-rasūlu bimā unzila ilayhi mir-Rabbihī wal-muʾminūn, kullun āmana billāhi wa malāʾikatihī wa kutubihī wa rusulih, lā nufarriqu bayna aḥadin mir-rusulih, wa qālū samiʿnā wa aṭaʿnā, ghufrānaka Rabbanā wa ilaykal-maṣīr.',
+    english:'The Messenger has believed in what was revealed to him from his Lord, and so have the believers. All of them believe in Allah, His angels, His books and His messengers — "We make no distinction between any of His messengers." — And they say: "We hear and we obey. Grant us Your forgiveness, our Lord, and to You is the final destination."',
+    urdu:'رسول ایمان لائے اس پر جو ان کی طرف ان کے رب کی طرف سے اتارا گیا اور مومن بھی — سب اللہ، فرشتوں، کتابوں اور رسولوں پر ایمان لائے۔ ہم رسولوں میں سے کسی میں فرق نہیں کرتے۔ انہوں نے کہا: ہم نے سنا اور مانا۔ اے ہمارے رب تیری مغفرت ہو اور تیری ہی طرف لوٹنا ہے۔',
+    source:'Quran 2:285–286 — "Whoever recites these at night, they will suffice him." — Bukhari 5009'
+  },
+  {
+    id:18, cats:['evening'],
+    icon:'🌙', ayat:false,
+    title:'Sleeping Dua — Before Sleep',
+    occ:'Say before sleeping every night',
+    arabic:'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا',
+    trans:'Bismika Allāhumma amūtu wa aḥyā',
+    english:'In Your name, O Allah, I die and I live.',
+    urdu:'اے اللہ! تیرے نام پر مرتا ہوں اور جیتا ہوں۔',
+    source:'Bukhari 6324'
+  },
+
+  // ── Travel ────────────────────────────────────────────────────
+  {
+    id:19, cats:['travel'],
+    icon:'✈️', ayat:true,
+    title:'Dua When Boarding a Vehicle',
+    occ:'When boarding any transport — plane, car, bus',
+    arabic:'بِسْمِ اللَّهِ، سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَٰذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ، وَإِنَّا إِلَى رَبِّنَا لَمُنقَلِبُونَ',
+    trans:'Bismillāh. Subḥāna-lladhī sakhkhara lanā hādhā wa mā kunnā lahū muqrinīn, wa innā ilā Rabbinā lamunqalibūn.',
+    english:'In the name of Allah. Glory be to He who has subjected this to us, and we could not have done it ourselves. And indeed, to our Lord we will return.',
+    urdu:'اللہ کے نام سے۔ پاک ہے وہ ذات جس نے ہمارے لیے اسے مسخر کیا، ہم اسے قابو نہیں کر سکتے تھے، اور بے شک ہمیں اپنے رب کی طرف لوٹنا ہے۔',
+    source:'Quran 43:13–14 / Abu Dawud 2602'
+  },
+  {
+    id:20, cats:['travel'],
+    icon:'🛣️', ayat:false,
+    title:'Dua for Safe Journey',
+    occ:'At the start of any journey — say together',
+    arabic:'اللَّهُمَّ إِنَّا نَسْأَلُكَ فِي سَفَرِنَا هَذَا الْبِرَّ وَالتَّقْوَى، وَمِنَ الْعَمَلِ مَا تَرْضَى، اللَّهُمَّ هَوِّنْ عَلَيْنَا سَفَرَنَا هَذَا وَاطْوِ عَنَّا بُعْدَهُ، اللَّهُمَّ أَنْتَ الصَّاحِبُ فِي السَّفَرِ وَالْخَلِيفَةُ فِي الْأَهْلِ',
+    trans:'Allāhumma innā nasʾaluka fī safarinā hādhā al-birra wat-taqwā, wa minal-ʿamali mā tarḍā, Allāhumma hawwin ʿalaynā safaranā hādhā waṭwi ʿannā buʿdah, Allāhumma antas-ṣāḥibu fis-safar, wal-khalīfatu fil-ahl',
+    english:'O Allah, we ask You on this journey for righteousness, taqwa, and deeds that please You. O Allah, make easy for us this journey and fold up its distance. O Allah, You are our companion in travel and our guardian over the family.',
+    urdu:'اے اللہ! ہم اس سفر میں نیکی، تقوٰی اور ایسے اعمال مانگتے ہیں جو تجھے پسند ہوں۔ اے اللہ! ہمارا یہ سفر آسان فرما اور اس کی دوری لپیٹ دے۔ اے اللہ! تو ہی سفر میں ساتھی ہے اور گھر والوں کا نگہبان ہے۔',
+    source:'Muslim 1342'
+  },
+  {
+    id:21, cats:['travel'],
+    icon:'🏠', ayat:false,
+    title:'Dua on Return Home',
+    occ:'When returning from any journey',
+    arabic:'آيِبُونَ تَائِبُونَ عَابِدُونَ لِرَبِّنَا حَامِدُونَ',
+    trans:'Āʾibūna tāʾibūna ʿābidūna li-Rabbinā ḥāmidūn',
+    english:'We are returning, repenting, worshipping, and praising our Lord.',
+    urdu:'ہم لوٹ رہے ہیں، توبہ کرتے ہوئے، عبادت کرتے ہوئے، اپنے رب کی حمد کرتے ہوئے۔',
+    source:'Muslim 1342'
+  },
+
+  // ── Hajj / Umrah ──────────────────────────────────────────────
+  {
+    id:22, cats:['hajj'],
+    icon:'🕋', ayat:false,
+    title:'Talbiyah — The Call of Hajj',
+    occ:'Recite continuously from Ihram until Tawaf begins',
+    arabic:'لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ، لَبَّيْكَ لَا شَرِيكَ لَكَ لَبَّيْكَ، إِنَّ الْحَمْدَ وَالنِّعْمَةَ لَكَ وَالْمُلْكَ، لَا شَرِيكَ لَكَ',
+    trans:'Labbayk Allāhumma labbayk, labbayka lā sharīka laka labbayk, innal-ḥamda wan-niʿmata laka wal-mulk, lā sharīka lak',
+    english:'Here I am, O Allah, here I am. Here I am — You have no partner — here I am. Verily all praise, grace and sovereignty belong to You. You have no partner.',
+    urdu:'حاضر ہوں اے اللہ، حاضر ہوں! حاضر ہوں، تیرا کوئی شریک نہیں، حاضر ہوں! بے شک تمام تعریفیں، نعمتیں اور بادشاہی تیری ہے، تیرا کوئی شریک نہیں۔',
+    source:'Bukhari 1549 / Muslim 1184'
+  },
+  {
+    id:23, cats:['hajj'],
+    icon:'🕋', ayat:false,
+    title:'Entering Masjid al-Nabawi / Masjid al-Haram',
+    occ:'When entering any mosque — right foot first',
+    arabic:'اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ',
+    trans:'Allāhumma iftaḥ lī abwāba raḥmatik',
+    english:'O Allah, open for me the gates of Your mercy.',
+    urdu:'اے اللہ! میرے لیے اپنی رحمت کے دروازے کھول دے۔',
+    source:'Muslim 713'
+  },
+  {
+    id:24, cats:['hajj'],
+    icon:'🕋', ayat:false,
+    title:'Best Dua of Arafat Day',
+    occ:'Repeat abundantly during Wuquf at Arafat',
+    arabic:'لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
+    trans:'Lā ilāha illallāhu waḥdahū lā sharīka lah, lahul-mulku wa lahul-ḥamdu wa huwa ʿalā kulli shayʾin qadīr',
+    english:'None has the right to be worshipped except Allah alone, without partner. To Him belongs all sovereignty and all praise, and He is over all things competent.',
+    urdu:'اللہ کے سوا کوئی معبود نہیں، وہ اکیلا ہے، اس کا کوئی شریک نہیں، اسی کی بادشاہی اور اسی کی تعریف ہے، وہ ہر چیز پر قادر ہے۔',
+    source:'Tirmidhi 3585 — "The best dua is the dua of Arafat day — the best thing I and the Prophets before me have said."'
+  },
+  {
+    id:25, cats:['hajj'],
+    icon:'🕋', ayat:false,
+    title:'Durood Ibrahim — Salawat on the Prophet ﷺ',
+    occ:'Send abundantly in Madinah and always',
+    arabic:'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ',
+    trans:'Allāhumma ṣalli ʿalā Muḥammadin wa ʿalā āli Muḥammadin kamā ṣallayta ʿalā Ibrāhīma wa ʿalā āli Ibrāhīm, innaka ḥamīdun majīd. Allāhumma bārik ʿalā Muḥammadin wa ʿalā āli Muḥammadin kamā bārakta ʿalā Ibrāhīma wa ʿalā āli Ibrāhīm, innaka ḥamīdun majīd.',
+    english:'O Allah, send blessings upon Muhammad and the family of Muhammad, as You sent blessings upon Ibrahim and the family of Ibrahim — You are indeed Praiseworthy and Glorious. O Allah, send blessings upon Muhammad and the family of Muhammad, as You blessed Ibrahim and the family of Ibrahim — You are indeed Praiseworthy and Glorious.',
+    urdu:'اے اللہ! محمدؐ اور آل محمدؐ پر رحمت نازل فرما جیسے تو نے ابراہیم اور آل ابراہیم پر نازل فرمائی، بے شک تو تعریف والا بزرگی والا ہے۔ اے اللہ! محمدؐ اور آل محمدؐ پر برکت نازل فرما جیسے تو نے ابراہیم اور آل ابراہیم پر نازل فرمائی، بے شک تو تعریف والا بزرگی والا ہے۔',
+    source:'Bukhari 3370 / Muslim 406'
+  },
+
+  // ── General Supplications ─────────────────────────────────────
+  {
+    id:26, cats:['dua'],
+    icon:'💚', ayat:false,
+    title:'Dua for Rizq — Sustenance & Provision',
+    occ:'Ask for halal provision and barakah in wealth',
+    arabic:'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا وَاسِعًا، وَشِفَاءً مِنْ كُلِّ دَاءٍ',
+    trans:'Allāhumma innī asʾaluka ʿilman nāfiʿan, wa rizqan wāsiʿan, wa shifāʾan min kulli dāʾ',
+    english:'O Allah, I ask You for beneficial knowledge, abundant provision, and cure from every illness.',
+    urdu:'اے اللہ! میں تجھ سے نفع بخش علم، وسیع رزق اور ہر بیماری سے شفا مانگتا ہوں۔',
+    source:'Ibn al-Sunni / Tabarani — recommended to recite after Fajr'
+  },
+  {
+    id:27, cats:['dua'],
+    icon:'🤲', ayat:false,
+    title:'Dua for Anxiety & Distress',
+    occ:'When feeling overwhelmed, anxious or burdened',
+    arabic:'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ',
+    trans:'Allāhumma innī aʿūdhu bika minal-hammi wal-ḥuzn, wa aʿūdhu bika minal-ʿajzi wal-kasal, wa aʿūdhu bika minal-jubni wal-bukhl, wa aʿūdhu bika min ghalabatid-dayni wa qahrir-rijāl',
+    english:'O Allah, I seek refuge in You from anxiety and sorrow, from weakness and laziness, from cowardice and miserliness, and from the burden of debts and the overpowering of men.',
+    urdu:'اے اللہ! میں تیری پناہ مانگتا ہوں فکر اور غم سے، عاجزی اور سستی سے، بزدلی اور بخل سے، اور قرضے کے بوجھ اور لوگوں کے غلبے سے۔',
+    source:'Bukhari 2893'
+  },
+  {
+    id:28, cats:['dua'],
+    icon:'💚', ayat:false,
+    title:'Dua for Shifa — Healing',
+    occ:'For yourself or someone who is ill — recite 7 times',
+    arabic:'اللَّهُمَّ رَبَّ النَّاسِ، أَذْهِبِ الْبَأْسَ، اشْفِ أَنْتَ الشَّافِي لَا شِفَاءَ إِلَّا شِفَاؤُكَ شِفَاءً لَا يُغَادِرُ سَقَمًا',
+    trans:'Allāhumma Rabban-nās, adh-hibil-baʾs, ishfi antas-shāfī, lā shifāʾa illā shifāʾuk, shifāʾan lā yughādiru saqamā',
+    english:'O Allah, Lord of mankind, remove the affliction. Heal — You are the Healer. There is no cure but Your cure — a cure that leaves no illness behind.',
+    urdu:'اے اللہ! تمام انسانوں کے رب، تکلیف دور فرما، شفا دے — تو ہی شفا دینے والا ہے، تیری شفا کے سوا کوئی شفا نہیں، ایسی شفا جو کوئی بیماری باقی نہ چھوڑے۔',
+    source:'Bukhari 5742 / Muslim 2191 — recited by the Prophet ﷺ over the sick'
+  },
+  {
+    id:29, cats:['dua'],
+    icon:'🌿', ayat:false,
+    title:'Dua for Good Character',
+    occ:'Ask Allah to guide your character and manners',
+    arabic:'اللَّهُمَّ اهْدِنِي لِأَحْسَنِ الْأَخْلَاقِ لَا يَهْدِي لِأَحْسَنِهَا إِلَّا أَنْتَ، وَاصْرِفْ عَنِّي سَيِّئَهَا لَا يَصْرِفُ عَنِّي سَيِّئَهَا إِلَّا أَنْتَ',
+    trans:'Allāhumma ih-dinī li-aḥsanil-akhlāqi lā yahdī li-aḥsanihā illā ant, waṣrif ʿannī sayyiʾahā lā yaṣrifu ʿannī sayyiʾahā illā ant',
+    english:'O Allah, guide me to the best of character — none can guide to the best of it except You — and turn away from me the worst of it — none can turn away the worst of it except You.',
+    urdu:'اے اللہ! مجھے بہترین اخلاق کی طرف ہدایت دے، تیرے سوا اس کی بہتری کی طرف کوئی ہدایت نہیں دے سکتا۔ اور مجھ سے بُرے اخلاق دور کر دے، تیرے سوا انہیں کوئی دور نہیں کر سکتا۔',
+    source:'Muslim 771'
+  },
+  {
+    id:30, cats:['dua'],
+    icon:'🤍', ayat:false,
+    title:'Dua Before Eating',
+    occ:'Say before every meal',
+    arabic:'بِسْمِ اللَّهِ وَعَلَى بَرَكَةِ اللَّهِ',
+    trans:'Bismillāhi wa ʿalā barakatillāh',
+    english:'In the name of Allah and upon the blessings of Allah.',
+    urdu:'اللہ کے نام سے اور اللہ کی برکت پر (کھاتا ہوں)۔',
+    source:'Abu Dawud 3767'
+  },
+  {
+    id:31, cats:['dua'],
+    icon:'🤍', ayat:false,
+    title:'Dua After Eating',
+    occ:'Say after finishing a meal',
+    arabic:'الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنِي هَذَا وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ',
+    trans:'Al-ḥamdu lillāhil-ladhī aṭʿamanī hādhā wa razaqanīhi min ghayri ḥawlin minnī wa lā quwwah',
+    english:'All praise is for Allah who fed me this and provided it for me without any might or power on my part.',
+    urdu:'تمام تعریف اللہ کے لیے جس نے مجھے یہ کھانا کھلایا اور یہ رزق دیا میری کسی طاقت اور قوت کے بغیر۔',
+    source:'Tirmidhi 3458 — sins forgiven for the one who says this'
+  },
+  {
+    id:32, cats:['dua'],
+    icon:'💧', ayat:false,
+    title:'Dua When it Rains',
+    occ:'When you see or hear rain — dua is accepted',
+    arabic:'اللَّهُمَّ صَيِّبًا نَافِعًا',
+    trans:'Allāhumma ṣayyiban nāfiʿā',
+    english:'O Allah, [send it as] a beneficial downpour.',
+    urdu:'اے اللہ! اسے نفع بخش بارش بنا دے۔',
+    source:'Bukhari 1032 — dua at rain is accepted'
+  },
+  {
+    id:33, cats:['dua'],
+    icon:'🔑', ayat:false,
+    title:'Hasbunallah — Complete Trust in Allah',
+    occ:'In times of fear, uncertainty, or hardship',
+    arabic:'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ',
+    trans:'Ḥasbunallāhu wa niʿmal-wakīl',
+    english:'Sufficient for us is Allah, and He is the best Disposer of affairs.',
+    urdu:'ہمارے لیے اللہ کافی ہے اور وہ بہترین کارساز ہے۔',
+    source:'Quran 3:173 / Bukhari 4563 — the words of Ibrahim ﷺ thrown into fire'
+  },
+];
+
+// ── State ──────────────────────────────────────────────────────────────────
+let selectedCat    = 'all';
+let searchQuery    = '';
+let currentTab     = 'duas';
+let familyDuas     = JSON.parse(localStorage.getItem('duas-family') || '[]');
+
+// ── Render Categories ──────────────────────────────────────────────────────
+function renderCats() {
+  document.getElementById('catPills').innerHTML = CATS.map(c =>
+    `<button class="cat-pill${c.id === selectedCat ? ' active' : ''}" onclick="selectCat('${c.id}')">
+       ${c.icon} ${c.label}
+     </button>`
+  ).join('');
+}
+
+function selectCat(id) {
+  selectedCat = id;
+  searchQuery = '';
+  document.getElementById('searchInput').value = '';
+  renderCats();
+  renderDuas();
+}
+
+// ── Search ────────────────────────────────────────────────────────────────
+function onSearch(val) {
+  searchQuery = val.toLowerCase().trim();
+  selectedCat = searchQuery ? 'all' : selectedCat;
+  renderCats();
+  renderDuas();
+}
+
+// ── Render Duas ───────────────────────────────────────────────────────────
+function getVisible() {
+  let list = DUAS;
+  if (selectedCat !== 'all') list = list.filter(d => d.cats.includes(selectedCat));
+  if (searchQuery) {
+    list = list.filter(d =>
+      d.title.toLowerCase().includes(searchQuery) ||
+      d.english.toLowerCase().includes(searchQuery) ||
+      d.trans.toLowerCase().includes(searchQuery) ||
+      d.occ.toLowerCase().includes(searchQuery)
+    );
+  }
+  return list;
+}
+
+function renderDuas() {
+  const list = getVisible();
+  const badge = document.getElementById('countBadge');
+  badge.textContent = list.length;
+
+  if (!list.length) {
+    document.getElementById('duaList').innerHTML =
+      `<div class="empty"><div class="empty-ico">🔍</div><div class="empty-text">No duas found.</div></div>`;
+    return;
+  }
+
+  document.getElementById('duaList').innerHTML = list.map(d => `
+    <div class="dua-card${d.ayat ? ' ayat' : ''}" id="dc-${d.id}" onclick="toggleCard(${d.id})">
+      <div class="card-head">
+        <div class="card-icon">${d.icon}</div>
+        <div class="card-meta">
+          <div class="card-title">${d.title}</div>
+          <div class="card-occ">${d.occ}</div>
+        </div>
+        <div class="card-expand">›</div>
+      </div>
+      <div class="arabic-preview">${d.arabic.split('\n')[0]}</div>
+      <div class="card-body">
+        <div class="divider"></div>
+        <div class="arabic-full">${d.arabic.replace(/\n/g,'<br>')}</div>
+        <div class="trans-block">
+          <div class="trans-label">Transliteration</div>
+          <div class="trans-text">${d.trans.replace(/\n/g,'<br>')}</div>
+        </div>
+        <div class="english-block">
+          <div class="meaning-label">English Meaning</div>
+          <div class="english-text">${d.english.replace(/\n/g,'<br>')}</div>
+        </div>
+        <div class="urdu-block">
+          <div class="urdu-label">اردو ترجمہ</div>
+          <div class="urdu-text">${d.urdu.replace(/\n/g,'<br>')}</div>
+        </div>
+        <div class="card-footer">
+          <div class="source-text">— ${d.source}</div>
+          <button class="copy-btn" id="copy-${d.id}" onclick="copyDua(event, ${d.id})">Copy</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleCard(id) {
+  const el = document.getElementById('dc-'+id);
+  el.classList.toggle('open');
+}
+
+// ── Copy ──────────────────────────────────────────────────────────────────
+function copyDua(e, id) {
+  e.stopPropagation();
+  const d = DUAS.find(x => x.id === id);
+  if (!d) return;
+  const text = `${d.title}\n\n${d.arabic}\n\nTransliteration:\n${d.trans}\n\nMeaning:\n${d.english}\n\nUrdu:\n${d.urdu}\n\n— ${d.source}`;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-'+id);
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+  }).catch(() => {});
+}
+
+// ── Family Duas ───────────────────────────────────────────────────────────
+function saveFamily() { localStorage.setItem('duas-family', JSON.stringify(familyDuas)); }
+
+function addFamily() {
+  const name = document.getElementById('fname').value.trim();
+  const rel  = document.getElementById('frelation').value.trim();
+  const dua  = document.getElementById('fduareq').value.trim();
+  if (!name || !dua) return;
+  familyDuas.unshift({ id:Date.now(), name, rel, dua, done:false });
+  saveFamily();
+  document.getElementById('fname').value = '';
+  document.getElementById('frelation').value = '';
+  document.getElementById('fduareq').value = '';
+  renderFamily();
+}
+
+function toggleFamilyDone(id) {
+  const f = familyDuas.find(x => x.id === id);
+  if (f) { f.done = !f.done; saveFamily(); renderFamily(); }
+}
+
+function deleteFamily(id) {
+  familyDuas = familyDuas.filter(x => x.id !== id);
+  saveFamily(); renderFamily();
+}
+
+function renderFamily() {
+  const grid = document.getElementById('familyGrid');
+  if (!familyDuas.length) {
+    grid.innerHTML = `<div class="empty"><div class="empty-ico">🤲</div><div class="empty-text">Add family members above.<br>Their duas will be remembered.</div></div>`;
+    return;
+  }
+  grid.innerHTML = `<div class="family-grid">${familyDuas.map(f => `
+    <div class="fcard${f.done ? ' done-card' : ''}">
+      <div class="fname-row">
+        <span class="fname-text">${f.name}${f.rel ? ` <span class="frel">(${f.rel})</span>` : ''}</span>
+        <button class="fcheck${f.done ? ' done' : ''}" onclick="toggleFamilyDone(${f.id})">${f.done ? '✓' : ''}</button>
+      </div>
+      <div class="fdua-text">${f.dua}</div>
+      <button class="fdel" onclick="deleteFamily(${f.id})">✕ remove</button>
+    </div>`).join('')}</div>`;
+}
+
+// ── Tab Switching ─────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+  currentTab = tab;
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+renderCats();
+renderDuas();
+renderFamily();
+</script>
+</body>
+</html>
