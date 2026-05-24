@@ -140,27 +140,48 @@ body::before{
 /* ── Family Duas ── */
 .addform{padding:15px;margin-bottom:10px;}
 .flabel{font-size:11px;font-weight:700;color:var(--gold);margin-bottom:10px;}
-.finput,.ftextarea{
+.finput,.ftextarea,.fselect{
   width:100%;background:rgba(255,255,255,0.07);border:1px solid var(--border);
   border-radius:var(--rs);color:var(--text);font-family:inherit;font-size:13px;
   padding:10px 12px;outline:none;transition:border-color 0.2s;
 }
-.ftextarea{resize:none;height:70px;line-height:1.5;}
-.finput:focus,.ftextarea:focus{border-color:rgba(201,168,76,0.38);}
+.fselect{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23c9a84c' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer;}
+.fselect option{background:#0d1420;color:#f0ead6;}
+.ftextarea{resize:none;height:58px;line-height:1.5;}
+.finput:focus,.ftextarea:focus,.fselect:focus{border-color:rgba(201,168,76,0.38);}
 .finput::placeholder,.ftextarea::placeholder{color:var(--muted);}
 .frow{display:flex;gap:8px;margin-bottom:8px;}
 .fcol{flex:1;}
 .btn-add{width:100%;padding:11px;background:rgba(201,168,76,0.13);border:1px solid rgba(201,168,76,0.28);
   border-radius:var(--rs);color:var(--gold2);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:background 0.18s;}
 .btn-add:active{background:rgba(201,168,76,0.24);}
-.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
-.fcard{padding:13px;border-radius:var(--r);}
-.fname{font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
-.fcheck{width:22px;height:22px;border:1.5px solid var(--border);border-radius:50%;background:transparent;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all 0.2s;flex-shrink:0;}
+/* dua preview in form */
+.fdua-preview{margin-bottom:8px;padding:12px;border-radius:var(--rs);background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.18);}
+.fdua-preview-arabic{font-family:'Amiri',serif;font-size:18px;color:var(--gold);direction:rtl;text-align:right;line-height:1.9;margin-bottom:6px;}
+.fdua-preview-trans{font-size:10px;color:var(--muted);font-style:italic;line-height:1.5;margin-bottom:4px;}
+.fdua-preview-english{font-size:12px;line-height:1.5;color:var(--text);}
+/* family cards — single column, richer layout */
+.fgrid{display:flex;flex-direction:column;gap:10px;}
+.fcard{padding:15px;border-radius:var(--r);}
+.fcard-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;gap:8px;}
+.fcard-info{flex:1;min-width:0;}
+.fname-text{font-size:14px;font-weight:800;display:block;margin-bottom:2px;}
+.frel-text{font-size:10px;color:var(--gold);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;}
+.fneed-tag{display:inline-block;font-size:10px;font-weight:700;padding:3px 8px;border-radius:7px;
+  background:rgba(201,168,76,0.10);border:1px solid rgba(201,168,76,0.20);color:var(--gold2);margin-bottom:8px;}
+.fcheck{width:26px;height:26px;border:1.5px solid var(--border);border-radius:50%;background:transparent;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all 0.2s;flex-shrink:0;}
 .fcheck.done{background:rgba(31,122,76,0.28);border-color:var(--green2);color:var(--green2);}
-.fdua{font-size:12px;color:var(--muted);line-height:1.5;}
+.fcard-arabic{font-family:'Amiri',serif;font-size:18px;color:var(--gold);direction:rtl;text-align:right;
+  line-height:1.9;padding:9px 12px;background:rgba(201,168,76,0.05);border-radius:var(--rs);
+  border-right:2px solid rgba(201,168,76,0.25);margin-bottom:7px;}
+.fcard-trans{font-size:10px;color:var(--muted);font-style:italic;line-height:1.5;margin-bottom:4px;}
+.fcard-english{font-size:12px;line-height:1.55;color:var(--text);margin-bottom:6px;}
+.fcard-urdu{font-family:'Amiri',serif;font-size:14px;color:rgba(201,168,76,0.65);direction:rtl;text-align:right;line-height:1.9;margin-bottom:4px;}
+.fcard-source{font-size:10px;color:rgba(201,168,76,0.38);font-weight:700;}
+.fnote-text{font-size:11px;color:var(--muted);font-style:italic;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);}
 .fdel{background:none;border:none;color:rgba(255,255,255,0.18);cursor:pointer;font-size:10px;padding:0;margin-top:8px;font-family:inherit;}
+.fdel:active{color:rgba(255,100,100,0.5);}
 .empty{text-align:center;padding:44px 20px;color:var(--muted);font-size:13px;}
 .empty-ico{font-size:36px;opacity:0.35;margin-bottom:10px;}
 
@@ -203,15 +224,35 @@ body::before{
   <div class="panel" id="panel-family">
     <div class="slabel">🤲 Family Duas</div>
     <div class="addform glass">
-      <div class="flabel">Add a family member's dua request</div>
+      <div class="flabel">Make dua for someone you love</div>
       <div class="frow">
-        <div class="fcol"><input class="finput" id="fname" placeholder="Name" /></div>
-        <div class="fcol"><input class="finput" id="frelation" placeholder="Relation" /></div>
+        <div class="fcol"><input class="finput" id="fname" placeholder="Their name" /></div>
+        <div class="fcol"><input class="finput" id="frelation" placeholder="Relation (e.g. Mother)" /></div>
       </div>
       <div style="margin-bottom:8px">
-        <textarea class="ftextarea" id="fduareq" placeholder="Their dua request (e.g. shifa, rizq, marriage, children…)"></textarea>
+        <select class="fselect" id="fneed" onchange="onNeedChange()">
+          <option value="">— What to ask Allah for them —</option>
+          <option value="shifa">💚 Shifa — Health &amp; Healing</option>
+          <option value="rizq">💰 Rizq — Provision &amp; Barakah</option>
+          <option value="marriage">💍 Marriage — Good Spouse</option>
+          <option value="children">👶 Children — Righteous Offspring</option>
+          <option value="guidance">🌟 Guidance — Hidayah &amp; Steadfastness</option>
+          <option value="protection">🛡️ Protection — Safety &amp; ʿAfiyah</option>
+          <option value="forgiveness">🌿 Forgiveness — Maghfirah</option>
+          <option value="deceased">🌹 Deceased — Rahma &amp; Jannah</option>
+          <option value="success">✨ Success — Dunya &amp; Akhirah</option>
+          <option value="hajj">🕋 Accepted Hajj</option>
+          <option value="anxiety">💙 Anxiety &amp; Grief — Inner Peace</option>
+          <option value="debt">🔓 Freedom from Debt &amp; Hardship</option>
+          <option value="knowledge">📚 Knowledge &amp; Wisdom</option>
+          <option value="general">🤲 General Well-being</option>
+        </select>
       </div>
-      <button class="btn-add" onclick="addFamily()">+ Add to List</button>
+      <div id="fduapreview" style="display:none" class="fdua-preview"></div>
+      <div style="margin-bottom:8px">
+        <textarea class="ftextarea" id="fduanote" placeholder="Personal note (optional — e.g. for their surgery, for their job search…)"></textarea>
+      </div>
+      <button class="btn-add" onclick="addFamily()">🤲 Add to My Dua List</button>
     </div>
     <div id="familyGrid"></div>
   </div>
@@ -975,6 +1016,122 @@ const CATS = [
   {id:'dua_arafah',  label:'🌄 Dua for Arafah'}
 ];
 
+// ── Family Duas Library ────────────────────────────────────────
+const FAMILY_DUAS = {
+  shifa: {
+    label:'💚 Shifa — Health & Healing',
+    arabic:'اللَّهُمَّ اشْفِهِ شِفَاءً لَا يُغَادِرُ سَقَمًا اللَّهُمَّ رَبَّ النَّاسِ أَذْهِبِ الْبَأْسَ اشْفِ أَنْتَ الشَّافِي لَا شِفَاءَ إِلَّا شِفَاؤُكَ شِفَاءً لَا يُغَادِرُ سَقَمًا',
+    trans:'Allāhumma ashfihī shifāʾan lā yughādiru saqamā. Allāhumma Rabban-nāsi adhhib-il-baʾs, ishfihī anta ash-shāfī, lā shifāʾa illā shifāʾuk, shifāʾan lā yughādiru saqamā',
+    english:'O Allah, heal them — a healing that leaves no illness behind. O Allah, Lord of mankind, remove the affliction. Heal them — You are the Healer. There is no healing except Your healing — a complete healing that leaves no illness behind.',
+    urdu:'اے اللہ! انہیں ایسی شفا دے جو کوئی بیماری باقی نہ چھوڑے۔ اے اللہ! اے لوگوں کے رب! تکلیف دور فرما، شفا دے — تو ہی شفا دینے والا ہے، تیری شفا کے سوا کوئی شفا نہیں — مکمل شفا جو کوئی بیماری نہ چھوڑے۔',
+    source:'Muslim 2191, Bukhari 5743'
+  },
+  rizq: {
+    label:'💰 Rizq — Provision & Barakah',
+    arabic:'اللَّهُمَّ اكْفِهِ بِحَلَالِكَ عَنْ حَرَامِكَ وَأَغْنِهِ بِفَضْلِكَ عَمَّنْ سِوَاكَ اللَّهُمَّ بَارِكْ لَهُ فِي رِزْقِهِ وَعَمَلِهِ وَأَهْلِهِ',
+    trans:'Allāhummak-fihī biḥalālika ʿan ḥarāmik, wa aghnihī bifaḍlika ʿamman siwāk. Allāhumma bārik lahū fī rizqihī wa ʿamalihī wa ahlih',
+    english:'O Allah, suffice them with what You have made lawful so they need not resort to the forbidden, and enrich them by Your grace so they need no one other than You. O Allah, bless them in their provision, their work, and their family.',
+    urdu:'اے اللہ! حلال سے انہیں کافی کر دے کہ حرام کی ضرورت نہ پڑے اور اپنے فضل سے غنی فرما کہ تیرے سوا کسی کا محتاج نہ رہیں۔ اے اللہ! ان کے رزق، عمل اور گھر والوں میں برکت دے۔',
+    source:'Tirmidhi 3563, Al-Adab Al-Mufrad'
+  },
+  marriage: {
+    label:'💍 Marriage — Good Spouse',
+    arabic:'اللَّهُمَّ ارْزُقْهُ زَوْجًا صَالِحًا يُعِينُهُ عَلَى دِينِهِ وَدُنْيَاهُ وَيَكُونُ لَهُ قُرَّةَ عَيْنٍ وَسَكَنًا وَرَحْمَةً رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ',
+    trans:'Allāhumma rzuqhu zawjan ṣāliḥan yuʿīnuhū ʿalā dīnihī wa dunyāhu wa yakūna lahū qurrata ʿaynin wa sakanan wa raḥmah. Rabbanā hab lanā min azwājinā wa dhurriyyātinā qurrata aʿyun',
+    english:'O Allah, grant them a righteous spouse who helps them in their deen and dunya, and who is a comfort to their eyes, a source of tranquility and mercy. Our Lord, grant us from our spouses and offspring comfort to our eyes.',
+    urdu:'اے اللہ! انہیں ایک نیک ساتھی عطا فرما جو دین و دنیا میں مدد کرے، آنکھوں کی ٹھنڈک، سکون اور رحمت بنے۔ اے ہمارے رب! ہمیں ازواج اور اولاد سے آنکھوں کی ٹھنڈک عطا فرما۔',
+    source:'Quran 25:74 / Ibn Majah 1925'
+  },
+  children: {
+    label:'👶 Children — Righteous Offspring',
+    arabic:'رَبِّ هَبْ لِي مِنْ لَدُنْكَ ذُرِّيَّةً طَيِّبَةً إِنَّكَ سَمِيعُ الدُّعَاءِ اللَّهُمَّ ارْزُقْهُمْ ذُرِّيَّةً صَالِحَةً تَقَرُّ بِهَا أَعْيُنُهُمْ وَتَكُونُ لَهُمْ ذُخْرًا فِي الدُّنْيَا وَالْآخِرَةِ',
+    trans:'Rabbi hab lī milladunka dhurriyyatan ṭayyibah, innaka samīʿud-duʿāʾ. Allāhumma rzuqhum dhurriyyatan ṣāliḥatan taqarru bihā aʿyunuhum wa takūna lahum dhukhran fid-dunyā wal-ākhirah',
+    english:'My Lord, grant them from Yourself righteous offspring. Indeed You are the Hearer of supplication. O Allah, bless them with righteous children who are a comfort to their eyes and a treasure for them in dunya and akhirah.',
+    urdu:'اے میرے رب! انہیں اپنی طرف سے پاکیزہ اولاد عطا فرما۔ بے شک تو دعا سننے والا ہے۔ اے اللہ! انہیں ایسی نیک اولاد دے جو ان کی آنکھوں کی ٹھنڈک بنے اور دنیا و آخرت میں ذخیرہ ہو۔',
+    source:'Quran 3:38, Quran 25:74'
+  },
+  guidance: {
+    label:'🌟 Guidance — Hidayah & Steadfastness',
+    arabic:'اللَّهُمَّ اهْدِهِ وَثَبِّتْهُ يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبَهُ عَلَى دِينِكَ رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِنْ لَدُنْكَ رَحْمَةً',
+    trans:'Allāhumma ihdihī wa thabbithu. Yā Muqallibal-qulūbi thabbit qalbahu ʿalā dīnik. Rabbanā lā tuzigh qulūbanā baʿda idh hadaytanā wa hab lanā milladunka raḥmah',
+    english:'O Allah, guide them and keep them firm. O Turner of hearts, keep their heart firm upon Your religion. Our Lord, let not our hearts deviate after You have guided us — and grant us mercy from Yourself.',
+    urdu:'اے اللہ! انہیں ہدایت دے اور ثابت قدم رکھ۔ اے دلوں کو پھیرنے والے! ان کے دل کو اپنے دین پر ثابت رکھ۔ اے رب! ہدایت کے بعد دلوں کو نہ بھٹکا — اپنی طرف سے رحمت عطا فرما۔',
+    source:'Tirmidhi 2140, Quran 3:8'
+  },
+  protection: {
+    label:'🛡️ Protection — Safety & ʿAfiyah',
+    arabic:'اللَّهُمَّ احْفَظْهُ مِنْ بَيْنِ يَدَيْهِ وَمِنْ خَلْفِهِ وَعَنْ يَمِينِهِ وَعَنْ شِمَالِهِ وَمِنْ فَوْقِهِ وَأَعُوذُ بِعَظَمَتِكَ أَنْ يُغْتَالَ مِنْ تَحْتِهِ اللَّهُمَّ عَافِهِ فِي بَدَنِهِ وَسَمْعِهِ وَبَصَرِهِ',
+    trans:'Allāhumma ḥfaẓhu min bayni yadayhi wa min khalfihī wa ʿan yamīnihī wa ʿan shimālihī wa min fawqihī, wa aʿūdhu biʿaẓamatika an yughtāla min taḥtih. Allāhumma ʿāfihī fī badanihī wa samʿihī wa baṣarih',
+    english:'O Allah, protect them from before them and behind them, from their right and their left, and from above them — and I seek refuge in Your greatness from them being swallowed from below. O Allah, grant them well-being in their body, their hearing, and their sight.',
+    urdu:'اے اللہ! انہیں آگے سے، پیچھے سے، دائیں سے، بائیں سے اور اوپر سے محفوظ رکھ — اور تیری عظمت کی پناہ لیتا ہوں کہ وہ نیچے سے تباہ نہ ہوں۔ اے اللہ! ان کے جسم، سماعت اور بصارت کو عافیت دے۔',
+    source:'Abu Dawud 5074, Abu Dawud 5090'
+  },
+  forgiveness: {
+    label:'🌿 Forgiveness — Maghfirah',
+    arabic:'اللَّهُمَّ اغْفِرْ لَهُ وَارْحَمْهُ وَعَافِهِ وَاعْفُ عَنْهُ وَأَكْرِمْ نُزُلَهُ وَوَسِّعْ مَدْخَلَهُ وَاغْسِلْهُ بِالْمَاءِ وَالثَّلْجِ وَالْبَرَدِ وَنَقِّهِ مِنَ الْخَطَايَا كَمَا نَقَّيْتَ الثَّوْبَ الْأَبْيَضَ مِنَ الدَّنَسِ',
+    trans:'Allāhummaghfir lahū warḥamhu wa ʿāfihī waʿfu ʿanh, wa akrim nuzulahu wa wassiʿ madkhalahu, waghsilhu bil-māʾi wath-thalji wal-barad, wa naqqihī minal-khaṭāyā kamā naqqaytath-thawbal-abyaḍa minad-danas',
+    english:'O Allah, forgive them, have mercy on them, pardon them, grant them honour, make their place of entry spacious, wash them with water and snow and hail, and cleanse them of sins as white cloth is cleansed of filth.',
+    urdu:'اے اللہ! انہیں معاف کر، رحم فرما، عافیت دے، عفو فرما، مہمانی عزت سے کر، جگہ کشادہ کر، پانی برف اور اولوں سے دھو، اور گناہوں سے ایسے صاف کر جیسے سفید کپڑا میل سے صاف ہوتا ہے۔',
+    source:'Muslim 963 — Janazah prayer dua'
+  },
+  deceased: {
+    label:'🌹 Deceased — Rahma & Jannah',
+    arabic:'اللَّهُمَّ اغْفِرْ لَهُ وَارْفَعْ دَرَجَتَهُ فِي الْمَهْدِيِّينَ وَأَفْسِحْ لَهُ فِي قَبْرِهِ وَنَوِّرْ لَهُ فِيهِ وَأَدْخِلْهُ الْجَنَّةَ وَأَعِذْهُ مِنْ عَذَابِ الْقَبْرِ وَمِنْ عَذَابِ النَّارِ',
+    trans:'Allāhummaghfir lahū warfaʿ darajatahū fil-mahdiyyīn, wa afsiḥ lahū fī qabrihī wa nawwir lahū fīh, wa adkhilhul-jannah wa aʿidhhū min ʿadhābil-qabri wa min ʿadhābinnār',
+    english:'O Allah, forgive them and elevate their rank among the guided ones. Make their grave spacious and fill it with light. Admit them to Jannah and protect them from the punishment of the grave and the punishment of the Fire.',
+    urdu:'اے اللہ! انہیں بخش دے، اہل ہدایت میں درجہ بلند کر، قبر کشادہ کر اور روشن کر، جنت میں داخل کر اور قبر اور آگ کے عذاب سے بچا۔',
+    source:'Muslim 920, Muslim 963'
+  },
+  success: {
+    label:'✨ Success — Dunya & Akhirah',
+    arabic:'اللَّهُمَّ آتِهِ فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِهِ عَذَابَ النَّارِ اللَّهُمَّ أَحْسِنْ عَاقِبَتَهُ فِي الْأُمُورِ كُلِّهَا',
+    trans:'Allāhumma ātihī fid-dunyā ḥasanatan wa fil-ākhirati ḥasanatan wa qihī ʿadhābannār. Allāhumma aḥsin ʿāqibatahu fil-umūri kullih',
+    english:'O Allah, give them good in this world and good in the Hereafter, and protect them from the punishment of the Fire. O Allah, make the outcome of all their affairs good.',
+    urdu:'اے اللہ! انہیں دنیا میں بھی بھلائی دے اور آخرت میں بھی بھلائی دے اور آگ کے عذاب سے بچا۔ اے اللہ! ان کے تمام معاملات کا انجام بہتر بنا۔',
+    source:'Quran 2:201, Ahmad 4/181'
+  },
+  hajj: {
+    label:'🕋 Accepted Hajj',
+    arabic:'اللَّهُمَّ تَقَبَّلْ مِنْهُ حَجَّهُ وَاجْعَلْهُ حَجًّا مَبْرُورًا وَسَعْيًا مَشْكُورًا وَذَنْبًا مَغْفُورًا اللَّهُمَّ أَعِدْهُ إِلَى بَيْتِهِ سَالِمًا غَانِمًا',
+    trans:'Allāhumma taqabbal minhu ḥajjahu wajʿalhu ḥajjan mabrūran wa saʿyan mashkūran wa dhamban maghfūrā. Allāhumma aʿidhu ilā baytihī sāliman ghānimā',
+    english:'O Allah, accept their Hajj, make it an accepted pilgrimage, a gratefully received effort, and a forgiven sin. O Allah, return them to their home safely with great reward.',
+    urdu:'اے اللہ! ان کا حج قبول فرما، اسے حج مبرور، مشکور سعی اور معاف گناہ بنا۔ اے اللہ! انہیں سلامت اور بھرپور اجر کے ساتھ گھر واپس لوٹا۔',
+    source:'Tirmidhi 3585, Ibn Majah'
+  },
+  anxiety: {
+    label:'💙 Anxiety & Grief — Inner Peace',
+    arabic:'اللَّهُمَّ إِنِّي أَسْأَلُكَ لَهُ الثَّبَاتَ فِي الْأَمْرِ وَالْعَزِيمَةَ عَلَى الرُّشْدِ اللَّهُمَّ اكْشِفْ عَنْهُ الْغَمَّ وَالْهَمَّ وَالْحَزَنَ وَاجْعَلْ لَهُ مِنْ كُلِّ ضِيقٍ فَرَجًا وَمِنْ كُلِّ هَمٍّ مَخْرَجًا يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ',
+    trans:'Allāhumma innī asʾaluka lahū th-thabāta fil-amri wal-ʿazīmata ʿalar-rushd. Allāhumma ikshif ʿanhul-ghamma wal-hamma wal-ḥazana, wajʿal lahū min kulli ḍīqin farajan wa min kulli hammin makhrajan. Yā Ḥayyu yā Qayyūmu biraḥmatika astaghīth',
+    english:'O Allah, I ask You to give them firmness of purpose and determination upon guidance. O Allah, lift from them worry, anxiety and grief — grant them a way out of every difficulty and an exit from every hardship. O Ever-Living, O Sustainer, in Your mercy I seek help for them.',
+    urdu:'اے اللہ! ان کے لیے استحکام اور ہدایت پر عزم مانگتا ہوں۔ اے اللہ! ان سے غم، پریشانی اور حزن اٹھا لے — ہر تنگی میں فراخی اور ہر پریشانی سے نکلنے کا راستہ دے۔ اے ہمیشہ زندہ، اے قائم رکھنے والے — تیری رحمت سے ان کے لیے فریاد کرتا ہوں۔',
+    source:'Ibn Majah 3831, Hakim 1/545'
+  },
+  debt: {
+    label:'🔓 Freedom from Debt & Hardship',
+    arabic:'اللَّهُمَّ اقْضِ عَنْهُ الدَّيْنَ وَأَغْنِهِ مِنَ الْفَقْرِ اللَّهُمَّ إِنِّي أَعُوذُ بِكَ لَهُ مِنَ الْهَمِّ وَالْحَزَنِ وَالْعَجْزِ وَالْكَسَلِ وَالْبُخْلِ وَالْجُبْنِ وَضَلَعِ الدَّيْنِ وَغَلَبَةِ الرِّجَالِ',
+    trans:'Allāhumma iqḍi ʿanhud-dayna wa aghnihī minal-faqr. Allāhumma innī aʿūdhu bika lahū minal-hammi wal-ḥazan, wal-ʿajzi wal-kasal, wal-bukhli wal-jubn, wa ḍalaʿid-dayni wa ghalabatir-rijāl',
+    english:'O Allah, pay off their debt and enrich them from poverty. O Allah, I seek refuge in You for them from worry and grief, from incapacity and laziness, from miserliness and cowardice, from the burden of debt, and from the oppression of men.',
+    urdu:'اے اللہ! ان کا قرض ادا فرما اور انہیں غربت سے غنی کر۔ اے اللہ! میں ان کے لیے تجھ سے پناہ مانگتا ہوں غم، حزن، عاجزی، کاہلی، بخل، بزدلی، قرض کے بوجھ اور لوگوں کے تسلط سے۔',
+    source:'Bukhari 2893, Ibn Majah 3884'
+  },
+  knowledge: {
+    label:'📚 Knowledge & Wisdom',
+    arabic:'اللَّهُمَّ انْفَعْهُ بِمَا عَلَّمْتَهُ وَعَلِّمْهُ مَا يَنْفَعُهُ وَزِدْهُ عِلْمًا اللَّهُمَّ فَقِّهْهُ فِي الدِّينِ وَعَلِّمْهُ التَّأْوِيلَ',
+    trans:'Allāhumma nfaʿhu bimā ʿallamtahu wa ʿallihmū mā yanfaʿuhu wa zidhu ʿilmā. Allāhumma faqqihhu fid-dīni wa ʿallimhut-taʾwīl',
+    english:'O Allah, benefit them with what You have taught them, teach them what will benefit them, and increase them in knowledge. O Allah, grant them deep understanding of the religion and teach them its interpretation.',
+    urdu:'اے اللہ! جو تو نے انہیں سکھایا اس سے انہیں فائدہ پہنچا، انہیں وہ سکھا جو نفع بخش ہو اور علم میں اضافہ فرما۔ اے اللہ! انہیں دین کی سمجھ عطا فرما اور تاویل سکھا۔',
+    source:'Tirmidhi 3599, Bukhari 143'
+  },
+  general: {
+    label:'🤲 General Well-being',
+    arabic:'اللَّهُمَّ أَصْلِحْ لَهُ دِينَهُ الَّذِي هُوَ عِصْمَةُ أَمْرِهِ وَأَصْلِحْ لَهُ دُنْيَاهُ الَّتِي فِيهَا مَعَاشُهُ وَأَصْلِحْ لَهُ آخِرَتَهُ الَّتِي فِيهَا مَعَادُهُ وَاجْعَلِ الْحَيَاةَ زِيَادَةً لَهُ فِي كُلِّ خَيْرٍ',
+    trans:'Allāhumma aṣliḥ lahū dīnahul-ladhī huwa ʿiṣmatu amrih, wa aṣliḥ lahū dunyāhul-latī fīhā maʿāshuh, wa aṣliḥ lahū ākhiratahul-latī fīhā maʿāduh, wajʿalil-ḥayāta ziyādatan lahū fī kulli khayr',
+    english:'O Allah, set right for them their religion which is the safeguard of all their affairs; set right for them their worldly affairs which is their livelihood; set right for them their hereafter which is their return; and make this life an increase for them in every good.',
+    urdu:'اے اللہ! ان کا دین درست کر جو ان کے تمام معاملات کی حفاظت ہے، ان کی دنیا درست کر جس میں ان کی معیشت ہے، ان کی آخرت درست کر جہاں انہیں لوٹنا ہے، اور اس زندگی کو ان کے لیے ہر بھلائی میں اضافہ بنا۔',
+    source:'Muslim 2720'
+  }
+};
+
 // ── App State ──────────────────────────────────────────────────
 let currentTab = 'journey';
 let selectedCat = 'travel';
@@ -1062,16 +1219,37 @@ function toggleDay(id, forceOpen) {
 // ── Family Duas ────────────────────────────────────────────────
 function saveFamily() { localStorage.setItem('hajj-family', JSON.stringify(familyDuas)); }
 
+function onNeedChange() {
+  const need = document.getElementById('fneed').value;
+  const preview = document.getElementById('fduapreview');
+  if (!need || !FAMILY_DUAS[need]) { preview.style.display = 'none'; return; }
+  const d = FAMILY_DUAS[need];
+  preview.style.display = 'block';
+  preview.innerHTML = `
+    <div class="fdua-preview-arabic">${d.arabic}</div>
+    <div class="fdua-preview-trans">${d.trans}</div>
+    <div class="fdua-preview-english">${d.english}</div>`;
+}
+
 function addFamily() {
   const name = document.getElementById('fname').value.trim();
   const rel  = document.getElementById('frelation').value.trim();
-  const dua  = document.getElementById('fduareq').value.trim();
-  if (!name || !dua) return;
-  familyDuas.unshift({id: Date.now(), name, rel, dua, done: false});
+  const need = document.getElementById('fneed').value;
+  const note = document.getElementById('fduanote').value.trim();
+  if (!name || !need) { alert('Please enter a name and select a dua.'); return; }
+  const d = FAMILY_DUAS[need];
+  familyDuas.unshift({
+    id: Date.now(), name, rel, need,
+    label: d.label, arabic: d.arabic, trans: d.trans,
+    english: d.english, urdu: d.urdu, source: d.source,
+    note, done: false
+  });
   saveFamily();
   document.getElementById('fname').value = '';
   document.getElementById('frelation').value = '';
-  document.getElementById('fduareq').value = '';
+  document.getElementById('fneed').value = '';
+  document.getElementById('fduanote').value = '';
+  document.getElementById('fduapreview').style.display = 'none';
   renderFamily();
 }
 
@@ -1088,18 +1266,32 @@ function deleteFamily(id) {
 function renderFamily() {
   const grid = document.getElementById('familyGrid');
   if (!familyDuas.length) {
-    grid.innerHTML = `<div class="empty"><div class="empty-ico">🤲</div>Add your family members above.<br>Their duas will be remembered in your Hajj.</div>`;
+    grid.innerHTML = `<div class="empty"><div class="empty-ico">🤲</div><div>Add your family and loved ones above.<br>Their duas will be remembered in your Hajj.</div></div>`;
     return;
   }
-  grid.innerHTML = `<div class="fgrid">${familyDuas.map(f => `
+  grid.innerHTML = `<div class="fgrid">${familyDuas.map(f => {
+    // Support both old format (just f.dua text) and new rich format
+    const hasRich = f.arabic && f.trans;
+    return `
     <div class="fcard glass${f.done?' glass-green':''}">
-      <div class="fname">
-        <span>${f.name}${f.rel?` <span style="font-weight:400;opacity:0.6;font-size:11px">(${f.rel})</span>`:''}</span>
-        <button class="fcheck${f.done?' done':''}" onclick="toggleFamilyDone(${f.id})">${f.done?'✓':''}</button>
+      <div class="fcard-hdr">
+        <div class="fcard-info">
+          <span class="fname-text">${f.name}${f.rel ? ` <span class="frel-text">${f.rel}</span>` : ''}</span>
+          ${f.label ? `<span class="fneed-tag">${f.label}</span>` : ''}
+        </div>
+        <button class="fcheck${f.done?' done':''}" onclick="toggleFamilyDone(${f.id})" title="${f.done?'Mark undone':'Mark done'}">${f.done?'✓':''}</button>
       </div>
-      <div class="fdua">${f.dua}</div>
+      ${hasRich ? `
+        <div class="fcard-arabic">${f.arabic}</div>
+        <div class="fcard-trans">${f.trans}</div>
+        <div class="fcard-english">${f.english}</div>
+        ${f.urdu ? `<div class="fcard-urdu">${f.urdu}</div>` : ''}
+        ${f.source ? `<div class="fcard-source">— ${f.source}</div>` : ''}
+      ` : `<div style="font-size:12px;color:var(--muted);line-height:1.5">${f.dua||''}</div>`}
+      ${f.note ? `<div class="fnote-text">📝 ${f.note}</div>` : ''}
       <button class="fdel" onclick="deleteFamily(${f.id})">✕ remove</button>
-    </div>`).join('')}</div>`;
+    </div>`;
+  }).join('')}</div>`;
 }
 
 // ── Adhkar ─────────────────────────────────────────────────────
