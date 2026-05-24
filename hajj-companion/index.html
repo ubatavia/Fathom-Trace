@@ -182,6 +182,26 @@ body::before{
 .fnote-text{font-size:11px;color:var(--muted);font-style:italic;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);}
 .fdel{background:none;border:none;color:rgba(255,255,255,0.18);cursor:pointer;font-size:10px;padding:0;margin-top:8px;font-family:inherit;}
 .fdel:active{color:rgba(255,100,100,0.5);}
+/* fcard collapsible + req text + reorder */
+.fcard-hdr{cursor:pointer;margin-bottom:0;}
+.fcard-body{display:none;padding-top:10px;}
+.fcard.open .fcard-body{display:block;}
+.fcard-chev{font-size:10px;color:var(--muted);transition:transform 0.2s;flex-shrink:0;align-self:center;}
+.fcard.open .fcard-chev{transform:rotate(90deg);}
+.fcard-req{font-size:12px;color:var(--muted);font-style:italic;line-height:1.55;
+  padding:8px 10px;background:rgba(255,255,255,0.04);border-radius:var(--rs);
+  border-left:2px solid rgba(201,168,76,0.30);margin-bottom:10px;}
+.fcard-req-lbl{font-size:9px;font-weight:700;color:rgba(201,168,76,0.5);letter-spacing:0.07em;margin-bottom:3px;}
+.fcard-reorder{display:flex;flex-direction:column;gap:1px;flex-shrink:0;}
+.fcard-reorder button{background:none;border:none;color:rgba(255,255,255,0.22);cursor:pointer;
+  font-size:9px;line-height:1;padding:2px 5px;font-family:inherit;transition:color 0.15s;}
+.fcard-reorder button:active{color:var(--gold);}
+/* import/export toolbar */
+.fc-toolbar{display:flex;gap:6px;margin-bottom:10px;}
+.fc-tool-btn{flex:1;padding:8px 4px;border-radius:var(--rs);font-family:inherit;font-size:11px;font-weight:700;
+  cursor:pointer;background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  color:var(--muted);transition:all 0.2s;text-align:center;}
+.fc-tool-btn:active{background:rgba(201,168,76,0.08);color:var(--gold);}
 .empty{text-align:center;padding:44px 20px;color:var(--muted);font-size:13px;}
 .empty-ico{font-size:36px;opacity:0.35;margin-bottom:10px;}
 
@@ -333,6 +353,10 @@ body::before{
         <div id="fduapreview" style="display:none" class="fdua-preview"></div>
         <button class="btn-add" onclick="addFamily()">🤲 Add to Dua List</button>
       </div>
+    </div>
+    <div class="fc-toolbar">
+      <button class="fc-tool-btn" onclick="exportFamilyCSV()">⬇ Export CSV</button>
+      <label class="fc-tool-btn">⬆ Import CSV<input type="file" id="csvImport" accept=".csv" style="display:none" onchange="importFamilyCSV(this)"></label>
     </div>
     <div id="familyGrid"></div>
   </div>
@@ -2256,8 +2280,9 @@ function addFamily() {
   const need = document.getElementById('fneed').value;
   if (!name || !need) { alert('Please enter a name and select a category.'); return; }
   const d = FAMILY_DUAS[need];
+  const req = document.getElementById('fduareq').value.trim();
   familyDuas.unshift({
-    id: Date.now(), name, rel, need,
+    id: Date.now(), name, rel, need, req,
     label: d.label, arabic: d.arabic, trans: d.trans,
     english: d.english, urdu: d.urdu, source: d.source,
     done: false
@@ -2283,33 +2308,116 @@ function deleteFamily(id) {
   saveFamily(); renderFamily();
 }
 
+function toggleFamilyCard(id) {
+  document.getElementById('fc-' + id)?.classList.toggle('open');
+}
+
+function moveFamilyUp(id) {
+  const i = familyDuas.findIndex(x => x.id === id);
+  if (i <= 0) return;
+  [familyDuas[i-1], familyDuas[i]] = [familyDuas[i], familyDuas[i-1]];
+  saveFamily(); renderFamily();
+}
+
+function moveFamilyDown(id) {
+  const i = familyDuas.findIndex(x => x.id === id);
+  if (i < 0 || i >= familyDuas.length - 1) return;
+  [familyDuas[i+1], familyDuas[i]] = [familyDuas[i], familyDuas[i+1]];
+  saveFamily(); renderFamily();
+}
+
+function exportFamilyCSV() {
+  if (!familyDuas.length) { alert('No entries to export.'); return; }
+  const headers = ['name','relation','category','your_request','arabic','transliteration','english','urdu','source'];
+  const esc = v => '"' + String(v||'').replace(/"/g, '""') + '"';
+  const rows = familyDuas.map(f => [
+    f.name, f.rel, f.label, f.req, f.arabic, f.trans, f.english, f.urdu, f.source
+  ].map(esc).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'arafah-duas-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+function importFamilyCSV(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const lines = e.target.result.split('\n').filter(l => l.trim());
+    let added = 0;
+    lines.slice(1).forEach((line, i) => {
+      const c = parseCSVLine(line);
+      if (!c[0]) return;
+      const need = c[2] ? Object.keys(FAMILY_DUAS).find(k => FAMILY_DUAS[k].label === c[2]) || '' : '';
+      const rich = need ? FAMILY_DUAS[need] : null;
+      familyDuas.push({
+        id: Date.now() + i + 1,
+        name: c[0]||'', rel: c[1]||'', label: c[2]||'', req: c[3]||'',
+        arabic:  c[4] || (rich ? rich.arabic  : ''),
+        trans:   c[5] || (rich ? rich.trans   : ''),
+        english: c[6] || (rich ? rich.english : ''),
+        urdu:    c[7] || (rich ? rich.urdu    : ''),
+        source:  c[8] || (rich ? rich.source  : ''),
+        done: false
+      });
+      added++;
+    });
+    saveFamily(); renderFamily();
+    alert(added + ' entr' + (added===1?'y':'ies') + ' imported.');
+    input.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function parseCSVLine(line) {
+  const result = []; let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') {
+      if (inQ && line[i+1] === '"') { cur += '"'; i++; }
+      else inQ = !inQ;
+    } else if (c === ',' && !inQ) { result.push(cur.trim()); cur = ''; }
+    else cur += c;
+  }
+  result.push(cur.trim()); return result;
+}
+
 function renderFamily() {
   const grid = document.getElementById('familyGrid');
   if (!familyDuas.length) {
     grid.innerHTML = `<div class="empty"><div class="empty-ico">🤲</div><div>Add your family and loved ones above.<br>Their duas will be remembered in your Hajj.</div></div>`;
     return;
   }
-  grid.innerHTML = `<div class="fgrid">${familyDuas.map(f => {
-    // Support both old format (just f.dua text) and new rich format
+  grid.innerHTML = `<div class="fgrid">${familyDuas.map((f, idx) => {
     const hasRich = f.arabic && f.trans;
+    const isFirst = idx === 0, isLast = idx === familyDuas.length - 1;
     return `
-    <div class="fcard glass${f.done?' glass-green':''}">
-      <div class="fcard-hdr">
+    <div class="fcard glass${f.done?' glass-green':''}" id="fc-${f.id}">
+      <div class="fcard-hdr" onclick="toggleFamilyCard(${f.id})">
+        <div class="fcard-reorder">
+          <button onclick="event.stopPropagation();moveFamilyUp(${f.id})" ${isFirst?'disabled':''}>▲</button>
+          <button onclick="event.stopPropagation();moveFamilyDown(${f.id})" ${isLast?'disabled':''}>▼</button>
+        </div>
         <div class="fcard-info">
           <span class="fname-text">${f.name}${f.rel ? ` <span class="frel-text">${f.rel}</span>` : ''}</span>
           ${f.label ? `<span class="fneed-tag">${f.label}</span>` : ''}
         </div>
-        <button class="fcheck${f.done?' done':''}" onclick="toggleFamilyDone(${f.id})" title="${f.done?'Mark undone':'Mark done'}">${f.done?'✓':''}</button>
+        <span class="fcard-chev">▶</span>
+        <button class="fcheck${f.done?' done':''}" onclick="event.stopPropagation();toggleFamilyDone(${f.id})" title="${f.done?'Mark undone':'Mark done'}">${f.done?'✓':''}</button>
       </div>
-      ${hasRich ? `
-        <div class="fcard-arabic">${f.arabic}</div>
-        <div class="fcard-trans">${f.trans}</div>
-        <div class="fcard-english">${f.english}</div>
-        ${f.urdu ? `<div class="fcard-urdu">${f.urdu}</div>` : ''}
-        ${f.source ? `<div class="fcard-source">— ${f.source}</div>` : ''}
-      ` : `<div style="font-size:12px;color:var(--muted);line-height:1.5">${f.dua||''}</div>`}
-      ${f.note ? `<div class="fnote-text">📝 ${f.note}</div>` : ''}
-      <button class="fdel" onclick="deleteFamily(${f.id})">✕ remove</button>
+      <div class="fcard-body">
+        ${f.req ? `<div class="fcard-req"><div class="fcard-req-lbl">YOUR WORDS</div>${f.req}</div>` : ''}
+        ${hasRich ? `
+          <div class="fcard-arabic">${f.arabic}</div>
+          <div class="fcard-trans">${f.trans}</div>
+          <div class="fcard-english">${f.english}</div>
+          ${f.urdu ? `<div class="fcard-urdu">${f.urdu}</div>` : ''}
+          ${f.source ? `<div class="fcard-source">— ${f.source}</div>` : ''}
+        ` : `<div style="font-size:12px;color:var(--muted);line-height:1.5">${f.dua||''}</div>`}
+        <button class="fdel" onclick="deleteFamily(${f.id})">✕ remove</button>
+      </div>
     </div>`;
   }).join('')}</div>`;
 }
