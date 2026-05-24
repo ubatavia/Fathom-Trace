@@ -194,11 +194,18 @@ body::before{
 .fcard-req-lbl{font-size:9px;font-weight:700;color:rgba(201,168,76,0.5);letter-spacing:0.07em;margin-bottom:3px;}
 .fcard-reorder{display:none;}
 /* drag-and-drop */
-.drag-handle{color:rgba(255,255,255,0.22);cursor:grab;padding:2px 8px 2px 0;font-size:16px;
+.drag-handle{color:rgba(255,255,255,0.22);cursor:grab;padding:2px 6px 2px 0;font-size:16px;
   flex-shrink:0;align-self:center;touch-action:none;user-select:none;line-height:1;}
 .drag-handle:active{cursor:grabbing;color:var(--gold);}
 .drag-over{outline:2px solid rgba(201,168,76,0.55);outline-offset:-2px;border-radius:var(--r);}
 .dragging-ghost{opacity:0.22;}
+.move-top-btn{background:none;border:none;color:rgba(255,255,255,0.18);cursor:pointer;
+  font-size:10px;padding:0 4px 0 0;font-family:inherit;flex-shrink:0;align-self:center;line-height:1;}
+.move-top-btn:active{color:var(--gold);}
+/* request text snippet always visible on card header */
+.req-snippet{font-size:11px;color:rgba(255,255,255,0.42);font-style:italic;
+  padding:0 14px 9px 54px;line-height:1.45;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;}
 /* import/export toolbar */
 .fc-toolbar{display:flex;gap:6px;margin-bottom:10px;}
 .fc-tool-btn{flex:1;padding:8px 4px;border-radius:var(--rs);font-family:inherit;font-size:11px;font-weight:700;
@@ -2095,6 +2102,24 @@ const PERSONAL_REQUESTS = [
    english:'Our Lord, grant us from among our spouses and offspring comfort to our eyes and make us leaders for the righteous. O Allah, grant her a righteous spouse who loves her, has mercy on her, and helps her in her religion and worldly life.',
    urdu:'اے ہمارے رب! ہمیں ازواج اور اولاد سے آنکھوں کی ٹھنڈک عطا فرما اور ہمیں متقیوں کا پیشوا بنا۔ اے اللہ! اسے ایک نیک شوہر دے جو اس سے محبت کرے، مہربان ہو، اور دین و دنیا میں مدد کرے۔',
    source:'Quran 25:74, Tirmidhi'},
+  {id:'pr31',name:'Hira Khan',rel:'Friend',icon:'🕋',needs:['Accept Hajj','Sibling for Maryam','Parents Visa'],
+   arabic:'اللَّهُمَّ ادْعُنَا إِلَى بَيْتِكَ الْحَرَامِ مُجَاوِرِينَ، وَارْزُقْ مَرْيَمَ أَخًا أَوْ أُخْتًا تَكُونُ لَهَا قُرَّةَ عَيْنٍ، وَيَسِّرْ لِأَبَوَيْهَا الْقُدُومَ إِلَيْنَا سَرِيعًا وَأَزِلْ عَنْهُمَا كُلَّ عَقَبَةٍ فِي الطَّرِيقِ',
+   trans:"Allāhumma-d'unā ilā baytikal-ḥarāmi mujāwirīn, warzuq Maryama akhan aw ukhtan takūnu lahā qurrata 'ayn, wa yassir li-abawayha l-qudūma ilaynā sarī'an wa azil 'anhumā kulla 'aqabatin fit-ṭarīq",
+   english:"O Allah, invite us to Your Sacred House as neighbours. Grant Maryam a brother or sister who will be the comfort of her eyes. Ease her parents' arrival to us swiftly and remove every obstacle in their path.",
+   urdu:'اے اللہ! ہمیں اپنے حرم میں ہمسائے بناکر بلا لے۔ مریم کو ایسا بھائی یا بہن دے جو اس کی آنکھوں کی ٹھنڈک ہو۔ اس کے والدین کی جلد آمد آسان فرما اور ہر رکاوٹ دور کر۔',
+   source:'Bukhari 1795, Quran 3:38'},
+  {id:'pr32',name:'Farooq Khan',rel:'Friend',icon:'💛',needs:['Family Health','Shifa (ICU)','University Choice','Hajj Next Year','Orphaned Children'],
+   arabic:'اللَّهُمَّ بَارِكْ فِي صِحَّةِ فَارُوقٍ وَنَازِيَا وَأَوْلَادِهِمَا عَائِشَةَ وَيُوسُفَ وَاهْدِهِمَا، وَاشْفِ أُخْتَهَا الْمَرِيضَةَ فِي الْمُسْتَشْفَى شِفَاءً كَامِلًا، وَاهْدِ يُوسُفَ لِلِاخْتِيَارِ الصَّوَابِ، وَتَقَبَّلْ حَجَّهُمُ الْقَادِمَ، وَارْحَمْ أَبْنَاءَ أَخِيهَا الْمُتَوَفَّى وَاكْفُلْهُمْ',
+   trans:"Allāhumma bārik fī ṣiḥḥati Fārūq wa Nāziyā wa awlādihimā 'Ā'isha wa Yūsuf wahdihumā, washfi ukhtaha l-marīḍata fil-mustashfā shifā'an kāmilā, wahdi Yūsufa lil-ikhtiyāri ṣ-ṣawāb, wa taqabbal ḥajjahum al-qādim, warḥam abnā'a akhīha l-mutawaffā wakfalhum",
+   english:'O Allah, bless the health of Farooq, Nazia and their children Aisha and Yusuf, and guide them. Grant complete shifa to her sister in hospital. Guide Yusuf to the right university choice. Accept their Hajj next year. Have mercy on the children of her deceased brother and care for them.',
+   urdu:'اے اللہ! فاروق، نازیہ اور ان کے بچوں عائشہ اور یوسف کی صحت میں برکت دے اور انہیں ہدایت دے۔ ہسپتال میں اس کی بیمار بہن کو مکمل شفا دے۔ یوسف کو صحیح یونیورسٹی کے انتخاب کی ہدایت دے۔ آئندہ سال ان کا حج قبول فرما اور اس کے مرحوم بھائی کے بچوں پر رحم فرما۔',
+   source:'Bukhari 5675, Quran 65:3, 93:6'},
+  {id:'pr33',name:'Muhammad Khurram Hankf',rel:'Friend',icon:'🌿',needs:['Barakah','Rishta for Daughters','Family Health'],
+   arabic:'اللَّهُمَّ بَارِكْ فِي حَيَاتِهِ وَارْزُقْهُ الصِّحَّةَ وَالْعَافِيَةَ، وَيَسِّرْ لِبَنَاتِهِ أَزْوَاجًا صَالِحِينَ فِي أَقْرَبِ وَقْتٍ مِمَّا تَرَى، وَاحْفَظْ جَمِيعَ أَفْرَادِ عَائِلَتِهِ مِنْ كُلِّ سُوءٍ وَضُرٍّ',
+   trans:"Allāhumma bārik fī ḥayātihi warzuqhu ṣ-ṣiḥḥata wal-'āfiya, wa yassir li-banātihi azwājan ṣāliḥīna fī aqrabi waqtin mimmā tarā, waḥfaẓ jamī'a afrādi 'ā'ilatihi min kulli sū'in wa ḍurr",
+   english:'O Allah, bless his life and grant him health and wellbeing. Ease for his daughters righteous marriages at the earliest time you see fit. Protect all members of his family from every harm and hardship.',
+   urdu:'اے اللہ! اس کی زندگی میں برکت دے اور صحت و عافیت عطا فرما۔ اپنی مرضی سے جلد سے جلد اس کی بیٹیوں کے لیے نیک ازواج میسر فرما اور اس کے تمام خاندان کو ہر برائی اور تکلیف سے محفوظ رکھ۔',
+   source:'Quran 25:74, Tirmidhi 3563'},
 ];
 
 // Original dua requests from the submitted Arafah list
@@ -2121,14 +2146,17 @@ const PERSONAL_REQS = {
   pr20: 'Call us for Hajj next year; call my maa for Hajj; forgiveness of sins; place in Jannah; long life, health, protection, success of children and mothers; kids be coolness of our eyes on siraat-e-mustaqeem; health of siblings and families; abundant halal rizq; barkat in relationship; complete shifaa for all sick; freedom for Gaza, Kashmir, Sudan, Iran and all oppressed; no child sleep hungry; shifaa for all kids in hospitals; mercy on Day of Judgement.',
   pr21: 'May Allah accept all ibadah and duas during Hajj and entire life. Provide good health and wealth.',
   pr22: 'May Allah accept your Hajj and make this journey full of blessings, peace, and spiritual growth. Remember us in your prayers.',
-  pr23: 'Ya Al-Wadud: place deep affection and sincere romantic love in heart of the one she wants to be with; unite them with clarity, tenderness and emotional peace. Ya Al-Fattah: grant her barakah in time, ease in schedule, balance between work, rest and worship. Ya Al-Razzaq: open for her friend Reem doors of a righteous job with growth, dignity and barakah. Ya Al-Latif: soften hearts in her family, gentleness between her and her mother, replace tension with compassion and love.',
+  pr23: 'Allahumma ya Al-Wadud (The Most Loving), place deep affection, longing, and sincere romantic love in the heart of the one she wants to be with. Unite them in love with clarity, mutual tenderness, and emotional peace, and bring them back together in the most beautiful and gentle way. Ya Hadi guide and inspire the one she loves to be gentler, more patient, more caring and more actively involved towards her.\n\nAllahumma ya Al-Fattah (The Opener), grant her barakah in her time, ease in her schedule, and balance between her work, rest, and worship. Fill her days with calm, consistency, and a heart at peace.\n\nAllahumma ya Al-Razzaq (The Provider), open for her dear friend Reem the doors of a righteous job filled with growth, dignity, and barakah. Place contentment, relief, and expansion in her heart and provision.\n\nAllahumma ya Al-Latif (The Gentle), soften the hearts within her family. Place gentleness between her and her mother, remove all tension and misunderstanding, and replace it with compassion, patience, and sincere love.',
   pr24: 'May Allah grant myself, Adnan, Zayaan, and Zaira all good health, barakah, success, and prosperity in this life and the next; that He protects and guides Zayaan and Zaira, blesses them with strong iman, good character, and a righteous future; and that He fills our home and hearts with peace, contentment, sakinah, and tranquility, keeping our family united, protected, and always on the right path. May Allah grant us ease in all our affairs, remove worries and hardships, and surround us with His mercy and blessings always.',
   pr25: "Please pray for Jahanzeb and Maha's parents health and safety. Please pray for the health, wellbeing and sustenance of our family and all future members of it inshaAllah. Please pray may Allah make us a waseela for those in need around us inshaAllah.",
   pr26: 'Please pray that I go through a smooth pregnancy and be blessed with a healthy baby. Make that baby the means of peace and happiness for us. Make that baby a reason that the parents are proud of them. Please pray for a smooth delivery (honestly I am super scared). Also for our residency process. That it goes smooth and we make it to the position we have been hoping for. For my NAC exam result. And I am also taking qe1 soon. Hamari dosti k liey k Allah miyan nazar e bad se bacha k rakhain n barkat dain is dosti main.',
   pr27: 'May Allah accept your Hajj and invite my family and I for Hajj as well. May Allah bring peace to the world and help the entire Muslim Ummah unite against the oppressors. May Allah bless our parents and all those before them.',
   pr28: 'Please pray for the health and wellbeing of my family, prosperity and happiness for all our loved ones. Job for Malaika. My friend Abrar is going to have his first kid this year, pray for it go well inshAllah.',
   pr29: 'May I be granted health, peace, happiness, great wealth, and a righteous, loving spouse who is a source of comfort and goodness in my life.',
-  pr30: 'Please pray for my Marriage'
+  pr30: 'Please pray for my Marriage',
+  pr31: "May Allah invite us for Hajj and Umrah, and bless Maryam with a sister or brother. Mery ami abu ka super visa abhi tak security verification mein hy — dua karna wo jaldi say ajayein.",
+  pr32: "1) Health, barakah and aafiat for Farooq/Nazia and children Aisha and Yusuf, and their guidance.\n2) Health and wellness for parents Tahira/Akhtar and Mother-in-law Surraya.\n3) Health for Nazia's elder sister who is sick and in ICU.\n4) Yusuf's decision of choice of university.\n5) Hajj next year inshAllah.\n6) Prayers for children of Nazia's deceased brother.",
+  pr33: "May Allah give barakah in life and find suitable rishta for daughters in coming years. Also pray for health of all family members. JazakAllah"
 };
 let prayedRequests  = JSON.parse(localStorage.getItem('hajj-prayed') || '[]');
 let personalOrder   = JSON.parse(localStorage.getItem('hajj-personal-order') || 'null');
@@ -2237,6 +2265,7 @@ function renderPersonalRequests() {
       <div class="pr-card glass${prayed ? ' prayed-card' : ''}" id="prc-${p.id}">
         <div class="pr-hdr" onclick="togglePersonalCard('${p.id}')">
           <span class="drag-handle" data-id="${p.id}" data-type="personal" onclick="event.stopPropagation()">⠿</span>
+          <button class="move-top-btn" onclick="event.stopPropagation();moveToTop('personal','${p.id}')" title="Move to top">↑</button>
           <div class="pr-ico">${p.icon}</div>
           <div class="pr-info">
             <div class="pr-name">${p.name}</div>
@@ -2245,6 +2274,7 @@ function renderPersonalRequests() {
           </div>
           <span class="pr-chev">▶</span>
         </div>
+        ${req ? `<div class="req-snippet">"${req.split('\n')[0].slice(0,110)}${req.length>110?'…':''}"</div>` : ''}
         <div class="pr-body">
           ${req ? `<div class="pr-req fcard-req"><div class="fcard-req-lbl">THEIR WORDS</div>${req.replace(/\n/g,'<br>')}</div>` : ''}
           <div class="pr-arabic">${p.arabic}</div>
@@ -2359,6 +2389,25 @@ function deleteFamily(id) {
 
 function toggleFamilyCard(id) {
   document.getElementById('fc-' + id)?.classList.toggle('open');
+}
+
+function moveToTop(type, id) {
+  if (type === 'family') {
+    const i = familyDuas.findIndex(x => x.id === id);
+    if (i <= 0) return;
+    const [item] = familyDuas.splice(i, 1);
+    familyDuas.unshift(item);
+    saveFamily(); renderFamily();
+  } else {
+    const ordered = getOrderedPersonalRequests();
+    const i = ordered.findIndex(x => x.id === id);
+    if (i <= 0) return;
+    const [item] = ordered.splice(i, 1);
+    ordered.unshift(item);
+    personalOrder = ordered.map(p => p.id);
+    localStorage.setItem('hajj-personal-order', JSON.stringify(personalOrder));
+    renderPersonalRequests();
+  }
 }
 
 // ── Drag-and-drop reorder (pointer events — works mouse + touch) ──
@@ -2516,6 +2565,7 @@ function renderFamily() {
     <div class="fcard glass${f.done?' glass-green':''}" id="fc-${f.id}">
       <div class="fcard-hdr" onclick="toggleFamilyCard(${f.id})">
         <span class="drag-handle" data-id="${f.id}" data-type="family" onclick="event.stopPropagation()">⠿</span>
+        <button class="move-top-btn" onclick="event.stopPropagation();moveToTop('family',${f.id})" title="Move to top">↑</button>
         <div class="fcard-info">
           <span class="fname-text">${f.name}${f.rel ? ` <span class="frel-text">${f.rel}</span>` : ''}</span>
           ${f.label ? `<span class="fneed-tag">${f.label}</span>` : ''}
@@ -2523,6 +2573,7 @@ function renderFamily() {
         <span class="fcard-chev">▶</span>
         <button class="fcheck${f.done?' done':''}" onclick="event.stopPropagation();toggleFamilyDone(${f.id})" title="${f.done?'Mark undone':'Mark done'}">${f.done?'✓':''}</button>
       </div>
+      ${f.req ? `<div class="req-snippet">"${f.req.slice(0,110)}${f.req.length>110?'…':''}"</div>` : ''}
       <div class="fcard-body">
         ${f.req ? `<div class="fcard-req"><div class="fcard-req-lbl">YOUR WORDS</div>${f.req}</div>` : ''}
         ${hasRich ? `
