@@ -185,6 +185,42 @@ body::before{
 .empty{text-align:center;padding:44px 20px;color:var(--muted);font-size:13px;}
 .empty-ico{font-size:36px;opacity:0.35;margin-bottom:10px;}
 
+/* ── Personal Requests List ── */
+.pr-section{margin-bottom:4px;}
+.pr-label{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.06em;margin-bottom:10px;padding:0 2px;}
+.pr-card{margin-bottom:8px;border-radius:var(--r);overflow:hidden;}
+.pr-hdr{padding:13px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;user-select:none;}
+.pr-ico{width:34px;height:34px;border-radius:50%;background:rgba(201,168,76,0.10);border:1.5px solid rgba(201,168,76,0.22);
+  display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.pr-info{flex:1;min-width:0;}
+.pr-name{font-size:13px;font-weight:700;}
+.pr-rel{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.pr-needs{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px;}
+.pr-need-tag{font-size:9px;padding:2px 7px;border-radius:12px;background:rgba(201,168,76,0.10);border:1px solid rgba(201,168,76,0.22);color:var(--gold);font-weight:700;}
+.pr-chev{color:var(--muted);font-size:11px;transition:transform 0.2s;flex-shrink:0;}
+.pr-card.open .pr-chev{transform:rotate(90deg);}
+.pr-body{display:none;padding:0 14px 14px;}
+.pr-card.open .pr-body{display:block;}
+.pr-arabic{font-family:'Amiri',serif;font-size:22px;color:var(--gold);direction:rtl;text-align:right;
+  line-height:2;padding:12px 14px;background:rgba(201,168,76,0.05);
+  border-radius:var(--rs);border-right:2px solid rgba(201,168,76,0.25);margin-bottom:10px;}
+.pr-trans{font-size:11px;color:var(--muted);font-style:italic;line-height:1.6;margin-bottom:6px;}
+.pr-english{font-size:13px;line-height:1.6;margin-bottom:6px;}
+.pr-urdu{font-family:'Amiri',serif;font-size:15px;color:rgba(201,168,76,0.7);direction:rtl;text-align:right;
+  line-height:1.9;border-top:1px solid var(--border);padding-top:8px;margin-top:4px;margin-bottom:6px;}
+.pr-source{font-size:10px;color:rgba(201,168,76,0.4);font-weight:700;margin-bottom:10px;}
+.pr-pray-btn{width:100%;padding:9px;border-radius:var(--rs);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.pr-pray-btn.unprayed{background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);color:var(--gold);}
+.pr-pray-btn.prayed{background:rgba(31,122,76,0.15);border:1px solid rgba(31,122,76,0.35);color:var(--green2);}
+.pr-card.prayed-card .pr-ico{background:rgba(31,122,76,0.12);border-color:rgba(31,122,76,0.28);}
+/* Add form toggle */
+.pr-add-toggle{width:100%;padding:11px;background:rgba(255,255,255,0.04);border:1px dashed rgba(201,168,76,0.25);
+  border-radius:var(--rs);color:var(--muted);font-family:inherit;font-size:13px;cursor:pointer;transition:all 0.2s;margin-bottom:10px;}
+.pr-add-toggle:active{background:rgba(201,168,76,0.08);}
+/* Auto-enhance hint */
+.enhance-hint{font-size:11px;color:var(--green2);padding:7px 10px;background:rgba(31,122,76,0.08);
+  border-radius:var(--rs);border:1px solid rgba(31,122,76,0.2);margin-top:6px;display:none;}
+
 /* ── Adhkar ── */
 .pills{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
 .pills::-webkit-scrollbar{display:none;}
@@ -259,36 +295,44 @@ body::before{
 
   <div class="panel" id="panel-family">
     <div class="slabel">🤲 Family Duas</div>
-    <div class="addform glass">
-      <div class="flabel">Make dua for someone you love</div>
-      <div class="frow">
-        <div class="fcol"><input class="finput" id="fname" placeholder="Their name" /></div>
-        <div class="fcol"><input class="finput" id="frelation" placeholder="Relation (e.g. Mother)" /></div>
+    <div class="pr-section">
+      <div class="pr-label">📋 YOUR ARAFAH DUA LIST</div>
+      <div id="personalRequestsList"></div>
+    </div>
+    <button class="pr-add-toggle" onclick="toggleAddForm()" id="addFormToggle">➕ Add More People</button>
+    <div id="addFormWrap" style="display:none">
+      <div class="addform glass">
+        <div class="flabel">Add someone to pray for</div>
+        <div class="frow">
+          <div class="fcol"><input class="finput" id="fname" placeholder="Their name" /></div>
+          <div class="fcol"><input class="finput" id="frelation" placeholder="Relation" /></div>
+        </div>
+        <div style="margin-bottom:8px">
+          <textarea class="ftextarea" id="fduareq" placeholder="What to ask Allah for them — type freely (e.g. shifa, job, marriage, passing exams…)" oninput="autoDetectNeed(this.value)"></textarea>
+          <div class="enhance-hint" id="enhanceHint"></div>
+        </div>
+        <div style="margin-bottom:8px">
+          <select class="fselect" id="fneed" onchange="onNeedChange()">
+            <option value="">— Category (auto-detected or choose) —</option>
+            <option value="shifa">💚 Shifa — Health &amp; Healing</option>
+            <option value="rizq">💰 Rizq — Provision &amp; Barakah</option>
+            <option value="marriage">💍 Marriage — Good Spouse</option>
+            <option value="children">👶 Children — Righteous Offspring</option>
+            <option value="guidance">🌟 Guidance — Hidayah &amp; Steadfastness</option>
+            <option value="protection">🛡️ Protection — Safety &amp; ʿAfiyah</option>
+            <option value="forgiveness">🌿 Forgiveness — Maghfirah</option>
+            <option value="deceased">🌹 Deceased — Rahma &amp; Jannah</option>
+            <option value="success">✨ Success — Dunya &amp; Akhirah</option>
+            <option value="hajj">🕋 Accepted Hajj</option>
+            <option value="anxiety">💙 Anxiety &amp; Inner Peace</option>
+            <option value="debt">🔓 Freedom from Debt &amp; Hardship</option>
+            <option value="knowledge">📚 Knowledge &amp; Exams</option>
+            <option value="general">🤲 General Well-being</option>
+          </select>
+        </div>
+        <div id="fduapreview" style="display:none" class="fdua-preview"></div>
+        <button class="btn-add" onclick="addFamily()">🤲 Add to Dua List</button>
       </div>
-      <div style="margin-bottom:8px">
-        <select class="fselect" id="fneed" onchange="onNeedChange()">
-          <option value="">— What to ask Allah for them —</option>
-          <option value="shifa">💚 Shifa — Health &amp; Healing</option>
-          <option value="rizq">💰 Rizq — Provision &amp; Barakah</option>
-          <option value="marriage">💍 Marriage — Good Spouse</option>
-          <option value="children">👶 Children — Righteous Offspring</option>
-          <option value="guidance">🌟 Guidance — Hidayah &amp; Steadfastness</option>
-          <option value="protection">🛡️ Protection — Safety &amp; ʿAfiyah</option>
-          <option value="forgiveness">🌿 Forgiveness — Maghfirah</option>
-          <option value="deceased">🌹 Deceased — Rahma &amp; Jannah</option>
-          <option value="success">✨ Success — Dunya &amp; Akhirah</option>
-          <option value="hajj">🕋 Accepted Hajj</option>
-          <option value="anxiety">💙 Anxiety &amp; Grief — Inner Peace</option>
-          <option value="debt">🔓 Freedom from Debt &amp; Hardship</option>
-          <option value="knowledge">📚 Knowledge &amp; Wisdom</option>
-          <option value="general">🤲 General Well-being</option>
-        </select>
-      </div>
-      <div id="fduapreview" style="display:none" class="fdua-preview"></div>
-      <div style="margin-bottom:8px">
-        <textarea class="ftextarea" id="fduanote" placeholder="Personal note (optional — e.g. for their surgery, for their job search…)"></textarea>
-      </div>
-      <button class="btn-add" onclick="addFamily()">🤲 Add to My Dua List</button>
     </div>
     <div id="familyGrid"></div>
   </div>
@@ -1842,6 +1886,191 @@ const DUAS_LIB = [
    source:'Bukhari 1377, Muslim 588'},
 ];
 
+// ── Personal Requests (Arafah Dua List) ───────────────────────
+const PERSONAL_REQUESTS = [
+  {id:'pr01',name:'Mil & Fil',rel:'Wife & Daughter',icon:'💕',needs:['Health','Rizq','Job','Happiness'],
+   arabic:'اللَّهُمَّ أَصْلِحْ لَهُمَا دِينَهُمَا وَدُنْيَاهُمَا وَآخِرَتَهُمَا، وَارْزُقْهُمَا صِحَّةً وَعَافِيَةً وَرِزْقًا حَلَالًا طَيِّبًا، وَاجْعَلْهُمَا مِنَ الشَّاكِرِينَ الْمُطْمَئِنِّينَ',
+   trans:"Allāhumma aṣliḥ lahumā dīnahumā wa dunyāhumā wa ākhiratahumā, warzuqhumā ṣiḥḥatan wa 'āfiyatan wa rizqan ḥalālan ṭayyibā, waj'alhumā minash-shākirīnal-muṭma'innīn",
+   english:'O Allah, rectify for them their religion, their worldly life, and their Hereafter. Grant them health, wellbeing, and pure halal provision, and make them among the grateful and contented.',
+   urdu:'اے اللہ! ان کی دین، دنیا اور آخرت سنوار دے۔ انہیں صحت، عافیت اور پاکیزہ حلال رزق عطا فرما، اور انہیں شکرگزار اور مطمئن لوگوں میں شامل کر۔',
+   source:'Muslim 2720, Ahmad'},
+  {id:'pr02',name:'Mom & Dad',rel:'Parents',icon:'👨‍👩',needs:['Health','Wealth','Long Life','Jannah'],
+   arabic:'رَّبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا۔ اللَّهُمَّ اغْفِرْ لَهُمَا وَارْحَمْهُمَا وَعَافِهِمَا وَاعْفُ عَنْهُمَا، وَبَارِكْ لَهُمَا فِي عُمُرِهِمَا وَصِحَّتِهِمَا وَرِزْقِهِمَا',
+   trans:"Rabbi'rḥamhumā kamā rabbayānī ṣaghīrā. Allāhummaghfir lahumā warḥamhumā wa 'āfihimā wa'fu 'anhumā, wa bārik lahumā fī 'umurihumā wa ṣiḥḥatihimā wa rizqihimā",
+   english:'My Lord, have mercy on them as they raised me when I was young. O Allah, forgive them, have mercy on them, grant them wellbeing, pardon them, and bless them in their lifespan, health, and provision.',
+   urdu:'اے میرے رب! ان پر رحم فرما جیسے انہوں نے مجھے بچپن میں پالا۔ اے اللہ! انہیں بخش دے، ان پر رحم فرما، انہیں عافیت دے، ان سے درگزر فرما، اور ان کی عمر، صحت اور رزق میں برکت دے۔',
+   source:'Quran 17:24, Muslim 963'},
+  {id:'pr03',name:'Saad & Hureema',rel:'Family',icon:'🤝',needs:['Health','Wealth','Happiness'],
+   arabic:'اللَّهُمَّ بَارِكْ لَهُمَا فِي صِحَّتِهِمَا وَرِزْقِهِمَا وَسَعَادَتِهِمَا، وَاجْعَلْ حَيَاتَهُمَا مَلِيئَةً بِرِضَاكَ وَنِعَمِكَ، وَاكْتُبْ لَهُمَا الْخَيْرَ فِي كُلِّ أَمْرٍ',
+   trans:"Allāhumma bārik lahumā fī ṣiḥḥatihimā wa rizqihimā wa sa'ādatihimā, waj'al ḥayātahumā malī'atan biriḍāka wa ni'amika, waktub lahumāl-khayra fī kulli amr",
+   english:'O Allah, bless them in their health, provision, and happiness. Make their lives filled with Your pleasure and blessings, and decree goodness for them in every matter.',
+   urdu:'اے اللہ! ان کی صحت، رزق اور خوشی میں برکت دے۔ ان کی زندگی کو اپنی رضا اور نعمتوں سے بھر دے، اور ان کے ہر معاملے میں بھلائی لکھ دے۔',
+   source:'Muslim, Bukhari'},
+  {id:'pr04',name:'Uzair & Zulekha',rel:'Family',icon:'🌿',needs:['Health','Wealth','Happiness'],
+   arabic:'اللَّهُمَّ اجْعَلْ لَهُمَا مِنْ كُلِّ ضِيقٍ مَخْرَجًا، وَمِنْ كُلِّ هَمٍّ فَرَجًا، وَارْزُقْهُمَا مِنْ حَيْثُ لَا يَحْتَسِبَانِ، وَأَدِمْ عَلَيْهِمَا الصِّحَّةَ وَالسَّعَادَةَ',
+   trans:"Allāhumma-j'al lahumā min kulli ḍīqin makhrajā, wa min kulli hammin farajā, warzuqhumā min ḥaythu lā yaḥtasibān, wa adim 'alayhimas-ṣiḥḥata was-sa'āda",
+   english:'O Allah, make a way out of every difficulty for them, and relief from every worry. Provide for them from sources they cannot imagine, and sustain them with continuous health and joy.',
+   urdu:'اے اللہ! ان کے لیے ہر تنگی سے نکلنے کا راستہ بنا دے، ہر غم سے چھٹکارا دلا دے، انہیں وہاں سے رزق دے جہاں سے انہیں گمان بھی نہ ہو، اور انہیں صحت اور خوشی سے نوازتا رہ۔',
+   source:'Quran 65:3, Tirmidhi 3563'},
+  {id:'pr05',name:'Unaiza & Saad',rel:'Sister & SIL',icon:'✈️',needs:['Australia Process','Success','Ease'],
+   arabic:'اللَّهُمَّ يَسِّرْ لَهُمَا أُمُورَهُمَا وَلَا تُعَسِّرْ، وَافْتَحْ لَهُمَا أَبْوَابَ الرِّزْقِ وَالنَّجَاحِ، وَاجْعَلْ تَنَقُّلَهُمَا سَبَبًا لِلْخَيْرِ وَالسَّعَادَةِ',
+   trans:"Allāhumma yassir lahumā umūrahumā wa lā tu'assir, waftaḥ lahumā abwābar-rizqi wan-najāḥ, waj'al tanaqqulahuma sababan lil-khayri was-sa'āda",
+   english:'O Allah, make their affairs easy and not difficult. Open for them the doors of provision and success, and make their migration a means of goodness and happiness.',
+   urdu:'اے اللہ! ان کے معاملات کو آسان فرما، مشکل نہ بنا۔ ان کے لیے رزق اور کامیابی کے دروازے کھول دے، اور ان کی نقل مکانی کو خیر اور خوشی کا ذریعہ بنا دے۔',
+   source:'Ibn Hibban 3/255, Quran 65:3'},
+  {id:'pr06',name:'Online Request',rel:'Health · Wealth · Job · Marriage',icon:'🌐',needs:['Health','Wealth','Job','Marriage'],
+   arabic:'اللَّهُمَّ اشْفِهِمْ وَعَافِهِمْ، وَارْزُقْهُمْ رِزْقًا حَلَالًا وَاسِعًا، وَيَسِّرْ لَهُمُ الْعَمَلَ الصَّالِحَ، وَاجْمَعْهُمْ بِأَزْوَاجٍ صَالِحِينَ يُقِرُّونَ أَعْيُنَهُمْ',
+   trans:"Allāhumma ashfihim wa 'āfihim, warzuqhum rizqan ḥalālan wāsi'an, wa yassir lahumul-'amal, wajma'hum bi'azwājin ṣāliḥīna yuqirrūna a'yunahum",
+   english:'O Allah, heal them and grant them wellbeing. Provide for them with halal and abundant provision, ease righteous work for them, and unite them with righteous spouses who are a comfort to their eyes.',
+   urdu:'اے اللہ! انہیں شفا اور عافیت دے، انہیں حلال اور وافر رزق دے، ان کے لیے نیک کام آسان کر، اور انہیں ایسے نیک شریکِ حیات سے ملا دے جو ان کی آنکھوں کی ٹھنڈک بنیں۔',
+   source:'Bukhari 5675, Tirmidhi 3563, Quran 25:74'},
+  {id:'pr07',name:'Online Request',rel:'Exams · Health · Wealth',icon:'📚',needs:['Exams','Health','Wealth'],
+   arabic:'اللَّهُمَّ اشْرَحْ لَهُمْ صُدُورَهُمْ وَيَسِّرْ لَهُمْ أُمُورَهُمْ، وَأَعِنْهُمْ عَلَى الْعِلْمِ وَالنَّجَاحِ، وَارْزُقْهُمُ الصِّحَّةَ وَالرِّزْقَ الطَّيِّبَ',
+   trans:"Allāhumma-shraḥ lahum ṣudūrahum wa yassir lahum umūrahum, wa a'inhum 'alal-'ilmi wan-najāḥ, warzuqhumuṣ-ṣiḥḥata war-rizqaṭ-ṭayyib",
+   english:'O Allah, expand their hearts and ease their affairs. Help them in knowledge and success, and grant them health and pure provision.',
+   urdu:'اے اللہ! ان کے سینے کھول دے اور ان کے معاملات آسان فرما، علم اور کامیابی میں ان کی مدد فرما، اور انہیں صحت اور پاکیزہ رزق عطا فرما۔',
+   source:'Quran 20:25, Ahmad'},
+  {id:'pr08',name:'Online Request',rel:"Dad's Surgery · Family Support",icon:'🏥',needs:['Surgery','Shifa','Rizq','Job'],
+   arabic:'اللَّهُمَّ رَبَّ النَّاسِ أَذْهِبِ الْبَأْسَ، اشْفِ أَنْتَ الشَّافِي لَا شِفَاءَ إِلَّا شِفَاؤُكَ شِفَاءً لَا يُغَادِرُ سَقَمًا، وَيَسِّرْ لِأَبْنَائِهِمُ الرِّزْقَ الْحَلَالَ لِخِدْمَةِ أَهْلِهِمْ',
+   trans:"Allāhumma rabban-nāsi adhhibil-ba'sa, ishfi antas-shāfī lā shifā'a illā shifā'uka shifā'an lā yughādiru saqamā, wa yassir li'abnā'ihimur-rizqal-ḥalāla likhidmati ahlihim",
+   english:'O Allah, Lord of mankind, remove the affliction. Heal — You are the Healer, there is no cure but Yours, a healing that leaves no illness. Ease halal provision for their children to serve their family.',
+   urdu:'اے اللہ! لوگوں کے رب، تکلیف دور کر دے — تو ہی شافی ہے، تیری شفا کے سوا کوئی شفا نہیں، ایسی شفا جو کوئی بیماری نہ چھوڑے۔ ان کے بچوں کو اپنے گھر والوں کی خدمت کے لیے حلال رزق آسان فرما دے۔',
+   source:'Bukhari 5675, Quran 65:3'},
+  {id:'pr09',name:'Online Source',rel:'Doctor Exams',icon:'🩺',needs:['Medical Exams','Success'],
+   arabic:'اللَّهُمَّ انْفَعْهُمْ بِمَا عَلَّمْتَهُمْ، وَعَلِّمْهُمْ مَا يَنْفَعُهُمْ، وَزِدْهُمْ عِلْمًا، وَيَسِّرْ لَهُمُ النَّجَاحَ فِي امْتِحَانَاتِهِمْ، وَاجْعَلْهُمْ سَبَبًا لِشِفَاءِ خَلْقِكَ',
+   trans:"Allāhumma anfa'hum bimā 'allamtahum, wa 'allimhum mā yanfa'uhum, wa zidhum 'ilmā, wa yassir lahumun-najāḥa fī-mtiḥānātihim, waj'alhum sababan lishifā'i khalqik",
+   english:'O Allah, benefit them with what You have taught them, teach them what benefits them, increase them in knowledge, grant them success in their exams, and make them a means of healing for Your creation.',
+   urdu:'اے اللہ! انہیں اپنا علم فائدہ پہنچائے، انہیں وہ سکھا جو نفع بخشے، ان کا علم بڑھا، امتحانات میں کامیابی دے، اور انہیں اپنی مخلوق کی شفا کا ذریعہ بنا۔',
+   source:'Tirmidhi 3599, Ibn Majah'},
+  {id:'pr10',name:'Hanif Uncle',rel:"Dad's Friend",icon:'💚',needs:['Shifa','Recovery'],
+   arabic:'اللَّهُمَّ رَبَّ النَّاسِ، أَنْتَ الشَّافِي لَا شَافِيَ إِلَّا أَنْتَ، شِفَاءً لَا يُغَادِرُ سَقَمًا، اللَّهُمَّ عَافِهِ وَأَعِذْهُ مِنَ الْأَلَمِ وَارْزُقْهُ الشِّفَاءَ الْعَاجِلَ بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ',
+   trans:"Allāhumma rabban-nāsi, antas-shāfī lā shāfiya illā anta, shifā'an lā yughādiru saqamā. Allāhumma 'āfihi wa a'idhhu minal-alam warzuqhuash-shifā'al-'ājila biraḥmatika yā arḥamar-rāḥimīn",
+   english:'O Allah, Lord of mankind, You are the Healer — there is no healer but You — a healing that leaves no illness. O Allah, grant him wellbeing, protect him from pain, and grant him swift recovery by Your mercy, O Most Merciful.',
+   urdu:'اے اللہ! لوگوں کے رب، تو ہی شافی ہے — تیرے سوا کوئی شافی نہیں — ایسی شفا جو کوئی بیماری نہ چھوڑے۔ انہیں عافیت دے، درد سے بچا، اور اپنی رحمت سے جلد شفا عطا فرما۔',
+   source:'Bukhari 5675, Muslim 2191'},
+  {id:'pr11',name:'Qari Sahab',rel:'Teacher · Quran',icon:'📖',needs:['Shifa','Long Life','Reward'],
+   arabic:'اللَّهُمَّ اشْفِهِ وَعَافِهِ وَأَطِلْ عُمُرَهُ فِي طَاعَتِكَ، وَاجْزِهِ عَنَّا وَعَنِ الْقُرْآنِ خَيْرَ الْجَزَاءِ، وَاجْعَلْهُ مِنْ أَهْلِ الْقُرْآنِ الَّذِينَ هُمْ أَهْلُ اللهِ وَخَاصَّتُهُ',
+   trans:"Allāhumma ashfihi wa 'āfihi wa aṭil 'umrahu fī ṭā'atik, wajzahu 'annā wa 'anil-Qur'āni khayral-jazā', waj'alhu min ahlil-Qur'ānil-ladhīna hum ahllullāhi wa khāṣṣatuh",
+   english:'O Allah, heal him, grant him wellbeing, and lengthen his life in Your obedience. Reward him on our behalf and the Quran with the best reward, and make him among the people of the Quran — they are the family of Allah and His chosen.',
+   urdu:'اے اللہ! انہیں شفا دے، عافیت دے، اور ان کی عمر اپنی اطاعت میں لمبی کر۔ ہماری اور قرآن کی طرف سے انہیں بہترین جزا دے، اور انہیں اہلِ قرآن میں شامل کر۔',
+   source:'Ibn Majah 215, Muslim'},
+  {id:'pr12',name:'Amna',rel:'Friend',icon:'🌸',needs:['Life Partner','Health','Job','Peace of Mind'],
+   arabic:'رَبِّ إِنِّي لِمَا أَنزَلْتَ إِلَيَّ مِنْ خَيْرٍ فَقِيرٌ۔ اللَّهُمَّ ارْزُقْهَا زَوْجًا صَالِحًا فِي الْوَقْتِ الَّذِي تَرَاهُ خَيْرًا لَهَا، وَاجْعَلْ لَهَا عَمَلًا يُرِيحُ قَلْبَهَا وَيُؤَمِّنُ مَعَاشَهَا، وَاشْفِهَا وَوَالِدَيْهَا',
+   trans:"Rabbi innī limā anzalta ilayya min khayrin faqīr. Allāhumma-rzuqhā zawjan ṣāliḥan fit-tawqitil-ladhī tarāhu khayran lahā, waj'al lahā 'amalan yurīḥu qalbahā wa yu'ammin ma'āshahā, washfihā wa wālidayhā",
+   english:"My Lord, I am in need of whatever good You send down to me. O Allah, grant her a righteous spouse at the time You see best for her. Give her work that brings her heart peace and financial security, and heal her and her parents.",
+   urdu:'اے میرے رب! میں اس بھلائی کا محتاج ہوں جو تو میری طرف نازل کرے۔ اے اللہ! اسے ایسے وقت نیک شریکِ حیات دے جو تجھے اس کے لیے بہتر لگے، اسے ایسا کام دے جو دل کو سکون اور معاش کو محفوظ کرے، اور اسے اور والدین کو شفا دے۔',
+   source:'Quran 28:24, Tirmidhi'},
+  {id:'pr13',name:'Yumna',rel:'Friend',icon:'🌟',needs:['Family Health','Long Life','CARMS Residency'],
+   arabic:'اللَّهُمَّ أَطِلْ أَعْمَارَ أَهْلِهَا فِي صِحَّةٍ وَعَافِيَةٍ، وَيَسِّرْ لَهَا مَسِيرَتَهَا الْمِهْنِيَّةَ وَاجْعَلِ الطَّرِيقَ أَمَامَهَا مَلِيئًا بِالتَّوْفِيقِ، اللَّهُمَّ تَقَبَّلْ دَعَوَاتِهَا وَبَارِكْ فِي حَجِّهِ',
+   trans:"Allāhumma aṭil a'māra ahliha fī ṣiḥḥatin wa 'āfiya, wa yassir lahā masīratahal-mihniyya waj'aliṭ-ṭarīqa amāmahā malī'an bit-tawfīq, Allāhumma taqabbal da'awātahā wa bārik fī ḥajjih",
+   english:'O Allah, lengthen the lives of her family in health and wellbeing. Ease her professional path and fill the road ahead with success. O Allah, accept her duas and bless his Hajj.',
+   urdu:'اے اللہ! اس کے اہل خانہ کی عمریں صحت و عافیت کے ساتھ لمبی کر، اس کا پیشہ ورانہ سفر آسان بنا اور آگے کا راستہ توفیق سے بھر دے۔ اے اللہ! اس کی دعائیں قبول فرما اور اس کے حج میں برکت دے۔',
+   source:'Muslim, Tirmidhi'},
+  {id:'pr14',name:'Raffia Jawaid',rel:'Friend',icon:'🌹',needs:['Ami Zakia — Jannah','Exam','Residency','Shifa','Hajj with Spouse'],
+   arabic:'اللَّهُمَّ اغْفِرْ لِأُمِّهَا زَاكِيَّةَ وَارْحَمْهَا وَأَكْرِمْ نُزُلَهَا وَأَلْحِقْهَا بِالصَّالِحِينَ فِي الْجَنَّةِ۔ اللَّهُمَّ اشْفِ مَرَاضِيَ الْعَائِلَةِ وَيَسِّرْ لَهَا نَجَاحَ الِامْتِحَانَاتِ وَالتَّخَصُّصَ، وَارْزُقْهَا حَجًّا مَعَ زَوْجِهَا',
+   trans:"Allāhummaghfir li'ummihā Zākiyya warḥamhā wa akrim nuzulahā wa alḥiqhā biṣ-ṣāliḥīna fil-janna. Allāhumma ishfi marāḍiyal-'ā'ila wa yassir lahā najāḥal-imtiḥānāt, warzuqhā ḥajjan ma'a zawjihā",
+   english:'O Allah, forgive her mother Zakia, have mercy on her, honor her abode, and unite her with the righteous in Jannah. O Allah, heal the sick in the family, ease her success in her exams and residency, and grant her and her husband Hajj together.',
+   urdu:'اے اللہ! اس کی ماں زاکیہ کو بخش دے، ان پر رحم فرما، ان کی منزل پُرکرم بنا اور انہیں جنت میں نیکوں کے ساتھ ملا دے۔ اے اللہ! خاندان کے بیماروں کو شفا دے، امتحانات اور ریزیڈنسی آسان کر، اور اسے شوہر کے ساتھ حج نصیب فرما۔',
+   source:'Muslim 963, Quran 3:193'},
+  {id:'pr15',name:'Saira',rel:'Friend',icon:'💛',needs:['Health','Children'],
+   arabic:'اللَّهُمَّ اشْفِهَا وَاشْفِ أَوْلَادَهَا، وَارْزُقْهُمُ الصِّحَّةَ الدَّائِمَةَ وَالْعَافِيَةَ، وَاجْعَلْ أَوْلَادَهَا قُرَّةَ عَيْنٍ لَهَا فِي الدُّنْيَا وَالْآخِرَةِ',
+   trans:"Allāhumma ashfihā wash-fi awlādahā, warzuqhumuṣ-ṣiḥḥatad-dā'imata wal-'āfiya, waj'al awlādahā qurrata 'aynin lahā fid-dunyā wal-ākhira",
+   english:'O Allah, heal her and her children, grant them lasting health and wellbeing, and make her children the comfort of her eyes in this world and the Hereafter.',
+   urdu:'اے اللہ! اسے اور اس کے بچوں کو شفا دے، انہیں ہمیشہ صحت اور عافیت دے، اور اس کے بچوں کو دنیا و آخرت میں اس کی آنکھوں کی ٹھنڈک بنا۔',
+   source:'Bukhari 5675, Quran 25:74'},
+  {id:'pr16',name:'Moin',rel:'Community',icon:'🕌',needs:['Wisdom for Muslims','Quran','Unity'],
+   arabic:'رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِن لَّدُنكَ رَحْمَةً۔ اللَّهُمَّ أَصْلِحْ أُمَّةَ مُحَمَّدٍ وَاهْدِ الْمُسْلِمِينَ إِلَى الْقُرْآنِ وَالسُّنَّةِ وَانْشُرِ الْعِلْمَ النَّافِعَ فِي قُلُوبِهِمْ',
+   trans:"Rabbanā lā tuzigh qulūbanā ba'da idh hadaytanā wahab lanā mil ladunka raḥmā. Allāhumma aṣliḥ ummata Muḥammadin wahdi-l-muslimīna ilal-Qur'āni was-sunna, wanshur-il-'ilman-nāfi'a fī qulūbihim",
+   english:"Our Lord, do not let our hearts deviate after You have guided us, and grant us from Yourself mercy. O Allah, reform the nation of Muhammad and guide Muslims to the Quran and Sunnah, and spread beneficial knowledge in their hearts.",
+   urdu:'اے ہمارے رب! ہمارے دلوں کو ٹیڑھا نہ کر جب تو نے ہمیں ہدایت دے دی، اور اپنی رحمت عطا فرما۔ اے اللہ! امتِ محمد کی اصلاح فرما، مسلمانوں کو قرآن و سنت کی راہ دکھا، اور نافع علم ان کے دلوں میں پھیلا دے۔',
+   source:'Quran 3:8, Tirmidhi'},
+  {id:'pr17',name:'Muhammad Khurram',rel:'Uncle',icon:'🤲',needs:['Barakah','Rishta for Daughters','Family Health'],
+   arabic:'اللَّهُمَّ بَارِكْ لَهُ فِي حَيَاتِهِ وَأَهْلِهِ، وَارْزُقْ بَنَاتِهِ أَزْوَاجًا صَالِحِينَ يُقِرُّونَ أَعْيُنَهُمْ، وَاحْفَظْ أَفْرَادَ عَائِلَتِهِ فِي صِحَّةٍ وَعَافِيَةٍ',
+   trans:"Allāhumma bārik lahu fī ḥayātihi wa ahlihi, warzuq banātihi azwājan ṣāliḥīna yuqirrūna a'yunahum, waḥfaẓ afrāda 'ā'ilatihi fī ṣiḥḥatin wa 'āfiya",
+   english:'O Allah, bless him in his life and family. Grant his daughters righteous husbands who are a comfort to their eyes, and preserve the members of his family in health and wellbeing.',
+   urdu:'اے اللہ! اس کی زندگی اور اہل خانہ میں برکت دے، اس کی بیٹیوں کو نیک شوہر نصیب فرما جو ان کی آنکھوں کی ٹھنڈک بنیں، اور اس کے گھر کے افراد کو صحت اور عافیت میں محفوظ رکھ۔',
+   source:'Quran 25:74, Tirmidhi 3563'},
+  {id:'pr18',name:'Nasser Ba Break',rel:'Community',icon:'🌿',needs:['Forgiveness','Mercy','All Muslims'],
+   arabic:'اللَّهُمَّ إِنَّكَ عَفُوٌّ كَرِيمٌ تُحِبُّ الْعَفْوَ فَاعْفُ عَنْ نَاصِرٍ وَعَائِلَتِهِ وَعَنِ الْمُسْلِمِينَ أَجْمَعِينَ، اللَّهُمَّ اغْفِرْ لَهُمْ وَارْحَمْهُمْ وَأَدْخِلْهُمُ الْجَنَّةَ بِغَيْرِ حِسَابٍ',
+   trans:"Allāhumma innaka 'afuwwun karīmun tuḥibbul-'afwa fa'fu 'an Nāṣirin wa 'ā'ilatihi wa 'anil-muslimīna ajma'īn. Allāhummaghfir lahum warḥamhum wa adkhilhumul-jannata bighayri ḥisāb",
+   english:'O Allah, You are the Pardoner, the Generous, You love to pardon — so pardon Nasser and his family and all Muslims. O Allah, forgive them, have mercy on them, and enter them into Jannah without reckoning.',
+   urdu:'اے اللہ! تو بہت معاف کرنے والا، بزرگ ہے، معاف کرنا تجھے پسند ہے — پس ناصر کو، اس کی فیملی کو اور تمام مسلمانوں کو معاف کر دے۔ انہیں بخش دے، ان پر رحم کر، اور بغیر حساب کے جنت میں داخل فرما۔',
+   source:'Tirmidhi 3513, Muslim'},
+  {id:'pr19',name:'Aimen',rel:'Friend',icon:'💜',needs:["Mother's Cancer","Shifa","Family Health"],
+   arabic:'اللَّهُمَّ رَبَّ النَّاسِ، أَنْتَ الشَّافِي لَا شَافِيَ إِلَّا أَنْتَ، شِفَاءً لَا يُغَادِرُ سَقَمًا۔ اللَّهُمَّ اشْفِ أُمَّهَا مِنَ السَّرَطَانِ شِفَاءً كَامِلًا، وَأَطِلْ أَعْمَارَ وَالِدَيْهَا وَزَوْجِهَا وَأَوْلَادِهَا فِي صِحَّةٍ وَسَعَادَةٍ',
+   trans:"Allāhumma rabban-nāsi, antas-shāfī lā shāfiya illā anta, shifā'an lā yughādiru saqamā. Allāhumma ishfi ummahā minas-sarṭāni shifā'an kāmilā, wa aṭil a'māra wālidayhā wa zawjihā wa awlādihā fī ṣiḥḥatin wa sa'āda",
+   english:'O Allah, Lord of mankind, You are the Healer — there is no healer but You — a healing that leaves no illness. O Allah, heal her mother completely from cancer, and lengthen the lives of her parents, husband, and children in health and happiness.',
+   urdu:'اے اللہ! لوگوں کے رب، تو ہی شافی ہے — تیرے سوا کوئی شافی نہیں — ایسی شفا جو کوئی بیماری نہ چھوڑے۔ اس کی ماں کو سرطان سے مکمل شفا دے، اور والدین، شوہر اور بچوں کی عمریں صحت اور خوشی کے ساتھ لمبی کر۔',
+   source:'Bukhari 5675, Muslim 2191'},
+  {id:'pr20',name:'Rabia Akram',rel:'Friend',icon:'🌺',needs:['Hajj','Forgiveness','Children','Shifa','Gaza','Justice'],
+   arabic:'اللَّهُمَّ تَقَبَّلْ حَجَّنَا وَاغْفِرْ لَنَا ذُنُوبَنَا، وَاجْعَلْ أَوْلَادَنَا قُرَّةَ أَعْيُنٍ لَنَا، وَاشْفِ مَرْضَانَا، وَارْزُقْنَا حَلَالًا وَاسِعًا، اللَّهُمَّ انْصُرِ الْمُسْتَضْعَفِينَ فِي غَزَّةَ وَالْقُدْسِ وَكَشْمِيرَ وَسَائِرِ بِلَادِ الْمُسْلِمِينَ',
+   trans:"Allāhumma taqabbal ḥajjanā waghfir lanā dhunūbanā, waj'al awlādanā qurrata a'yunin lanā, washfi marḍānā, warzuqnā ḥalālan wāsi'ā. Allāhumma-nṣuril-mustaḍ'afīna fī ghazzata wal-qudsi wa kashmīra wa sā'iri bilādil-muslimīn",
+   english:'O Allah, accept our Hajj and forgive our sins. Make our children the comfort of our eyes, heal our sick, and grant us abundant halal provision. O Allah, aid the oppressed in Gaza, Jerusalem, Kashmir, and all Muslim lands.',
+   urdu:'اے اللہ! ہمارا حج قبول فرما، گناہ معاف کر، بچوں کو آنکھوں کی ٹھنڈک بنا، بیماروں کو شفا دے، وافر حلال رزق دے۔ اے اللہ! غزہ، قدس، کشمیر اور تمام مسلم سرزمینوں کے مظلوموں کی مدد فرما۔',
+   source:'Quran 25:74, Muslim'},
+  {id:'pr21',name:'Beenish',rel:'Friend',icon:'🌷',needs:['Accept Ibadah','Health','Wealth'],
+   arabic:'اللَّهُمَّ تَقَبَّلْ مِنَّا صَلَاتَنَا وَصِيَامَنَا وَقِيَامَنَا وَجَمِيعَ عِبَادَتِنَا، وَبَارِكْ لَنَا فِي صِحَّتِنَا وَأَرْزَاقِنَا، إِنَّكَ أَنْتَ السَّمِيعُ الْعَلِيمُ',
+   trans:"Allāhumma taqabbal minnā ṣalātanā wa ṣiyāmanā wa qiyāmanā wa jamī'a 'ibādatinā, wa bārik lanā fī ṣiḥḥatinā wa arzāqinā, innaka antas-samī'ul-'alīm",
+   english:'O Allah, accept from us our prayers, fasting, night worship, and all our acts of worship. Bless us in our health and provisions. Indeed, You are the All-Hearing, All-Knowing.',
+   urdu:'اے اللہ! ہماری نماز، روزہ، قیام اللیل اور تمام عبادت قبول فرما، ہماری صحت اور رزق میں برکت دے، بے شک تو ہی سننے والا اور جاننے والا ہے۔',
+   source:'Quran 2:127, Bukhari'},
+  {id:'pr22',name:'Shafaq Waqas',rel:'Friend',icon:'🕋',needs:['Accept Hajj','Blessings','Spiritual Growth'],
+   arabic:'اللَّهُمَّ تَقَبَّلْ حَجَّنَا هَذَا وَاجْعَلْهُ حَجًّا مَبْرُورًا وَسَعْيًا مَشْكُورًا وَذَنْبًا مَغْفُورًا، اللَّهُمَّ اجْعَلْ هَذِهِ الرِّحْلَةَ مَلِيئَةً بِالْبَرَكَةِ وَالسَّكِينَةِ وَالنُّمُوِّ الرُّوحِيِّ',
+   trans:"Allāhumma taqabbal ḥajjanā hādhā waj'alhu ḥajjan mabrūran wa sa'yan mashkūran wa dhanban maghfūrā. Allāhumma-j'al hādhihir-riḥlata malī'atan bil-barakati was-sakīnati wan-numuwwir-rūḥī",
+   english:'O Allah, accept this Hajj of ours and make it a Hajj Mabrur, a gratitude-worthy striving, and forgiveness of sins. O Allah, make this journey filled with barakah, tranquility, and spiritual growth.',
+   urdu:'اے اللہ! ہمارا یہ حج قبول فرما اور اسے حجِ مبرور، مشکور سعی اور مغفورِ گناہ بنا۔ اے اللہ! اس سفر کو برکت، سکون اور روحانی ترقی سے بھر دے۔',
+   source:'Muslim, Bukhari — Hajj duas'},
+  {id:'pr23',name:'Rubaina',rel:'Friend',icon:'💫',needs:['Al-Wadud — Love','Al-Fattah — Time','Reem — Job','Al-Latif — Family Peace'],
+   arabic:'يَا الْوَدُودُ أَلِّفْ بَيْنَ قُلُوبِهِمَا بِالْمَحَبَّةِ وَالرَّأْفَةِ۔ يَا الْفَتَّاحُ افْتَحْ لَهَا أَبْوَابَ الْوَقْتِ وَالرِّزْقِ وَالسَّكِينَةِ۔ يَا الرَّزَّاقُ ارْزُقْ صَدِيقَتَهَا رِيمَ عَمَلًا صَالِحًا وَافِرًا۔ يَا اللَّطِيفُ أَلِّنْ قُلُوبَ أَهْلِهَا وَضَعِ الرَّحْمَةَ بَيْنَهَا وَبَيْنَ أُمِّهَا',
+   trans:"Yā al-Wadūdu allif bayna qulūbihimā bil-maḥabbati war-ra'fa. Yā al-Fattāḥu iftaḥ lahā abwābat-tawqiti war-rizqi was-sakīna. Yā ar-Razzāqu-rzuq ṣadīqatahā Rīma 'amalan ṣāliḥan wāfirā. Yā al-Laṭīfu allin qulūba ahlihā wa ḍa'ir-raḥmata baynahā wa bayna ummihā",
+   english:'O Al-Wadud, join their hearts with love and tenderness. O Al-Fattah, open for her the doors of time, provision, and peace. O Al-Razzaq, grant her friend Reem blessed and abundant good work. O Al-Latif, soften the hearts of her family and place mercy between her and her mother.',
+   urdu:'اے الودود! ان دونوں کے دلوں کو محبت اور شفقت سے جوڑ دے۔ اے الفتاح! وقت، رزق اور سکون کے دروازے کھول دے۔ اے الرزاق! اس کی دوست ریم کو بھرپور نیک کام عطا فرما۔ اے اللطیف! اس کے گھر والوں کے دل نرم کر اور اس اور ماں کے درمیان رحمت رکھ دے۔',
+   source:'Quran — Asmaul Husna, Hisnul Muslim'},
+  {id:'pr24',name:'Momena Ihsan',rel:'Friend',icon:'🌙',needs:['Health','Barakah','Children Guidance','Sakinah'],
+   arabic:'اللَّهُمَّ بَارِكْ لِمُؤْمِنَةَ وَعَدْنَانَ وَزَيَّانَ وَزَيْرَا فِي صِحَّتِهِمْ وَنَجَاحِهِمْ۔ اللَّهُمَّ اهْدِ أَوْلَادَهُمَا وَأَصْلِحْ شَأْنَهُمَا، وَاجْعَلْ بَيْتَهُمَا مَمْلُوءًا بِالسَّكِينَةِ وَالرَّحْمَةِ',
+   trans:"Allāhumma bārik liMu'minata wa Adnān wa Zayyān wa Zayrā fī ṣiḥḥatihim wa najāḥihim. Allāhumma-hdi awlādahumā wa aṣliḥ sha'nahumā, waj'al baytahumā mamlū'an bis-sakīnati war-raḥma",
+   english:'O Allah, bless Momena, Adnan, Zayaan, and Zaira in their health and success. O Allah, guide their children and set their affairs right, and fill their home with tranquility and mercy.',
+   urdu:'اے اللہ! مؤمنہ، عدنان، زیان اور زیرا کو صحت اور کامیابی میں برکت دے۔ اے اللہ! ان کے بچوں کو ہدایت دے اور ان کا معاملہ سنوار دے، اور ان کے گھر کو سکینت اور رحمت سے بھر دے۔',
+   source:'Muslim 2720, Quran 25:74'},
+  {id:'pr25',name:'Jahanzeb & Maha',rel:'Friends',icon:'🤝',needs:["Parents' Health",'Family','Sustenance','Waseela'],
+   arabic:'اللَّهُمَّ احْفَظْ وَالِدَيْهِمَا وَبَارِكْ فِي صِحَّتِهِمَا، وَارْزُقِ الْعَائِلَةَ رِزْقًا طَيِّبًا، وَاجْعَلْهُمَا وَسِيلَةً لِلْخَيْرِ فِي مُجْتَمَعِهِمَا، وَبَارِكْ لَهُمَا فِي كُلِّ مَنْ سَيَنْضَمُّ إِلَى عَائِلَتِهِمَا',
+   trans:"Allāhumma-ḥfaẓ wālidayhimā wa bārik fī ṣiḥḥatihimā, warzuqil-'ā'ilata rizqan ṭayyibā, waj'alhumā wasīlatan lil-khayri fī mujtama'ihimā, wa bārik lahumā fī kulli man sayaḍummu ilā 'ā'ilatihimā",
+   english:'O Allah, protect their parents and bless their health. Grant the family good provision. Make them a means of goodness in their community, and bless all future members who will join their family.',
+   urdu:'اے اللہ! ان کے والدین کی حفاظت فرما اور ان کی صحت میں برکت دے، گھرانے کو پاکیزہ رزق عطا فرما، انہیں اپنے سماج میں خیر کا ذریعہ بنا، اور ان کی فیملی میں شامل ہونے والے سب کو برکت دے۔',
+   source:'Quran 65:3, Muslim'},
+  {id:'pr26',name:'Mahrukh Afreen',rel:'Friend',icon:'🌸',needs:['Safe Pregnancy','Healthy Baby','NAC/QE1','Residency','Friendship'],
+   arabic:'رَبِّ هَبْ لِي مِنْ لَدُنْكَ ذُرِّيَّةً طَيِّبَةً إِنَّكَ سَمِيعُ الدُّعَاءِ۔ اللَّهُمَّ يَسِّرْ لَهَا الْحَمْلَ وَالْوِلَادَةَ وَاهَبْهَا مَوْلُودًا صَالِحًا، وَيَسِّرْ امْتِحَانَاتِهَا وَالتَّخَصُّصَ، وَاحْفَظِ الصَّدَاقَةَ بَيْنَهَا وَبَيْنَ رَفِيقَاتِهَا بِالْبَرَكَةِ',
+   trans:"Rabbi hab lī min ladunka dhurriyyatan ṭayyibatan innaka samī'ud-du'ā'. Allāhumma yassir lahal-ḥamla wal-wilādata wahab lahā mawlūdan ṣāliḥā, wa yassir imtiḥānātahā wat-takhaṣṣuṣ, waḥfaẓiṣ-ṣadāqata baynahā wa bayna rafīqātihā bil-baraka",
+   english:'My Lord, grant me from Yourself good offspring — You are the Hearer of supplication. O Allah, ease her pregnancy and delivery, grant her a righteous child, ease her exams and residency, and preserve the friendship between her and her companions with barakah.',
+   urdu:'اے میرے رب! مجھے اپنے پاس سے نیک اولاد عطا فرما — تو دعائیں سننے والا ہے۔ اے اللہ! حمل اور ولادت آسان کر، نیک بچہ عطا فرما، امتحانات اور ریزیڈنسی آسان کر، اور اس کی سہیلیوں کے ساتھ دوستی کو برکت سے محفوظ رکھ۔',
+   source:'Quran 3:38, Hadith'},
+  {id:'pr27',name:'Ayesha',rel:'Friend',icon:'🌍',needs:['Accept Hajj','Family Hajj','World Peace','Parents'],
+   arabic:'اللَّهُمَّ تَقَبَّلْ حَجَّنَا وَادْعُ أَهْلَهَا إِلَى بَيْتِكَ الْحَرَامِ، اللَّهُمَّ أَلِّفْ بَيْنَ قُلُوبِ الْمُسْلِمِينَ وَانْصُرْهُمْ، وَارْحَمْ وَالِدَيْهَا وَوَالِدِي الْمُسْلِمِينَ أَجْمَعِينَ',
+   trans:"Allāhumma taqabbal ḥajjanā wad'u ahlahā ilā baytikal-ḥarām. Allāhumma allif bayna qulūbil-muslimīna wanṣurhum, warḥam wālidayhā wa wālidil-muslimīna ajma'īn",
+   english:'O Allah, accept our Hajj and invite her family to Your Sacred House. O Allah, join the hearts of the Muslims together and grant them victory, and have mercy on her parents and the parents of all Muslims.',
+   urdu:'اے اللہ! ہمارا حج قبول فرما اور اس کے خاندان کو اپنے حرم میں بلا لے۔ اے اللہ! مسلمانوں کے دلوں کو جوڑ اور انہیں غلبہ عطا فرما، اور اس کے والدین اور تمام مسلمانوں کے والدین پر رحم فرما۔',
+   source:'Muslim, Bukhari, Quran 8:63'},
+  {id:'pr28',name:'Hamza Khan Firdousi',rel:'Friend',icon:'💙',needs:['Family Health','Malaika Job','Prosperity',"Abrar's Baby"],
+   arabic:'اللَّهُمَّ بَارِكْ فِي صِحَّةِ أَهْلِهِ وَعَافِيَتِهِمْ، وَارْزُقِ اخْتَهُ مَلَائِكَةَ عَمَلًا طَيِّبًا مُبَارَكًا، وَيَسِّرْ عَلَى صَدِيقِهِ أَبْرَارٍ وِلَادَةَ مَوْلُودٍ صَالِحٍ سَالِمٍ، وَارْزُقْهُمُ الرِّزْقَ وَالسَّعَادَةَ',
+   trans:"Allāhumma bārik fī ṣiḥḥati ahlihi wa 'āfiyatihim, warzuq ukhtahu Malā'ikata 'amalan ṭayyiban mubārakā, wa yassir 'alā ṣadīqihi Abrārin wilādata mawlūdin ṣāliḥin sālim, warzuqhum ar-rizqa was-sa'āda",
+   english:'O Allah, bless the health and wellbeing of his family. Grant his sister Malaika good and blessed work. Ease for his friend Abrar the birth of a righteous and healthy child. Grant all of them provision and happiness.',
+   urdu:'اے اللہ! اس کے اہل خانہ کی صحت اور عافیت میں برکت دے، اس کی بہن ملائکہ کو پاکیزہ اور بابرکت کام دے، اس کے دوست ابرار کے ہاں نیک اور صحت مند بچے کی پیدائش آسان کر، اور انہیں سب کو رزق اور خوشی عطا فرما۔',
+   source:'Quran 3:38, Bukhari 5675'},
+  {id:'pr29',name:'Amir',rel:'Community',icon:'🌟',needs:['Health','Peace','Wealth','Righteous Spouse'],
+   arabic:'اللَّهُمَّ ارْزُقْهُ الصِّحَّةَ وَالسَّلَامَةَ وَالسَّعَادَةَ، وَأَغْنِهِ بِحَلَالِكَ عَنْ حَرَامِكَ، وَارْزُقْهُ زَوْجَةً صَالِحَةً تَكُونُ سَكَنًا لَهُ وَقُرَّةَ عَيْنٍ تُعِينُهُ عَلَى دِينِهِ وَدُنْيَاهُ',
+   trans:"Allāhumma-rzuqhuṣ-ṣiḥḥata was-salāmata was-sa'āda, wa aghnīhi biḥalālika 'an ḥarāmika, warzuqhu zawjatan ṣāliḥatan takūnu sakanan lahu wa qurrata 'aynin tu'īnuhu 'alā dīnihi wa dunyāh",
+   english:'O Allah, grant him health, safety, and happiness. Enrich him with halal over haram, and grant him a righteous wife who is a tranquility for him and the comfort of his eyes, who helps him in his religion and worldly life.',
+   urdu:'اے اللہ! اسے صحت، سلامتی اور خوشی عطا فرما، اسے حلال سے غنی کر اور حرام سے بچا، اور اسے ایک نیک بیوی دے جو اس کا سکون اور آنکھوں کی ٹھنڈک ہو اور دین و دنیا میں مدد کرے۔',
+   source:'Tirmidhi 3563, Quran 30:21'},
+  {id:'pr30',name:'Annie',rel:'Friend',icon:'💍',needs:['Marriage','Good Spouse'],
+   arabic:'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا۔ اللَّهُمَّ ارْزُقْهَا زَوْجًا صَالِحًا يُحِبُّهَا وَيَرْحَمُهَا وَيُعِينُهَا عَلَى دِينِهَا وَدُنْيَاهَا',
+   trans:"Rabbanā hab lanā min azwājinā wa dhurriyyātinā qurrata a'yunin waj'alnā lil-muttaqīna imāmā. Allāhumma-rzuqhā zawjan ṣāliḥan yuḥibbuhā wa yarḥamuhā wa yu'īnuhā 'alā dīnihā wa dunyāhā",
+   english:'Our Lord, grant us from among our spouses and offspring comfort to our eyes and make us leaders for the righteous. O Allah, grant her a righteous spouse who loves her, has mercy on her, and helps her in her religion and worldly life.',
+   urdu:'اے ہمارے رب! ہمیں ازواج اور اولاد سے آنکھوں کی ٹھنڈک عطا فرما اور ہمیں متقیوں کا پیشوا بنا۔ اے اللہ! اسے ایک نیک شوہر دے جو اس سے محبت کرے، مہربان ہو، اور دین و دنیا میں مدد کرے۔',
+   source:'Quran 25:74, Tirmidhi'},
+];
+let prayedRequests = JSON.parse(localStorage.getItem('hajj-prayed') || '[]');
+
 // ── App State ──────────────────────────────────────────────────
 let currentTab = 'journey';
 let selectedCat = 'travel';
@@ -1927,6 +2156,85 @@ function toggleDay(id, forceOpen) {
   else el.classList.toggle('open');
 }
 
+// ── Personal Requests ──────────────────────────────────────────
+function renderPersonalRequests() {
+  const el = document.getElementById('personalRequestsList');
+  if (!el) return;
+  el.innerHTML = PERSONAL_REQUESTS.map(p => {
+    const prayed = prayedRequests.includes(p.id);
+    return `
+      <div class="pr-card glass${prayed ? ' prayed-card' : ''}" id="prc-${p.id}">
+        <div class="pr-hdr" onclick="togglePersonalCard('${p.id}')">
+          <div class="pr-ico">${p.icon}</div>
+          <div class="pr-info">
+            <div class="pr-name">${p.name}</div>
+            <div class="pr-rel">${p.rel}</div>
+            <div class="pr-needs">${p.needs.map(n=>`<span class="pr-need-tag">${n}</span>`).join('')}</div>
+          </div>
+          <span class="pr-chev">▶</span>
+        </div>
+        <div class="pr-body">
+          <div class="pr-arabic">${p.arabic}</div>
+          <div class="pr-trans">${p.trans}</div>
+          <div class="pr-english">${p.english}</div>
+          ${p.urdu ? `<div class="pr-urdu">${p.urdu}</div>` : ''}
+          <div class="pr-source">— ${p.source}</div>
+          <button class="pr-pray-btn ${prayed ? 'prayed' : 'unprayed'}" onclick="markPrayed('${p.id}')">
+            ${prayed ? '✓ Made this dua at Arafat' : '🤲 Mark as prayed at Arafat'}
+          </button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function togglePersonalCard(id) {
+  document.getElementById('prc-' + id)?.classList.toggle('open');
+}
+
+function markPrayed(id) {
+  if (!prayedRequests.includes(id)) prayedRequests.push(id);
+  else prayedRequests = prayedRequests.filter(x => x !== id);
+  localStorage.setItem('hajj-prayed', JSON.stringify(prayedRequests));
+  renderPersonalRequests();
+}
+
+function toggleAddForm() {
+  const wrap = document.getElementById('addFormWrap');
+  const btn  = document.getElementById('addFormToggle');
+  const open = wrap.style.display === 'none';
+  wrap.style.display = open ? 'block' : 'none';
+  btn.textContent = open ? '✕ Close' : '➕ Add More People';
+}
+
+function autoDetectNeed(text) {
+  const t = text.toLowerCase();
+  let detected = '';
+  if (/shifa|sick|ill|cancer|surgery|hospital|health|heal|marz/.test(t)) detected = 'shifa';
+  else if (/marriage|spouse|rishta|husband|wife|nikah|shaadi/.test(t)) detected = 'marriage';
+  else if (/child|baby|pregn|children|offspring|son|daughter/.test(t)) detected = 'children';
+  else if (/exam|study|degree|pass|test|graduate|license|resid|carms|nac|qe/.test(t)) detected = 'knowledge';
+  else if (/job|work|income|career|employ|salary|profession/.test(t)) detected = 'rizq';
+  else if (/rizq|money|wealth|provision|debt|loan|financial/.test(t)) detected = 'rizq';
+  else if (/forgiv|maghfir|sin|tawbah|repent/.test(t)) detected = 'forgiveness';
+  else if (/deceased|died|jannah|passed away|death|wafat|rahmat/.test(t)) detected = 'deceased';
+  else if (/anxiety|stress|depress|peace|calm|worry|grief|mental/.test(t)) detected = 'anxiety';
+  else if (/hajj|umrah|mecca|kabah|pilgrimage/.test(t)) detected = 'hajj';
+  else if (/protect|evil|harm|safe|nazar|sihr/.test(t)) detected = 'protection';
+  else if (/guide|hidayah|iman|faith|quran|deen/.test(t)) detected = 'guidance';
+  else if (t.length > 10) detected = 'general';
+
+  const hint = document.getElementById('enhanceHint');
+  const sel  = document.getElementById('fneed');
+  if (detected && sel.value === '') {
+    sel.value = detected;
+    onNeedChange();
+    hint.style.display = 'block';
+    hint.textContent = '✨ Auto-detected: ' + sel.options[sel.selectedIndex].text;
+  } else if (!detected) {
+    hint.style.display = 'none';
+  }
+}
+
 // ── Family Duas ────────────────────────────────────────────────
 function saveFamily() { localStorage.setItem('hajj-family', JSON.stringify(familyDuas)); }
 
@@ -1946,22 +2254,23 @@ function addFamily() {
   const name = document.getElementById('fname').value.trim();
   const rel  = document.getElementById('frelation').value.trim();
   const need = document.getElementById('fneed').value;
-  const note = document.getElementById('fduanote').value.trim();
-  if (!name || !need) { alert('Please enter a name and select a dua.'); return; }
+  if (!name || !need) { alert('Please enter a name and select a category.'); return; }
   const d = FAMILY_DUAS[need];
   familyDuas.unshift({
     id: Date.now(), name, rel, need,
     label: d.label, arabic: d.arabic, trans: d.trans,
     english: d.english, urdu: d.urdu, source: d.source,
-    note, done: false
+    done: false
   });
   saveFamily();
   document.getElementById('fname').value = '';
   document.getElementById('frelation').value = '';
   document.getElementById('fneed').value = '';
-  document.getElementById('fduanote').value = '';
+  document.getElementById('fduareq').value = '';
+  document.getElementById('enhanceHint').style.display = 'none';
   document.getElementById('fduapreview').style.display = 'none';
   renderFamily();
+  toggleAddForm();
 }
 
 function toggleFamilyDone(id) {
@@ -2091,6 +2400,7 @@ function switchTab(tab) {
 // ── Init ───────────────────────────────────────────────────────
 renderTodayBanner();
 renderJourney();
+renderPersonalRequests();
 renderFamily();
 renderCatPills();
 renderDuas();
