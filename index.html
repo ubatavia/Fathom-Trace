@@ -192,10 +192,13 @@ body::before{
   padding:8px 10px;background:rgba(255,255,255,0.04);border-radius:var(--rs);
   border-left:2px solid rgba(201,168,76,0.30);margin-bottom:10px;}
 .fcard-req-lbl{font-size:9px;font-weight:700;color:rgba(201,168,76,0.5);letter-spacing:0.07em;margin-bottom:3px;}
-.fcard-reorder{display:flex;flex-direction:column;gap:1px;flex-shrink:0;}
-.fcard-reorder button{background:none;border:none;color:rgba(255,255,255,0.22);cursor:pointer;
-  font-size:9px;line-height:1;padding:2px 5px;font-family:inherit;transition:color 0.15s;}
-.fcard-reorder button:active{color:var(--gold);}
+.fcard-reorder{display:none;}
+/* drag-and-drop */
+.drag-handle{color:rgba(255,255,255,0.22);cursor:grab;padding:2px 8px 2px 0;font-size:16px;
+  flex-shrink:0;align-self:center;touch-action:none;user-select:none;line-height:1;}
+.drag-handle:active{cursor:grabbing;color:var(--gold);}
+.drag-over{outline:2px solid rgba(201,168,76,0.55);outline-offset:-2px;border-radius:var(--r);}
+.dragging-ghost{opacity:0.22;}
 /* import/export toolbar */
 .fc-toolbar{display:flex;gap:6px;margin-bottom:10px;}
 .fc-tool-btn{flex:1;padding:8px 4px;border-radius:var(--rs);font-family:inherit;font-size:11px;font-weight:700;
@@ -2093,7 +2096,42 @@ const PERSONAL_REQUESTS = [
    urdu:'اے ہمارے رب! ہمیں ازواج اور اولاد سے آنکھوں کی ٹھنڈک عطا فرما اور ہمیں متقیوں کا پیشوا بنا۔ اے اللہ! اسے ایک نیک شوہر دے جو اس سے محبت کرے، مہربان ہو، اور دین و دنیا میں مدد کرے۔',
    source:'Quran 25:74, Tirmidhi'},
 ];
-let prayedRequests = JSON.parse(localStorage.getItem('hajj-prayed') || '[]');
+
+// Original dua requests from the submitted Arafah list
+const PERSONAL_REQS = {
+  pr01: 'Health, wealth, job and happiness',
+  pr02: 'Health, wealth and happiness',
+  pr03: 'Health, wealth, happiness',
+  pr04: 'Health, wealth, happiness',
+  pr05: 'Australia process and success in life',
+  pr06: 'Health, wealth, job, marriage',
+  pr07: 'Request for clearing exams and health/wealth',
+  pr08: "Dad's surgery, health, wealth and a job to support",
+  pr09: 'Request for exams clearing of doctor',
+  pr10: 'Request for shifa and dua',
+  pr11: 'Request for dua and shifa',
+  pr12: '1) Behetri in life partner, whenever its meant to be\n2) Wellbeing and better health for myself & parents\n3) Better job opportunity — one that aligns with my goals and gives peace of mind & financial security',
+  pr13: 'For good health and long lives of my family & for my CARMS match. May Allah accept your Hajj and all prayers.',
+  pr14: "Please remember Ami Zakia — Allah unko Jannat me alaa muqaam de. Pray for Mustafa Musa Khizer and mine healthy long life. Barakah in all aspects, save us from hardship in Duniya and Akhirah. Strength to pass Canadian license exam in first attempt and get into residency. Heal our illness. May Allah call us on Hajj with spouse. Patience with kids — raise them with love and wisdom. Good job and financial stability for me and Mustafa.",
+  pr15: 'Dua for health and kids.',
+  pr16: 'Allah give wisdom to all Muslims to live their lives according to the Quran. Muslims wake up from delusion.',
+  pr17: 'May Allah give barakah in life and find suitable rishta for daughters in coming years. Pray for health of all family members.',
+  pr18: 'Ya Allah, You are the most forgiving, and You love forgiveness, so forgive Nasser and his family and all Muslims.',
+  pr19: 'Please make dua for my mother — may Allah give ease during her cancer treatment and make her cancer free soon. Pray for long healthy happy life of my parents, husband and kids.',
+  pr20: 'Call us for Hajj next year; call my maa for Hajj; forgiveness of sins; place in Jannah; long life, health, protection, success of children and mothers; kids be coolness of our eyes on siraat-e-mustaqeem; health of siblings and families; abundant halal rizq; barkat in relationship; complete shifaa for all sick; freedom for Gaza, Kashmir, Sudan, Iran and all oppressed; no child sleep hungry; shifaa for all kids in hospitals; mercy on Day of Judgement.',
+  pr21: 'May Allah accept all ibadah and duas during Hajj and entire life. Provide good health and wealth.',
+  pr22: 'May Allah accept your Hajj and make this journey full of blessings, peace, and spiritual growth. Remember us in your prayers.',
+  pr23: 'Ya Al-Wadud: place deep affection and sincere romantic love in heart of the one she wants to be with; unite them with clarity, tenderness and emotional peace. Ya Al-Fattah: grant her barakah in time, ease in schedule, balance between work, rest and worship. Ya Al-Razzaq: open for her friend Reem doors of a righteous job with growth, dignity and barakah. Ya Al-Latif: soften hearts in her family, gentleness between her and her mother, replace tension with compassion and love.',
+  pr24: 'May Allah grant myself, Adnan, Zayaan, and Zaira all good health, barakah, success, and prosperity in this life and the next; that He protects and guides Zayaan and Zaira, blesses them with strong iman, good character, and a righteous future; and that He fills our home and hearts with peace, contentment, sakinah, and tranquility, keeping our family united, protected, and always on the right path. May Allah grant us ease in all our affairs, remove worries and hardships, and surround us with His mercy and blessings always.',
+  pr25: "Please pray for Jahanzeb and Maha's parents health and safety. Please pray for the health, wellbeing and sustenance of our family and all future members of it inshaAllah. Please pray may Allah make us a waseela for those in need around us inshaAllah.",
+  pr26: 'Please pray that I go through a smooth pregnancy and be blessed with a healthy baby. Make that baby the means of peace and happiness for us. Make that baby a reason that the parents are proud of them. Please pray for a smooth delivery (honestly I am super scared). Also for our residency process. That it goes smooth and we make it to the position we have been hoping for. For my NAC exam result. And I am also taking qe1 soon. Hamari dosti k liey k Allah miyan nazar e bad se bacha k rakhain n barkat dain is dosti main.',
+  pr27: 'May Allah accept your Hajj and invite my family and I for Hajj as well. May Allah bring peace to the world and help the entire Muslim Ummah unite against the oppressors. May Allah bless our parents and all those before them.',
+  pr28: 'Please pray for the health and wellbeing of my family, prosperity and happiness for all our loved ones. Job for Malaika. My friend Abrar is going to have his first kid this year, pray for it go well inshAllah.',
+  pr29: 'May I be granted health, peace, happiness, great wealth, and a righteous, loving spouse who is a source of comfort and goodness in my life.',
+  pr30: 'Please pray for my Marriage'
+};
+let prayedRequests  = JSON.parse(localStorage.getItem('hajj-prayed') || '[]');
+let personalOrder   = JSON.parse(localStorage.getItem('hajj-personal-order') || 'null');
 
 // ── App State ──────────────────────────────────────────────────
 let currentTab = 'journey';
@@ -2181,14 +2219,24 @@ function toggleDay(id, forceOpen) {
 }
 
 // ── Personal Requests ──────────────────────────────────────────
+function getOrderedPersonalRequests() {
+  if (!personalOrder) return [...PERSONAL_REQUESTS];
+  const map = Object.fromEntries(PERSONAL_REQUESTS.map(p => [p.id, p]));
+  const ordered = personalOrder.map(id => map[id]).filter(Boolean);
+  PERSONAL_REQUESTS.forEach(p => { if (!personalOrder.includes(p.id)) ordered.push(p); });
+  return ordered;
+}
+
 function renderPersonalRequests() {
   const el = document.getElementById('personalRequestsList');
   if (!el) return;
-  el.innerHTML = PERSONAL_REQUESTS.map(p => {
+  el.innerHTML = getOrderedPersonalRequests().map(p => {
     const prayed = prayedRequests.includes(p.id);
+    const req    = PERSONAL_REQS[p.id] || '';
     return `
       <div class="pr-card glass${prayed ? ' prayed-card' : ''}" id="prc-${p.id}">
         <div class="pr-hdr" onclick="togglePersonalCard('${p.id}')">
+          <span class="drag-handle" data-id="${p.id}" data-type="personal" onclick="event.stopPropagation()">⠿</span>
           <div class="pr-ico">${p.icon}</div>
           <div class="pr-info">
             <div class="pr-name">${p.name}</div>
@@ -2198,6 +2246,7 @@ function renderPersonalRequests() {
           <span class="pr-chev">▶</span>
         </div>
         <div class="pr-body">
+          ${req ? `<div class="pr-req fcard-req"><div class="fcard-req-lbl">THEIR WORDS</div>${req.replace(/\n/g,'<br>')}</div>` : ''}
           <div class="pr-arabic">${p.arabic}</div>
           <div class="pr-trans">${p.trans}</div>
           <div class="pr-english">${p.english}</div>
@@ -2312,18 +2361,89 @@ function toggleFamilyCard(id) {
   document.getElementById('fc-' + id)?.classList.toggle('open');
 }
 
-function moveFamilyUp(id) {
-  const i = familyDuas.findIndex(x => x.id === id);
-  if (i <= 0) return;
-  [familyDuas[i-1], familyDuas[i]] = [familyDuas[i], familyDuas[i-1]];
-  saveFamily(); renderFamily();
+// ── Drag-and-drop reorder (pointer events — works mouse + touch) ──
+let dragState = null;
+
+document.addEventListener('pointerdown', e => {
+  const handle = e.target.closest('.drag-handle');
+  if (!handle) return;
+  startDrag(e, handle.dataset.id, handle.dataset.type);
+}, true);
+
+function startDrag(e, rawId, type) {
+  const id = type === 'family' ? parseInt(rawId) : rawId;
+  const card = document.getElementById(type === 'family' ? 'fc-' + rawId : 'prc-' + rawId);
+  if (!card) return;
+  e.preventDefault();
+  const r = card.getBoundingClientRect();
+  const clone = card.cloneNode(true);
+  clone.style.cssText = `position:fixed;top:${r.top}px;left:${r.left}px;width:${r.width}px;`
+    + `opacity:0.88;pointer-events:none;z-index:9999;transition:none;`
+    + `box-shadow:0 10px 40px rgba(0,0,0,0.55);`;
+  document.body.appendChild(clone);
+  card.classList.add('dragging-ghost');
+  dragState = { type, id, rawId, clone, card, offX: e.clientX - r.left, offY: e.clientY - r.top };
+  document.addEventListener('pointermove', onDragMove, { passive: false });
+  document.addEventListener('pointerup',   onDragEnd);
+  document.addEventListener('pointercancel', onDragEnd);
 }
 
-function moveFamilyDown(id) {
-  const i = familyDuas.findIndex(x => x.id === id);
-  if (i < 0 || i >= familyDuas.length - 1) return;
-  [familyDuas[i+1], familyDuas[i]] = [familyDuas[i], familyDuas[i+1]];
-  saveFamily(); renderFamily();
+function onDragMove(e) {
+  if (!dragState) return;
+  e.preventDefault();
+  dragState.clone.style.top  = (e.clientY - dragState.offY) + 'px';
+  dragState.clone.style.left = (e.clientX - dragState.offX) + 'px';
+  dragState.clone.style.visibility = 'hidden';
+  const under = document.elementFromPoint(e.clientX, e.clientY);
+  dragState.clone.style.visibility = '';
+  const sel = dragState.type === 'family' ? '[id^="fc-"]' : '[id^="prc-"]';
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  const target = under?.closest(sel);
+  if (target && target !== dragState.card) target.classList.add('drag-over');
+}
+
+function onDragEnd(e) {
+  if (!dragState) return;
+  document.removeEventListener('pointermove', onDragMove);
+  document.removeEventListener('pointerup',   onDragEnd);
+  document.removeEventListener('pointercancel', onDragEnd);
+  dragState.clone.style.visibility = 'hidden';
+  const under = document.elementFromPoint(e.clientX, e.clientY);
+  dragState.clone.remove();
+  dragState.card.classList.remove('dragging-ghost');
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  const sel = dragState.type === 'family' ? '[id^="fc-"]' : '[id^="prc-"]';
+  const target = under?.closest(sel);
+  if (target) {
+    const toRaw = target.id.replace(/^fc-|^prc-/, '');
+    if (dragState.type === 'family') {
+      const fromId = dragState.id, toId = parseInt(toRaw);
+      if (fromId !== toId) {
+        const fi = familyDuas.findIndex(x => x.id === fromId);
+        const ti = familyDuas.findIndex(x => x.id === toId);
+        if (fi >= 0 && ti >= 0) {
+          const [item] = familyDuas.splice(fi, 1);
+          familyDuas.splice(ti, 0, item);
+          saveFamily(); renderFamily();
+        }
+      }
+    } else {
+      const fromId = dragState.rawId, toId = toRaw;
+      if (fromId !== toId) {
+        const ordered = getOrderedPersonalRequests();
+        const fi = ordered.findIndex(x => x.id === fromId);
+        const ti = ordered.findIndex(x => x.id === toId);
+        if (fi >= 0 && ti >= 0) {
+          const [item] = ordered.splice(fi, 1);
+          ordered.splice(ti, 0, item);
+          personalOrder = ordered.map(p => p.id);
+          localStorage.setItem('hajj-personal-order', JSON.stringify(personalOrder));
+          renderPersonalRequests();
+        }
+      }
+    }
+  }
+  dragState = null;
 }
 
 function exportFamilyCSV() {
@@ -2390,16 +2510,12 @@ function renderFamily() {
     grid.innerHTML = `<div class="empty"><div class="empty-ico">🤲</div><div>Add your family and loved ones above.<br>Their duas will be remembered in your Hajj.</div></div>`;
     return;
   }
-  grid.innerHTML = `<div class="fgrid">${familyDuas.map((f, idx) => {
+  grid.innerHTML = `<div class="fgrid">${familyDuas.map(f => {
     const hasRich = f.arabic && f.trans;
-    const isFirst = idx === 0, isLast = idx === familyDuas.length - 1;
     return `
     <div class="fcard glass${f.done?' glass-green':''}" id="fc-${f.id}">
       <div class="fcard-hdr" onclick="toggleFamilyCard(${f.id})">
-        <div class="fcard-reorder">
-          <button onclick="event.stopPropagation();moveFamilyUp(${f.id})" ${isFirst?'disabled':''}>▲</button>
-          <button onclick="event.stopPropagation();moveFamilyDown(${f.id})" ${isLast?'disabled':''}>▼</button>
-        </div>
+        <span class="drag-handle" data-id="${f.id}" data-type="family" onclick="event.stopPropagation()">⠿</span>
         <div class="fcard-info">
           <span class="fname-text">${f.name}${f.rel ? ` <span class="frel-text">${f.rel}</span>` : ''}</span>
           ${f.label ? `<span class="fneed-tag">${f.label}</span>` : ''}
