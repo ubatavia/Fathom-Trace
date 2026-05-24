@@ -12,15 +12,15 @@
   --gold2: #e8c96a;
   --green: #1f7a4c;
   --green2: #4ec991;
-  --glass: rgba(255,255,255,0.065);
-  --glass2: rgba(255,255,255,0.10);
-  --border: rgba(255,255,255,0.11);
-  --border-gold: rgba(201,168,76,0.28);
+  --glass: rgba(255,255,255,0.10);
+  --glass2: rgba(255,255,255,0.15);
+  --border: rgba(255,255,255,0.15);
+  --border-gold: rgba(201,168,76,0.35);
   --text: #f0ead6;
-  --muted: rgba(240,234,214,0.52);
+  --muted: rgba(240,234,214,0.60);
   --r: 20px;
   --rs: 12px;
-  --shadow: 0 6px 36px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,255,255,0.08);
+  --shadow: 0 6px 36px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,255,255,0.10);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;-webkit-tap-highlight-color:transparent;}
@@ -199,12 +199,13 @@ body::before{
 .drag-handle:active{cursor:grabbing;color:var(--gold);}
 .drag-over{outline:2px solid rgba(201,168,76,0.55);outline-offset:-2px;border-radius:var(--r);}
 .dragging-ghost{opacity:0.22;}
-.move-top-btn{background:none;border:none;color:rgba(255,255,255,0.18);cursor:pointer;
-  font-size:10px;padding:0 4px 0 0;font-family:inherit;flex-shrink:0;align-self:center;line-height:1;}
-.move-top-btn:active{color:var(--gold);}
+.move-top-btn{background:rgba(201,168,76,0.14);border:1px solid rgba(201,168,76,0.30);
+  color:var(--gold);cursor:pointer;font-size:11px;font-weight:700;padding:1px 6px;
+  border-radius:6px;font-family:inherit;flex-shrink:0;align-self:center;line-height:1.4;}
+.move-top-btn:active{background:rgba(201,168,76,0.30);}
 /* request text snippet always visible on card header */
-.req-snippet{font-size:11px;color:rgba(255,255,255,0.42);font-style:italic;
-  padding:0 14px 9px 54px;line-height:1.45;white-space:nowrap;overflow:hidden;
+.req-snippet{font-size:11.5px;color:rgba(240,234,214,0.65);font-style:italic;
+  padding:0 14px 10px 56px;line-height:1.45;white-space:nowrap;overflow:hidden;
   text-overflow:ellipsis;}
 /* import/export toolbar */
 .fc-toolbar{display:flex;gap:6px;margin-bottom:10px;}
@@ -325,10 +326,6 @@ body::before{
 
   <div class="panel" id="panel-family">
     <div class="slabel">🤲 Family Duas</div>
-    <div class="pr-section">
-      <div class="pr-label">📋 YOUR ARAFAH DUA LIST</div>
-      <div id="personalRequestsList"></div>
-    </div>
     <button class="pr-add-toggle" onclick="toggleAddForm()" id="addFormToggle">➕ Add More People</button>
     <div id="addFormWrap" style="display:none">
       <div class="addform glass">
@@ -368,7 +365,7 @@ body::before{
       <button class="fc-tool-btn" onclick="exportFamilyCSV()">⬇ Export CSV</button>
       <label class="fc-tool-btn">⬆ Import CSV<input type="file" id="csvImport" accept=".csv" style="display:none" onchange="importFamilyCSV(this)"></label>
     </div>
-    <div id="familyGrid"></div>
+    <div id="unifiedList"></div>
   </div>
 
   <div class="panel" id="panel-adhkar">
@@ -2160,6 +2157,7 @@ const PERSONAL_REQS = {
 };
 let prayedRequests  = JSON.parse(localStorage.getItem('hajj-prayed') || '[]');
 let personalOrder   = JSON.parse(localStorage.getItem('hajj-personal-order') || 'null');
+let unifiedOrder    = JSON.parse(localStorage.getItem('hajj-unified-order') || 'null');
 
 // ── App State ──────────────────────────────────────────────────
 let currentTab = 'journey';
@@ -2246,49 +2244,107 @@ function toggleDay(id, forceOpen) {
   else el.classList.toggle('open');
 }
 
-// ── Personal Requests ──────────────────────────────────────────
-function getOrderedPersonalRequests() {
-  if (!personalOrder) return [...PERSONAL_REQUESTS];
-  const map = Object.fromEntries(PERSONAL_REQUESTS.map(p => [p.id, p]));
-  const ordered = personalOrder.map(id => map[id]).filter(Boolean);
-  PERSONAL_REQUESTS.forEach(p => { if (!personalOrder.includes(p.id)) ordered.push(p); });
-  return ordered;
+// ── Unified Dua List ───────────────────────────────────────────
+function saveUnifiedOrder() {
+  localStorage.setItem('hajj-unified-order', JSON.stringify(unifiedOrder));
 }
 
-function renderPersonalRequests() {
-  const el = document.getElementById('personalRequestsList');
-  if (!el) return;
-  el.innerHTML = getOrderedPersonalRequests().map(p => {
-    const prayed = prayedRequests.includes(p.id);
-    const req    = PERSONAL_REQS[p.id] || '';
-    return `
-      <div class="pr-card glass${prayed ? ' prayed-card' : ''}" id="prc-${p.id}">
-        <div class="pr-hdr" onclick="togglePersonalCard('${p.id}')">
-          <span class="drag-handle" data-id="${p.id}" data-type="personal" onclick="event.stopPropagation()">⠿</span>
-          <button class="move-top-btn" onclick="event.stopPropagation();moveToTop('personal','${p.id}')" title="Move to top">↑</button>
-          <div class="pr-ico">${p.icon}</div>
-          <div class="pr-info">
-            <div class="pr-name">${p.name}</div>
-            <div class="pr-rel">${p.rel}</div>
-            <div class="pr-needs">${p.needs.map(n=>`<span class="pr-need-tag">${n}</span>`).join('')}</div>
-          </div>
-          <span class="pr-chev">▶</span>
-        </div>
-        ${req ? `<div class="req-snippet">"${req.split('\n')[0].slice(0,110)}${req.length>110?'…':''}"</div>` : ''}
-        <div class="pr-body">
-          ${req ? `<div class="pr-req fcard-req"><div class="fcard-req-lbl">THEIR WORDS</div>${req.replace(/\n/g,'<br>')}</div>` : ''}
-          <div class="pr-arabic">${p.arabic}</div>
-          <div class="pr-trans">${p.trans}</div>
-          <div class="pr-english">${p.english}</div>
-          ${p.urdu ? `<div class="pr-urdu">${p.urdu}</div>` : ''}
-          <div class="pr-source">— ${p.source}</div>
-          <button class="pr-pray-btn ${prayed ? 'prayed' : 'unprayed'}" onclick="markPrayed('${p.id}')">
-            ${prayed ? '✓ Made this dua at Arafat' : '🤲 Mark as prayed at Arafat'}
-          </button>
-        </div>
-      </div>`;
-  }).join('');
+function getUnifiedList() {
+  const personalMap = Object.fromEntries(PERSONAL_REQUESTS.map(p => [p.id, p]));
+  const familyMap   = Object.fromEntries(familyDuas.map(f => [String(f.id), f]));
+  if (!unifiedOrder) {
+    return [
+      ...familyDuas.map(f => ({type:'family', item:f})),
+      ...PERSONAL_REQUESTS.map(p => ({type:'personal', item:p}))
+    ];
+  }
+  const seen = {personal: new Set(), family: new Set()};
+  const result = [];
+  for (const {type, id} of unifiedOrder) {
+    const sid = String(id);
+    if (seen[type].has(sid)) continue;
+    const item = type === 'personal' ? personalMap[sid] : familyMap[sid];
+    if (item) { result.push({type, item}); seen[type].add(sid); }
+  }
+  familyDuas.forEach(f => { if (!seen.family.has(String(f.id))) result.push({type:'family', item:f}); });
+  PERSONAL_REQUESTS.forEach(p => { if (!seen.personal.has(p.id)) result.push({type:'personal', item:p}); });
+  return result;
 }
+
+function renderPersonalCardHTML(p) {
+  const prayed = prayedRequests.includes(p.id);
+  const req = PERSONAL_REQS[p.id] || '';
+  return `
+    <div class="pr-card glass${prayed ? ' prayed-card' : ''}" id="prc-${p.id}">
+      <div class="pr-hdr" onclick="togglePersonalCard('${p.id}')">
+        <span class="drag-handle" data-id="${p.id}" data-type="personal" onclick="event.stopPropagation()">⠿</span>
+        <button class="move-top-btn" onclick="event.stopPropagation();moveToTop('personal','${p.id}')" title="Move to top">↑ Top</button>
+        <div class="pr-ico">${p.icon}</div>
+        <div class="pr-info">
+          <div class="pr-name">${p.name}</div>
+          <div class="pr-rel">${p.rel}</div>
+          <div class="pr-needs">${p.needs.map(n=>`<span class="pr-need-tag">${n}</span>`).join('')}</div>
+        </div>
+        <span class="pr-chev">▶</span>
+      </div>
+      ${req ? `<div class="req-snippet">"${req.split('\n')[0].slice(0,110)}${req.length>110?'…':''}"</div>` : ''}
+      <div class="pr-body">
+        ${req ? `<div class="pr-req fcard-req"><div class="fcard-req-lbl">THEIR WORDS</div>${req.replace(/\n/g,'<br>')}</div>` : ''}
+        <div class="pr-arabic">${p.arabic}</div>
+        <div class="pr-trans">${p.trans}</div>
+        <div class="pr-english">${p.english}</div>
+        ${p.urdu ? `<div class="pr-urdu">${p.urdu}</div>` : ''}
+        <div class="pr-source">— ${p.source}</div>
+        <button class="pr-pray-btn ${prayed ? 'prayed' : 'unprayed'}" onclick="markPrayed('${p.id}')">
+          ${prayed ? '✓ Made this dua at Arafat' : '🤲 Mark as prayed at Arafat'}
+        </button>
+      </div>
+    </div>`;
+}
+
+function renderFamilyCardHTML(f) {
+  const hasRich = f.arabic && f.trans;
+  return `
+    <div class="fcard glass${f.done?' glass-green':''}" id="fc-${f.id}">
+      <div class="fcard-hdr" onclick="toggleFamilyCard(${f.id})">
+        <span class="drag-handle" data-id="${f.id}" data-type="family" onclick="event.stopPropagation()">⠿</span>
+        <button class="move-top-btn" onclick="event.stopPropagation();moveToTop('family',${f.id})" title="Move to top">↑ Top</button>
+        <div class="fcard-info">
+          <span class="fname-text">${f.name}${f.rel ? ` <span class="frel-text">${f.rel}</span>` : ''}</span>
+          ${f.label ? `<span class="fneed-tag">${f.label}</span>` : ''}
+        </div>
+        <span class="fcard-chev">▶</span>
+        <button class="fcheck${f.done?' done':''}" onclick="event.stopPropagation();toggleFamilyDone(${f.id})" title="${f.done?'Mark undone':'Mark done'}">${f.done?'✓':''}</button>
+      </div>
+      ${f.req ? `<div class="req-snippet">"${f.req.slice(0,110)}${f.req.length>110?'…':''}"</div>` : ''}
+      <div class="fcard-body">
+        ${f.req ? `<div class="fcard-req"><div class="fcard-req-lbl">YOUR WORDS</div>${f.req}</div>` : ''}
+        ${hasRich ? `
+          <div class="fcard-arabic">${f.arabic}</div>
+          <div class="fcard-trans">${f.trans}</div>
+          <div class="fcard-english">${f.english}</div>
+          ${f.urdu ? `<div class="fcard-urdu">${f.urdu}</div>` : ''}
+          ${f.source ? `<div class="fcard-source">— ${f.source}</div>` : ''}
+        ` : `<div style="font-size:12px;color:var(--muted);line-height:1.5">${f.dua||''}</div>`}
+        <button class="fdel" onclick="deleteFamily(${f.id})">✕ remove</button>
+      </div>
+    </div>`;
+}
+
+function renderUnifiedList() {
+  const el = document.getElementById('unifiedList');
+  if (!el) return;
+  const list = getUnifiedList();
+  el.innerHTML = list.map(({type, item}) =>
+    type === 'personal' ? renderPersonalCardHTML(item) : renderFamilyCardHTML(item)
+  ).join('');
+}
+
+function getOrderedPersonalRequests() {
+  return PERSONAL_REQUESTS;
+}
+
+function renderPersonalRequests() { renderUnifiedList(); }
 
 function togglePersonalCard(id) {
   document.getElementById('prc-' + id)?.classList.toggle('open');
@@ -2298,7 +2354,7 @@ function markPrayed(id) {
   if (!prayedRequests.includes(id)) prayedRequests.push(id);
   else prayedRequests = prayedRequests.filter(x => x !== id);
   localStorage.setItem('hajj-prayed', JSON.stringify(prayedRequests));
-  renderPersonalRequests();
+  renderUnifiedList();
 }
 
 function toggleAddForm() {
@@ -2340,6 +2396,7 @@ function autoDetectNeed(text) {
 
 // ── Family Duas ────────────────────────────────────────────────
 function saveFamily() { localStorage.setItem('hajj-family', JSON.stringify(familyDuas)); }
+function renderFamily() { renderUnifiedList(); }
 
 function onNeedChange() {
   const need = document.getElementById('fneed').value;
@@ -2360,31 +2417,40 @@ function addFamily() {
   if (!name || !need) { alert('Please enter a name and select a category.'); return; }
   const d = FAMILY_DUAS[need];
   const req = document.getElementById('fduareq').value.trim();
-  familyDuas.unshift({
-    id: Date.now(), name, rel, need, req,
+  const newId = Date.now();
+  familyDuas.unshift({ id: newId, name, rel, need, req,
     label: d.label, arabic: d.arabic, trans: d.trans,
-    english: d.english, urdu: d.urdu, source: d.source,
-    done: false
-  });
+    english: d.english, urdu: d.urdu, source: d.source, done: false });
   saveFamily();
+  // Put new card at the very top of the unified order
+  const list = getUnifiedList();
+  const ni = list.findIndex(e => e.type === 'family' && e.item.id === newId);
+  if (ni > 0) { const [ent] = list.splice(ni, 1); list.unshift(ent); }
+  unifiedOrder = list.map(({type, item}) => ({type, id: item.id}));
+  saveUnifiedOrder();
   document.getElementById('fname').value = '';
   document.getElementById('frelation').value = '';
   document.getElementById('fneed').value = '';
   document.getElementById('fduareq').value = '';
   document.getElementById('enhanceHint').style.display = 'none';
   document.getElementById('fduapreview').style.display = 'none';
-  renderFamily();
+  renderUnifiedList();
   toggleAddForm();
 }
 
 function toggleFamilyDone(id) {
   const f = familyDuas.find(x => x.id === id);
-  if (f) { f.done = !f.done; saveFamily(); renderFamily(); }
+  if (f) { f.done = !f.done; saveFamily(); renderUnifiedList(); }
 }
 
 function deleteFamily(id) {
   familyDuas = familyDuas.filter(x => x.id !== id);
-  saveFamily(); renderFamily();
+  saveFamily();
+  if (unifiedOrder) {
+    unifiedOrder = unifiedOrder.filter(o => !(o.type === 'family' && String(o.id) === String(id)));
+    saveUnifiedOrder();
+  }
+  renderUnifiedList();
 }
 
 function toggleFamilyCard(id) {
@@ -2392,22 +2458,14 @@ function toggleFamilyCard(id) {
 }
 
 function moveToTop(type, id) {
-  if (type === 'family') {
-    const i = familyDuas.findIndex(x => x.id === id);
-    if (i <= 0) return;
-    const [item] = familyDuas.splice(i, 1);
-    familyDuas.unshift(item);
-    saveFamily(); renderFamily();
-  } else {
-    const ordered = getOrderedPersonalRequests();
-    const i = ordered.findIndex(x => x.id === id);
-    if (i <= 0) return;
-    const [item] = ordered.splice(i, 1);
-    ordered.unshift(item);
-    personalOrder = ordered.map(p => p.id);
-    localStorage.setItem('hajj-personal-order', JSON.stringify(personalOrder));
-    renderPersonalRequests();
-  }
+  const list = getUnifiedList();
+  const i = list.findIndex(e => e.type === type && String(e.item.id) === String(id));
+  if (i <= 0) return;
+  const [entry] = list.splice(i, 1);
+  list.unshift(entry);
+  unifiedOrder = list.map(({type, item}) => ({type, id: item.id}));
+  saveUnifiedOrder();
+  renderUnifiedList();
 }
 
 // ── Drag-and-drop reorder (pointer events — works mouse + touch) ──
@@ -2445,9 +2503,8 @@ function onDragMove(e) {
   dragState.clone.style.visibility = 'hidden';
   const under = document.elementFromPoint(e.clientX, e.clientY);
   dragState.clone.style.visibility = '';
-  const sel = dragState.type === 'family' ? '[id^="fc-"]' : '[id^="prc-"]';
   document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
-  const target = under?.closest(sel);
+  const target = under?.closest('[id^="prc-"],[id^="fc-"]');
   if (target && target !== dragState.card) target.classList.add('drag-over');
 }
 
@@ -2461,35 +2518,20 @@ function onDragEnd(e) {
   dragState.clone.remove();
   dragState.card.classList.remove('dragging-ghost');
   document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
-  const sel = dragState.type === 'family' ? '[id^="fc-"]' : '[id^="prc-"]';
-  const target = under?.closest(sel);
-  if (target) {
-    const toRaw = target.id.replace(/^fc-|^prc-/, '');
-    if (dragState.type === 'family') {
-      const fromId = dragState.id, toId = parseInt(toRaw);
-      if (fromId !== toId) {
-        const fi = familyDuas.findIndex(x => x.id === fromId);
-        const ti = familyDuas.findIndex(x => x.id === toId);
-        if (fi >= 0 && ti >= 0) {
-          const [item] = familyDuas.splice(fi, 1);
-          familyDuas.splice(ti, 0, item);
-          saveFamily(); renderFamily();
-        }
-      }
-    } else {
-      const fromId = dragState.rawId, toId = toRaw;
-      if (fromId !== toId) {
-        const ordered = getOrderedPersonalRequests();
-        const fi = ordered.findIndex(x => x.id === fromId);
-        const ti = ordered.findIndex(x => x.id === toId);
-        if (fi >= 0 && ti >= 0) {
-          const [item] = ordered.splice(fi, 1);
-          ordered.splice(ti, 0, item);
-          personalOrder = ordered.map(p => p.id);
-          localStorage.setItem('hajj-personal-order', JSON.stringify(personalOrder));
-          renderPersonalRequests();
-        }
-      }
+  const target = under?.closest('[id^="prc-"],[id^="fc-"]');
+  if (target && target !== dragState.card) {
+    const tid = target.id;
+    const toType = tid.startsWith('prc-') ? 'personal' : 'family';
+    const toRaw  = tid.replace(/^prc-|^fc-/, '');
+    const list = getUnifiedList();
+    const fi = list.findIndex(e => e.type === dragState.type && String(e.item.id) === dragState.rawId);
+    const ti = list.findIndex(e => e.type === toType && String(e.item.id) === toRaw);
+    if (fi >= 0 && ti >= 0 && fi !== ti) {
+      const [entry] = list.splice(fi, 1);
+      list.splice(ti, 0, entry);
+      unifiedOrder = list.map(({type, item}) => ({type, id: item.id}));
+      saveUnifiedOrder();
+      renderUnifiedList();
     }
   }
   dragState = null;
@@ -2533,7 +2575,7 @@ function importFamilyCSV(input) {
       });
       added++;
     });
-    saveFamily(); renderFamily();
+    saveFamily(); renderUnifiedList();
     alert(added + ' entr' + (added===1?'y':'ies') + ' imported.');
     input.value = '';
   };
@@ -2553,41 +2595,6 @@ function parseCSVLine(line) {
   result.push(cur.trim()); return result;
 }
 
-function renderFamily() {
-  const grid = document.getElementById('familyGrid');
-  if (!familyDuas.length) {
-    grid.innerHTML = `<div class="empty"><div class="empty-ico">🤲</div><div>Add your family and loved ones above.<br>Their duas will be remembered in your Hajj.</div></div>`;
-    return;
-  }
-  grid.innerHTML = `<div class="fgrid">${familyDuas.map(f => {
-    const hasRich = f.arabic && f.trans;
-    return `
-    <div class="fcard glass${f.done?' glass-green':''}" id="fc-${f.id}">
-      <div class="fcard-hdr" onclick="toggleFamilyCard(${f.id})">
-        <span class="drag-handle" data-id="${f.id}" data-type="family" onclick="event.stopPropagation()">⠿</span>
-        <button class="move-top-btn" onclick="event.stopPropagation();moveToTop('family',${f.id})" title="Move to top">↑</button>
-        <div class="fcard-info">
-          <span class="fname-text">${f.name}${f.rel ? ` <span class="frel-text">${f.rel}</span>` : ''}</span>
-          ${f.label ? `<span class="fneed-tag">${f.label}</span>` : ''}
-        </div>
-        <span class="fcard-chev">▶</span>
-        <button class="fcheck${f.done?' done':''}" onclick="event.stopPropagation();toggleFamilyDone(${f.id})" title="${f.done?'Mark undone':'Mark done'}">${f.done?'✓':''}</button>
-      </div>
-      ${f.req ? `<div class="req-snippet">"${f.req.slice(0,110)}${f.req.length>110?'…':''}"</div>` : ''}
-      <div class="fcard-body">
-        ${f.req ? `<div class="fcard-req"><div class="fcard-req-lbl">YOUR WORDS</div>${f.req}</div>` : ''}
-        ${hasRich ? `
-          <div class="fcard-arabic">${f.arabic}</div>
-          <div class="fcard-trans">${f.trans}</div>
-          <div class="fcard-english">${f.english}</div>
-          ${f.urdu ? `<div class="fcard-urdu">${f.urdu}</div>` : ''}
-          ${f.source ? `<div class="fcard-source">— ${f.source}</div>` : ''}
-        ` : `<div style="font-size:12px;color:var(--muted);line-height:1.5">${f.dua||''}</div>`}
-        <button class="fdel" onclick="deleteFamily(${f.id})">✕ remove</button>
-      </div>
-    </div>`;
-  }).join('')}</div>`;
-}
 
 // ── Adhkar ─────────────────────────────────────────────────────
 function renderCatPills() {
@@ -2675,8 +2682,7 @@ function switchTab(tab) {
 // ── Init ───────────────────────────────────────────────────────
 renderTodayBanner();
 renderJourney();
-renderPersonalRequests();
-renderFamily();
+renderUnifiedList();
 renderCatPills();
 renderDuas();
 renderDuasCatPills();
