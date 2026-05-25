@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <meta name="description" content="1000 duas — a beautiful mobile card experience for every supplication.">
+  <meta name="description" content="Arafah Guide & Duas — step-by-step companion, 1000 duas, and Names of Allah.">
   <meta name="theme-color" content="#07101e">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>1000 Duas</title>
+  <title>Arafah Guide & Duas</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,9 +17,9 @@
     <header class="header">
       <div class="logo">
         <span class="logo-moon">☽</span>
-        <span class="logo-text">1000 Duas</span>
+        <span class="logo-text">Arafah Guide</span>
       </div>
-      <div class="header-actions">
+      <div class="header-actions" id="headerActions">
         <button class="btn-icon" id="btnFavFilter" aria-label="Saved duas" title="Saved">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
@@ -34,7 +34,7 @@
       </div>
     </header>
 
-    <!-- Search Bar -->
+    <!-- Search Bar (duas mode only) -->
     <div class="search-bar" id="searchBar" role="search">
       <div class="search-inner">
         <svg class="search-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -58,8 +58,14 @@
       </div>
     </div>
 
+    <!-- Guide sub-tabs (guide mode only) -->
+    <div class="guide-subtabs" id="guideSubtabs">
+      <button class="guide-tab is-active" id="tabArafah" onclick="switchGuideSub('arafah')">🌅 Arafah</button>
+      <button class="guide-tab" id="tabMuzdalifah" onclick="switchGuideSub('muzdalifah')">🌙 Muzdalifah</button>
+    </div>
+
     <!-- Card Stack Area -->
-    <main class="card-area" id="cardArea" aria-live="polite" aria-label="Dua card">
+    <main class="card-area" id="cardArea" aria-live="polite" aria-label="Card">
 
       <div class="card-stack" id="cardStack">
         <!-- Depth cards (visual only) -->
@@ -68,37 +74,8 @@
 
         <!-- Active card -->
         <div class="card card--front" id="cardFront" role="article" tabindex="0">
-          <div class="card-inner">
-            <div class="card-header-row">
-              <span class="card-category-badge" id="cardCat">Loading…</span>
-              <span class="card-num" id="cardNum">#1</span>
-            </div>
-
-            <div class="card-body">
-              <p class="card-text" id="cardText">Loading duas…</p>
-            </div>
-
-            <div class="card-footer-row">
-              <button class="btn-card btn-share" id="btnShare" aria-label="Share this dua">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-                  <polyline points="16 6 12 2 8 6"/>
-                  <line x1="12" y1="2" x2="12" y2="15"/>
-                </svg>
-              </button>
-              <button class="btn-card-text" id="btnCopy" aria-label="Tap to copy">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                </svg>
-                Copy
-              </button>
-              <button class="btn-card btn-heart" id="btnHeart" aria-label="Save this dua">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                </svg>
-              </button>
-            </div>
+          <div class="card-inner" id="cardInner">
+            <!-- Content injected by JS -->
           </div>
         </div>
       </div>
@@ -113,15 +90,38 @@
 
     <!-- Bottom Bar -->
     <footer class="bottom-bar">
-      <div class="inspire-row">
-        <button class="btn-inspire" id="btnInspire" aria-label="Inspire me with a random dua">
-          <span class="inspire-icon">✦</span>
-          Inspire me
+
+      <!-- Duas mode: inspire + chips -->
+      <div id="duasBottomSection">
+        <div class="inspire-row">
+          <button class="btn-inspire" id="btnInspire" aria-label="Inspire me with a random dua">
+            <span class="inspire-icon">✦</span>
+            Inspire me
+          </button>
+        </div>
+        <div class="chips-track" id="chipsTrack" role="list" aria-label="Filter by category">
+          <!-- Chips injected by JS -->
+        </div>
+      </div>
+
+      <!-- Names mode: progress line -->
+      <div class="names-footer" id="namesFooterSection" style="display:none">
+        <span class="names-progress" id="namesProgress">Name 1 of 30</span>
+      </div>
+
+      <!-- Mode navigation (always visible) -->
+      <nav class="mode-nav" aria-label="Mode navigation">
+        <button class="mode-tab is-active" id="modeGuide" onclick="switchMode('guide')" aria-label="Guide">
+          🕌 Guide
         </button>
-      </div>
-      <div class="chips-track" id="chipsTrack" role="list" aria-label="Filter by category">
-        <!-- Chips injected by JS -->
-      </div>
+        <button class="mode-tab" id="modeDuas" onclick="switchMode('duas')" aria-label="Duas">
+          📿 Duas
+        </button>
+        <button class="mode-tab" id="modeNames" onclick="switchMode('names')" aria-label="Names">
+          ✨ Names
+        </button>
+      </nav>
+
     </footer>
 
   </div>
@@ -129,6 +129,6 @@
   <!-- Toast notification -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="app.js" type="module"></script>
+  <script src="app.js"></script>
 </body>
 </html>
